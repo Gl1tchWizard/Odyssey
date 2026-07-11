@@ -1,48 +1,53 @@
-// Odyssey service worker v3 — self-updating, network-first voor app-bestanden
-const VERSION = 'odyssey-v3';
+// Crimpify service worker — offline-first met verse index
+const CACHE = 'crimpify-v1';
+const CORE = [
+  './',
+  'index.html',
+  'manifest.json',
+  'icon-192.png',
+  'icon-512.png',
+  'icon-maskable-512.png',
+  'apple-touch-icon.png',
+  'favicon.svg',
+  'og.png'
+];
 
 self.addEventListener('install', e => {
-  // niet wachten: nieuwe SW meteen actief maken
-  self.skipWaiting();
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {
-  e.waitUntil((async () => {
-    // gooi ALLE oude caches weg (ook van vorige versies)
-    const keys = await caches.keys();
-    await Promise.all(keys.map(k => caches.delete(k)));
-    // neem direct controle over alle open tabs/PWA-vensters
-    await self.clients.claim();
-  })());
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
-  const sameOrigin = url.origin === self.location.origin;
+  if (e.request.method !== 'GET') return;
 
-  if (sameOrigin) {
-    // NETWORK-FIRST: altijd eerst verse versie van GitHub proberen.
-    // Alleen bij offline terugvallen op cache.
+  // index/navigatie: netwerk eerst zodat updates landen, cache als vangnet
+  if (e.request.mode === 'navigate' || url.pathname.endsWith('index.html')) {
     e.respondWith(
-      fetch(e.request).then(resp => {
-        const copy = resp.clone();
-        caches.open(VERSION).then(c => c.put(e.request, copy)).catch(()=>{});
-        return resp;
-      }).catch(() =>
-        caches.match(e.request).then(hit => hit || caches.match('index.html'))
-      )
+      fetch(e.request).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy));
+        return res;
+      }).catch(() => caches.match(e.request).then(r => r || caches.match('index.html')))
     );
-  } else {
-    // externe assets (fonts): cache-first
-    e.respondWith(
-      caches.match(e.request).then(hit =>
-        hit || fetch(e.request).then(resp => {
-          const copy = resp.clone();
-          caches.open(VERSION).then(c => c.put(e.request, copy)).catch(()=>{});
-          return resp;
-        }).catch(()=>hit)
-      )
-    );
+    return;
   }
+
+  // overige assets: cache eerst, netwerk als aanvulling
+  e.respondWith(
+    caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {
+      if (res.ok && url.origin === location.origin) {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy));
+      }
+      return res;
+    }))
+  );
 });
