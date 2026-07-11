@@ -786,6 +786,25 @@ body {
     </div>
   </div>
 
+
+  <!-- ══ TERUGBLIK OP EEN AFGERONDE SESSIE ══ -->
+  <div id="recapView" style="display:none;position:absolute;inset:0;z-index:62;background:rgba(5,5,5,.95);backdrop-filter:blur(4px);flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;overflow-y:auto;">
+    <div style="width:100%;max-width:330px;">
+      <div style="text-align:center;">
+        <div id="recapDot" style="width:16px;height:16px;border-radius:50%;margin:0 auto 10px;background:#3A3A38;"></div>
+        <div id="recapName" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;text-transform:uppercase;letter-spacing:.03em;color:#F5F5F2;line-height:1.1;">–</div>
+        <div id="recapMeta" style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.06em;color:#7A7A76;margin-top:6px;">–</div>
+      </div>
+      <div id="recapBar" style="display:flex;height:14px;border-radius:7px;overflow:hidden;background:#1A1A18;margin-top:18px;"></div>
+      <div id="recapBlocks" style="margin-top:14px;display:flex;flex-direction:column;gap:8px;"></div>
+      <div id="recapNote" style="display:none;font-family:'Barlow',sans-serif;font-size:12px;line-height:1.5;color:#8A8A86;margin-top:14px;"></div>
+      <div style="display:flex;gap:8px;margin-top:20px;">
+        <button onclick="closeRecap()" style="flex:1;padding:13px;border-radius:10px;border:1px solid #3A3A38;background:none;color:#C8C8C4;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;">Sluit</button>
+        <button id="recapAgainBtn" onclick="recapAgain()" style="flex:1;padding:13px;border-radius:10px;border:1px solid #3A3A38;background:none;color:#C8C8C4;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;">Nog eens</button>
+        <button id="recapShareBtn" onclick="recapShare()" style="flex:1;padding:13px;border-radius:10px;border:none;background:var(--acid);color:#0A0A0A;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;">Deel</button>
+      </div>
+    </div>
+  </div>
   <!-- ══ EXIT CONFIRM DIALOG ══ -->
   <div id="confirmExit" style="display:none;position:absolute;inset:0;z-index:70;background:rgba(5,5,5,.85);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:30px;">
     <div style="background:#111;border:1px solid #2A2A28;border-radius:16px;padding:24px 22px;max-width:300px;text-align:center;">
@@ -1158,9 +1177,11 @@ const INTENSITY_FACTORS = {
 function sessionLoad(id, minutes) {
   return Math.round((minutes||0) * (INTENSITY_FACTORS[id] != null ? INTENSITY_FACTORS[id] : 0.65));
 }
-function logSessionDone(id, variant, time, sig) {
+function logSessionDone(id, variant, time, sig, snap) {
   const h = loadHistory();
-  h.unshift({ id, variant: variant||'', time: time||0, ts: Date.now(), sig: sig || null, load: sessionLoad(id, time) });
+  const e = { id, variant: variant||'', time: time||0, ts: Date.now(), sig: sig || null, load: sessionLoad(id, time) };
+  if (snap) { e.keys = snap.keys; e.name = snap.name; e.color = snap.color; e.blocks = snap.blocks; }
+  h.unshift(e);
   saveHistory(h);
   rebuildRecent();
   renderSignalCal();
@@ -1192,7 +1213,7 @@ function rebuildRecent() {
     const freqScore = Math.min(20, s.count * 4);          // vaker = hoger, gecapt
     return { ...s, score: recencyScore + freqScore };
   }).sort((a,b)=> b.score - a.score);
-  recent = scored.slice(0, 8).map(s => ({ id:s.id, ago:agoLabel(s.last), time:s.time||60, variant:s.variant, sig:s.sig }));
+  recent = scored.slice(0, 8).map(s => ({ id:s.id, ago:agoLabel(s.last), time:s.time||60, variant:s.variant, sig:s.sig, ts:s.last }));
   if (typeof buildRecent==='function') buildRecent();
 }
 const categories = ['Strength','Power','Power Endurance','Capacity','Conditioning','Skill','Performance','Recovery'];
@@ -1485,7 +1506,12 @@ function showSessionSummary() {
   const totalMin = spentMin || (s ? getT() : 60);
   const coreBlock = blocks.filter((b,i)=>i>0).sort((a,b)=>b.spent-a.spent)[0];
   const variant = coreBlock ? coreBlock.name : (s ? s.name : '');
-  _pendingLog = s ? { id: s.id, variant, time: totalMin } : null;
+  _pendingLog = s ? { id: s.id, variant, time: totalMin, snap: {
+    keys: currentBlocks.map(b => b._key),
+    name: s.name,
+    color: s.color || 'lime',
+    blocks: blocks.map(b => ({ name: b.name, spent: b.spent||0, color: b.color || '#60A5FA' }))
+  } } : null;
   // stoplicht-UI terugzetten naar beginstand
   document.getElementById('signalAsk').style.display = '';
   document.getElementById('signalAdvice').style.display = 'none';
@@ -1499,7 +1525,7 @@ const SIGNAL_ADVICE = {
   red:    { col:'#F87171', title:'Rood — herstel nu', txt:'Stop-signaal. Plan 1 à 2 dagen rust; de eerstvolgende sessie licht (Recovery of Skill). Pijn die niet wegtrekt? Laat het checken.' },
 };
 function signalTap(sig) {
-  if (_pendingLog) { logSessionDone(_pendingLog.id, _pendingLog.variant, _pendingLog.time, sig); _pendingLog = null; }
+  if (_pendingLog) { logSessionDone(_pendingLog.id, _pendingLog.variant, _pendingLog.time, sig, _pendingLog.snap); _pendingLog = null; }
   const a = SIGNAL_ADVICE[sig];
   document.getElementById('signalAsk').style.display = 'none';
   const box = document.getElementById('signalAdvice');
@@ -1510,13 +1536,13 @@ function signalTap(sig) {
   document.getElementById('signalAdviceTxt').textContent = a.txt;
 }
 function signalSkip() {
-  if (_pendingLog) { logSessionDone(_pendingLog.id, _pendingLog.variant, _pendingLog.time, null); _pendingLog = null; }
+  if (_pendingLog) { logSessionDone(_pendingLog.id, _pendingLog.variant, _pendingLog.time, null, _pendingLog.snap); _pendingLog = null; }
   closeSummary();
 }
 
 function closeSummary() {
   // vangnet: als er nog een ongelogde sessie hangt, log zonder signaal
-  if (_pendingLog) { logSessionDone(_pendingLog.id, _pendingLog.variant, _pendingLog.time, null); _pendingLog = null; }
+  if (_pendingLog) { logSessionDone(_pendingLog.id, _pendingLog.variant, _pendingLog.time, null, _pendingLog.snap); _pendingLog = null; }
   document.getElementById('sessionSummary').style.display = 'none';
   sessionLog = {};
   recentFolded = false; applyRecentFold();
@@ -2045,7 +2071,7 @@ function buildRecent() {
     if (!s) return;
     const col = C[s.color];
     const isActive = s.id === activeSessionId;
-    html += `<div class="recent-card${isActive?' active':''}" style="background:${col.bg};border-color:${isActive?col.color:col.border};${isActive?'--rc-color:'+col.color+';':''}" onclick="selectSession('${s.id}')">
+    html += `<div class="recent-card${isActive?' active':''}" style="background:${col.bg};border-color:${isActive?col.color:col.border};${isActive?'--rc-color:'+col.color+';':''}" onclick="openRecap(${r.ts})">
       <div class="rc-top" style="background:${col.color};"></div>
       <div class="rc-body">
         <div class="rc-name" style="color:${col.text};">${s.name}</div>
@@ -2155,6 +2181,80 @@ function toggleLoadPanel() {
 // 2. twee keer oranje op rij of ACWR 1.3-1.5 → volume vasthouden, licht systeem
 // 3. gisteren zwaar (strength/power/perf) → vandaag laag-intensief alterneren
 // 4. anders → progressie, roteer energiesystemen
+
+// ── TERUGBLIK OP EEN AFGERONDE SESSIE (openen vanuit Mijn sessies) ──
+let _recapEntry = null;
+const SIG_COL = { green:'#4ADE80', orange:'#FB923C', red:'#F87171' };
+function openRecap(ts) {
+  const e = loadHistory().find(x => x.ts === ts);
+  if (!e) return;
+  _recapEntry = e;
+  const s = getSession(e.id);
+  const name = e.name || (s ? s.name : 'Sessie');
+  const el = id => document.getElementById(id);
+  el('recapName').textContent = name;
+  const d = new Date(e.ts);
+  const sigTxt = e.sig === 'green' ? 'sterk' : e.sig === 'orange' ? 'op de rand' : e.sig === 'red' ? 'te veel' : 'geen signaal';
+  el('recapMeta').textContent = nlDate(d) + ' · ' + (e.time || 0) + ' min · ' + sigTxt;
+  el('recapDot').style.background = SIG_COL[e.sig] || '#3A3A38';
+  el('recapDot').style.boxShadow = SIG_COL[e.sig] ? '0 0 14px ' + SIG_COL[e.sig] + '80' : 'none';
+
+  const blocks = e.blocks || [];
+  const total = blocks.reduce((sum,b)=>sum+(b.spent||0),0) || 1;
+  el('recapBar').innerHTML = blocks.map(b => '<div style="width:' + ((b.spent||0)/total*100).toFixed(1) + '%;background:' + (b.color||'#60A5FA') + ';"></div>').join('');
+  el('recapBar').style.display = blocks.length ? 'flex' : 'none';
+  el('recapBlocks').innerHTML = blocks.map(b =>
+    '<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:#111;border-radius:8px;border-left:3px solid ' + (b.color||'#60A5FA') + ';">' +
+      '<div style="flex:1;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:15px;text-transform:uppercase;letter-spacing:.03em;color:#D8D8D4;">' + b.name + '</div>' +
+      '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:18px;color:' + (b.color||'#D8D8D4') + ';">' + Math.round((b.spent||0)/60) + ' min</div>' +
+    '</div>').join('');
+
+  const canShare = Array.isArray(e.keys) && e.keys.length;
+  el('recapShareBtn').style.display = canShare ? '' : 'none';
+  el('recapAgainBtn').style.display = canShare ? '' : 'none';
+  const note = el('recapNote');
+  if (!canShare) {
+    note.style.display = '';
+    note.textContent = 'Deze sessie is gelogd voor de update, dus de opbouw is niet bewaard. Sessies vanaf nu kun je hier terugzien en delen.';
+  } else { note.style.display = 'none'; }
+  el('recapView').style.display = 'flex';
+}
+function closeRecap() { document.getElementById('recapView').style.display = 'none'; _recapEntry = null; }
+function recapShare() {
+  const e = _recapEntry;
+  if (!e || !e.keys || !e.keys.length) return;
+  const s = getSession(e.id);
+  const url = location.origin + location.pathname + '#s=' + encodePayload(e.name || (s ? s.name : 'Sessie'), e.keys, e.time || 60, e.color || 'lime');
+  const title = 'Crimpify: ' + (e.name || (s ? s.name : 'sessie'));
+  if (navigator.share) { navigator.share({ title, url }).catch(()=>{ openShareDialog(url); }); }
+  else { openShareDialog(url); }
+}
+function recapAgain() {
+  const e = _recapEntry;
+  if (!e || !e.keys || !e.keys.length) return;
+  closeRecap();
+  const s = getSession(e.id);
+  customSession = { id:'custom', cat:'opnieuw', name: e.name || (s ? s.name : 'Sessie'), desc:'', color: e.color || 'lime', rpe: s ? s.rpe : '–', intent:'Zelfde sessie als eerder. Pas aan en leg vast, of start meteen.' };
+  customKeys = e.keys.filter(k => BLOCKLIB[k]);
+  activeSessionId = 'custom';
+  sessionLocked = false;
+  sessionOwned = true;
+  const ti = timeValues.indexOf(e.time);
+  if (ti >= 0) setTimeIdx(ti);
+  buildSlab();
+  goTo('v-session');
+}
+
+// ── hoe vaak traint deze persoon werkelijk? (mediaan tussen trainingsdagen) ──
+function typicalGapDays(h) {
+  const days = [...new Set(h.map(e => Math.floor(e.ts / 86400000)))].sort((a,b) => b - a);
+  if (days.length < 3) return null;
+  const gaps = [];
+  for (let i = 0; i < Math.min(days.length - 1, 10); i++) gaps.push(days[i] - days[i+1]);
+  gaps.sort((a,b) => a - b);
+  return gaps[Math.floor(gaps.length / 2)];
+}
+
 let _coachPick = null;
 function coachSuggest() {
   const h = loadHistory();
@@ -2176,6 +2276,16 @@ function coachSuggest() {
     reason:'Twee keer oranje op rij. Techniekwerk houdt je in beweging zonder de belasting verder op te stapelen.' };
   if (ratio != null && ratio > 1.3) return { id:'capacity', time:45, badge:'#FB923C',
     reason:'Je belasting loopt op (ratio ' + ratio.toFixed(2) + '). Licht aeroob volume, geen intensiteit toevoegen deze week.' };
+  // rust is het standaardadvies vlak na een sessie; het ritme van de persoon corrigeert dat
+  const gap = typicalGapDays(h);
+  if (daysSince === 0) return { rest:true, id:'recovery', time:30, badge:'#60A5FA',
+    reason: gap != null && gap <= 1
+      ? 'Je hebt vandaag al getraind. Je traint doorgaans dagelijks, dus een tweede sessie kan, maar houd hem licht.'
+      : 'Je hebt vandaag al getraind. De aanpassing gebeurt in de rust, niet in de sessie.' };
+  if (daysSince === 1 && (gap == null || gap >= 2)) return { rest:true, id:'recovery', time:30, badge:'#60A5FA',
+    reason: gap == null
+      ? 'Gisteren getraind. Eén dag rust laat de aanpassing landen; nog te weinig historie om je ritme te kennen.'
+      : 'Gisteren getraind, en je traint doorgaans om de ' + gap + ' dagen. Rust vandaag, morgen weer scherp.' };
   if (last && HEAVY.includes(last.id) && daysSince <= 1) {
     return { id:'skill', time:60, badge:'#4ADE80',
       reason:'Gisteren zwaar getraind (' + (getSession(last.id) ? getSession(last.id).name : last.id) + '). Alterneren: vandaag techniek of licht volume, morgen weer intensief.' };
@@ -2196,9 +2306,17 @@ function renderCoach() {
   const s = getSession(pick.id);
   if (!s) { card.style.display = 'none'; return; }
   card.style.display = '';
-  const col = C[s.color] || C.lime;
-  document.getElementById('coachName').textContent = s.name + ' · ' + pick.time + ' min';
-  document.getElementById('coachName').style.color = col.text;
+  const btn = document.getElementById('coachApplyBtn');
+  if (pick.rest) {
+    document.getElementById('coachName').textContent = 'Rustdag';
+    document.getElementById('coachName').style.color = '#93C5FD';
+    btn.textContent = 'Toch trainen? Licht herstel →';
+  } else {
+    const col = C[s.color] || C.lime;
+    document.getElementById('coachName').textContent = s.name + ' · ' + pick.time + ' min';
+    document.getElementById('coachName').style.color = col.text;
+    btn.textContent = 'Gebruik voorstel →';
+  }
   document.getElementById('coachReason').textContent = pick.reason;
   document.getElementById('coachBadge').style.background = pick.badge;
 }
@@ -2455,8 +2573,10 @@ function toggleFavorite() {
 }
 function encodeSession() {
   const s = getSession(activeSessionId);
-  const keys = currentBlocks.map(b=>b._key);
-  const payload = { n: s ? s.name : 'Sessie', k: keys, t: getT(), c: s ? s.color : 'lime' };
+  return encodePayload(s ? s.name : 'Sessie', currentBlocks.map(b=>b._key), getT(), s ? s.color : 'lime');
+}
+function encodePayload(name, keys, time, color) {
+  const payload = { n: name || 'Sessie', k: keys, t: time, c: color || 'lime' };
   // eigen oefeningen reizen mee in de link
   const own = keys.filter(k=>k.startsWith('ux_') && BLOCKLIB[k]);
   if (own.length) {
