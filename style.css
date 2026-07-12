@@ -139,10 +139,9 @@ body {
 .time-track-wrap::after { right:0; background:linear-gradient(-90deg,var(--bg),transparent); }
 .time-track { display:flex; gap:7px; padding:3px 80px; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; cursor:grab; }
 .time-track::-webkit-scrollbar { display:none; }
-/* MOCK Choose-prototype: chips gedemoveerd — tijd is een parameter, niet het hoofdevent */
-.time-item { scroll-snap-align:center; flex-shrink:0; width:46px; padding:8px 0; border-radius:6px; border:1px solid var(--border); background:var(--s1); text-align:center; cursor:pointer; transition:all .18s; user-select:none; }
+.time-item { scroll-snap-align:center; flex-shrink:0; width:58px; padding:11px 0; border-radius:6px; border:1px solid var(--border); background:var(--s1); text-align:center; cursor:pointer; transition:all .18s; user-select:none; }
 .time-item.active { border-color:var(--acid); background:rgba(230,245,87,.05); box-shadow:0 0 12px var(--acid-g); }
-.t-num { font-size:16px; font-weight:900; color:var(--sub); transition:color .18s; line-height:1; }
+.t-num { font-size:23px; font-weight:900; color:var(--sub); transition:color .18s; line-height:1; }
 .time-item.active .t-num { color:var(--acid); }
 .t-unit { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-top:1px; }
 .time-item.active .t-unit { color:var(--acid-d); }
@@ -344,29 +343,7 @@ body {
 .next-name { flex:1; font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
 .next-arr { font-size:16px; color:var(--sub); }
 
-/* ══ MOCK Choose-prototype: tijdbalk, deuren, lege staat ══ */
-/* tijdbalk — vullende blokken (crimp-motief), tap om te kiezen; laatste stop = ∞ */
-.timebar-wrap { padding:12px 20px 2px; }
-.timebar-head { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px; }
-.timebar-readout { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:42px; line-height:.85; color:var(--acid); letter-spacing:.01em; }
-.timebar-readout span { font-family:'DM Mono',monospace; font-weight:400; font-size:12px; letter-spacing:.14em; text-transform:uppercase; margin-left:5px; color:var(--acid-d); }
-.timebar { display:flex; gap:5px; align-items:flex-end; }
-.tb-seg { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:6px; cursor:pointer; -webkit-tap-highlight-color:transparent; user-select:none; }
-.tb-block { width:100%; border-radius:4px; border:1px solid var(--border2); background:var(--s1); transition:background .15s,border-color .15s,box-shadow .15s; }
-.tb-seg:nth-child(1) .tb-block { height:14px; }
-.tb-seg:nth-child(2) .tb-block { height:18px; }
-.tb-seg:nth-child(3) .tb-block { height:22px; }
-.tb-seg:nth-child(4) .tb-block { height:26px; }
-.tb-seg:nth-child(5) .tb-block { height:30px; }
-.tb-seg:nth-child(6) .tb-block { height:34px; }
-.tb-seg:nth-child(7) .tb-block { height:38px; }
-.tb-seg:nth-child(8) .tb-block { height:42px; }
-.tb-seg:nth-child(9) .tb-block { height:46px; }
-.tb-seg.on .tb-block { background:var(--acid); border-color:var(--acid); }
-.tb-seg.head .tb-block { box-shadow:0 0 14px var(--acid-g); }
-.tb-lab { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:.03em; }
-.tb-seg.on .tb-lab { color:var(--acid-d); }
-
+/* ══ MOCK Choose-prototype: deuren, lege staat ══ */
 /* de twee deuren */
 .doors { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:16px 20px 4px; }
 .door { border:1px solid rgba(230,245,87,.30); border-radius:12px; background:var(--s1); padding:16px 14px 14px; min-height:116px; cursor:pointer; display:flex; flex-direction:column; transition:filter .15s,border-color .15s; }

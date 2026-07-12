@@ -2441,7 +2441,6 @@ function setTimeIdx(idx){
   const v=timeValues[idx];
   if(sum) sum.textContent = isFinite(v) ? v + ' min' : 'no limit';
   buildCategories(); renderPreview();
-  if (typeof renderTimeBar === 'function') renderTimeBar();  // MOCK: tijdbalk op de landing meesyncen
 }
 function toggleTimePicker(){
   const w=document.getElementById('timeTrackWrap');
@@ -2673,21 +2672,6 @@ function openGenerate() {
   setTimeIdx(activeTimeIdx);  // chip-status en samenvatting syncen nu de view zichtbaar is
 }
 
-// ── MOCK: prominente tijdbalk op de landing (stuurt getT(), dus ook Choose) ──
-function renderTimeBar() {
-  const bar = document.getElementById('timeBar');
-  if (!bar) return;
-  bar.innerHTML = timeValues.map((v, i) => `
-    <div class="tb-seg${i <= activeTimeIdx ? ' on' : ''}${i === activeTimeIdx ? ' head' : ''}" onclick="pickTime(${i})">
-      <div class="tb-block"></div>
-      <div class="tb-lab">${isFinite(v) ? v : '∞'}</div>
-    </div>`).join('');
-  const ro = document.getElementById('timeBarReadout');
-  const v = timeValues[activeTimeIdx];
-  if (ro) ro.innerHTML = isFinite(v) ? `${v}<span>min</span>` : `∞<span>no limit</span>`;
-}
-function pickTime(i) { setTimeIdx(i); }
-
 // ── MOCK: deuren met lading + lege-staat-zin ──
 function renderDoors() {
   const el = document.getElementById('doorChooseSub');
@@ -2702,4 +2686,4 @@ function renderEmptyHint() {
   try { h = JSON.parse(localStorage.getItem('crimpify_history') || '[]'); } catch {}
   el.style.display = (Array.isArray(h) && h.length) ? 'none' : '';
 }
-renderTimeBar(); renderDoors(); renderEmptyHint();
+renderDoors(); renderEmptyHint();

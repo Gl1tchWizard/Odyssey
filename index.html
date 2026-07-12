@@ -60,13 +60,23 @@
     <div class="search-results" id="searchResults"></div>
     <div class="scroll-body">
       <div class="main-content" id="mainContent">
-        <!-- MOCK Choose-prototype: tijdbalk (stuurt het schema, ook voor Choose) -->
-        <div class="timebar-wrap">
-          <div class="timebar-head">
-            <div class="slabel" style="padding:0;font-size:10px;">session time</div>
-            <div class="timebar-readout" id="timeBarReadout">60<span>min</span></div>
+        <!-- tijd-slider terug op de landing (origineel), met oneindig-chip als toevoeging -->
+        <div class="slabel" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>time available</span>
+          <span id="timeSummary" style="color:var(--acid);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.04em;">60 min</span>
+        </div>
+        <div class="time-track-wrap" id="timeTrackWrap">
+          <div class="time-track" id="timeTrack">
+            <div class="time-item" data-t="30"><div class="t-num">30</div><div class="t-unit">min</div></div>
+            <div class="time-item" data-t="45"><div class="t-num">45</div><div class="t-unit">min</div></div>
+            <div class="time-item active" data-t="60"><div class="t-num">60</div><div class="t-unit">min</div></div>
+            <div class="time-item" data-t="75"><div class="t-num">75</div><div class="t-unit">min</div></div>
+            <div class="time-item" data-t="90"><div class="t-num">90</div><div class="t-unit">min</div></div>
+            <div class="time-item" data-t="105"><div class="t-num">105</div><div class="t-unit">min</div></div>
+            <div class="time-item" data-t="120"><div class="t-num">120</div><div class="t-unit">min</div></div>
+            <div class="time-item" data-t="150"><div class="t-num">150</div><div class="t-unit">min</div></div>
+            <div class="time-item" data-t="inf"><div class="t-num">∞</div><div class="t-unit">no limit</div></div>
           </div>
-          <div class="timebar" id="timeBar"></div>
         </div>
         <!-- MOCK: de twee deuren -->
         <div class="doors">
@@ -168,26 +178,6 @@
     <div class="topbar"><button class="back-btn" onclick="goTo('v-build')">← back</button><div class="logo" onclick="goTo('v-browse')" style="cursor:pointer;"><svg class="logo-mark"><use href="#cf-mark"/></svg><svg class="logo-word"><use href="#cf-word"/></svg></div></div>
     <div class="scroll-body">
       <div class="main-content">
-        <!-- MOCK: legacy tijd-chips, verborgen — de tijdbalk op de landing stuurt; init-code (app.js) bindt hieraan -->
-        <div style="display:none;">
-          <div class="slabel" style="display:flex;justify-content:space-between;align-items:center;">
-            <span>time available</span>
-            <span id="timeSummary" style="color:var(--acid);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.04em;">60 min</span>
-          </div>
-          <div class="time-track-wrap" id="timeTrackWrap">
-            <div class="time-track" id="timeTrack">
-              <div class="time-item" data-t="30"><div class="t-num">30</div><div class="t-unit">min</div></div>
-              <div class="time-item" data-t="45"><div class="t-num">45</div><div class="t-unit">min</div></div>
-              <div class="time-item active" data-t="60"><div class="t-num">60</div><div class="t-unit">min</div></div>
-              <div class="time-item" data-t="75"><div class="t-num">75</div><div class="t-unit">min</div></div>
-              <div class="time-item" data-t="90"><div class="t-num">90</div><div class="t-unit">min</div></div>
-              <div class="time-item" data-t="105"><div class="t-num">105</div><div class="t-unit">min</div></div>
-              <div class="time-item" data-t="120"><div class="t-num">120</div><div class="t-unit">min</div></div>
-              <div class="time-item" data-t="150"><div class="t-num">150</div><div class="t-unit">min</div></div>
-              <div class="time-item" data-t="inf"><div class="t-num">∞</div><div class="t-unit">max</div></div>
-            </div>
-          </div>
-        </div>
         <div onclick="selectSession('minidose');goToSession();" style="margin:4px 20px 10px;padding:10px 14px;border:1px solid var(--border2);border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;">
           <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#8A8A86;">short on time? <b style="color:#C8C8C4;font-weight:500;">minimal dose · ~20 min</b></div>
           <div style="font-family:'DM Mono',monospace;font-size:13px;color:#8A8A86;">›</div>
