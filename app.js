@@ -2089,7 +2089,7 @@ function buildSlab() {
       <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8A8A86;">+ add block</div>
     </div>
     <div class="slab-block" style="background:none;min-height:44px;justify-content:center;" onclick="toggleSlabEdit()">
-      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:${slabEditMode?'var(--acid)':'#6A6A66'};">${slabEditMode?'✓ done editing':'✎ edit order'}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:${slabEditMode?'var(--acid)':'#6A6A66'};">${slabEditMode?'✓ done editing':'✎ edit'}</div>
     </div>`;
   const lockedRow = sessionLocked ? `
     <div class="slab-block" style="background:none;min-height:40px;justify-content:center;pointer-events:none;">
