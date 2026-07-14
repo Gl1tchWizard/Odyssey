@@ -2449,23 +2449,44 @@ function updateTimerDisplay() {
   }
 }
 
-// ── TIME SCRUBBER ──
+// ── TIME SCRUBBER (wieltje: getallen draaien onder een vast kader in het midden door) ──
 const track = document.getElementById('timeTrack');
-let tDrag=false,tSX,tSS;
-track.addEventListener('mousedown',e=>{tDrag=true;tSX=e.clientX;tSS=track.scrollLeft;});
-document.addEventListener('mousemove',e=>{if(!tDrag)return;track.scrollLeft=tSS-(e.clientX-tSX);});
+let tDrag=false,tTouch=false,tMoved=false,tSX,tSS;
+track.addEventListener('mousedown',e=>{tDrag=true;tMoved=false;tSX=e.clientX;tSS=track.scrollLeft;});
+document.addEventListener('mousemove',e=>{if(!tDrag)return;if(Math.abs(e.clientX-tSX)>4)tMoved=true;track.scrollLeft=tSS-(e.clientX-tSX);});
 document.addEventListener('mouseup',()=>{if(!tDrag)return;tDrag=false;snapTime();});
-track.addEventListener('touchstart',e=>{tSX=e.touches[0].clientX;tSS=track.scrollLeft;},{passive:true});
-track.addEventListener('touchmove',e=>{track.scrollLeft=tSS-(e.touches[0].clientX-tSX);},{passive:true});
-track.addEventListener('touchend',snapTime);
+track.addEventListener('touchstart',e=>{tTouch=true;tMoved=false;tSX=e.touches[0].clientX;tSS=track.scrollLeft;},{passive:true});
+track.addEventListener('touchmove',e=>{if(Math.abs(e.touches[0].clientX-tSX)>4)tMoved=true;track.scrollLeft=tSS-(e.touches[0].clientX-tSX);},{passive:true});
+track.addEventListener('touchend',()=>{tTouch=false;snapTime();});
 
-function snapTime(){
+function nearestTimeIdx(){
   const items=[...track.querySelectorAll('.time-item')];
   const center=track.scrollLeft+track.offsetWidth/2;
   let best=0,bd=Infinity;
   items.forEach((item,i)=>{const d=Math.abs(item.offsetLeft+item.offsetWidth/2-center);if(d<bd){bd=d;best=i;}});
-  setTimeIdx(best);
+  return best;
 }
+function snapTime(){
+  const best=nearestTimeIdx();
+  if(best!==activeTimeIdx){ setTimeIdx(best); return; }
+  const item=track.querySelectorAll('.time-item')[best];
+  if(item) track.scrollTo({left:item.offsetLeft-track.offsetWidth/2+item.offsetWidth/2,behavior:'smooth'});
+}
+// live: tijdens het draaien volgt de selectie het getal in het midden; commit pas als het wiel stilstaat
+let _wheelRaf=null,_wheelSettle=null;
+track.addEventListener('scroll',()=>{
+  if(_wheelRaf)return;
+  _wheelRaf=requestAnimationFrame(()=>{
+    _wheelRaf=null;
+    const best=nearestTimeIdx();
+    [...track.querySelectorAll('.time-item')].forEach((item,i)=>item.classList.toggle('active',i===best));
+    const sum=document.getElementById('timeSummary');
+    const v=timeValues[best];
+    if(sum) sum.textContent = isFinite(v) ? v + ' min' : '∞ no limit';
+    clearTimeout(_wheelSettle);
+    _wheelSettle=setTimeout(()=>{ if(!tDrag&&!tTouch) snapTime(); },160);
+  });
+});
 function setTimeIdx(idx){
   activeTimeIdx=idx;
   [...track.querySelectorAll('.time-item')].forEach((item,i)=>item.classList.toggle('active',i===idx));
@@ -2487,7 +2508,7 @@ function setTimePickerOpen(open){
 function toggleTimePicker(){
   setTimePickerOpen(document.getElementById('timeTrackWrap').style.display==='none');
 }
-[...track.querySelectorAll('.time-item')].forEach((item,i)=>item.addEventListener('click',()=>{ setTimeIdx(i); setTimePickerOpen(false); }));
+[...track.querySelectorAll('.time-item')].forEach((item,i)=>item.addEventListener('click',()=>{ if(tMoved) return; setTimeIdx(i); setTimePickerOpen(false); }));
 
 // ── SEARCH ──
 const searchInput = document.getElementById('searchInput');
