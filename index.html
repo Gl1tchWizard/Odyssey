@@ -120,7 +120,8 @@
 
   <!-- ══ CHOOSE (catalogus: hero + planken, zie CLAUDE.md Choose-flow) ══ -->
   <div class="view" id="v-choose">
-    <div class="topbar"><button class="back-btn" onclick="goTo('v-browse')">← back</button><div class="logo" onclick="goTo('v-browse')" style="cursor:pointer;"><svg class="logo-mark"><use href="#cf-mark"/></svg><svg class="logo-word"><use href="#cf-word"/></svg></div></div>
+    <div class="topbar"><button class="back-btn" onclick="goTo('v-browse')">← back</button><div style="display:flex;align-items:center;gap:14px;"><button class="tb-icon" id="chSearchToggle" onclick="toggleChSearch()" aria-label="search">⌕</button><div class="logo" onclick="goTo('v-browse')" style="cursor:pointer;"><svg class="logo-mark"><use href="#cf-mark"/></svg><svg class="logo-word"><use href="#cf-word"/></svg></div></div></div>
+    <div id="chSearchWrap" style="display:none;"></div>
     <div class="scroll-body">
       <div class="main-content" id="chooseBody"></div>
     </div>

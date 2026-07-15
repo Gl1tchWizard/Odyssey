@@ -458,3 +458,22 @@ body {
   font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.08em; padding:10px 16px; border-radius:8px;
   opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; box-shadow:0 8px 24px rgba(0,0,0,.5); }
 #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* zoeken in Choose: icoon in de topbar, uitklapbaar paneel met filterchips, verticale resultaten */
+.tb-icon { background:none; border:none; color:var(--dust); font-size:19px; line-height:1; cursor:pointer; padding:4px 6px; }
+.tb-icon.on { color:var(--acid); }
+.ch-fgroup { padding:8px 20px 0; }
+.ch-flabel { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:var(--disabled); margin-bottom:6px; }
+.ch-fchips { display:flex; gap:7px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
+.ch-fchips::-webkit-scrollbar { display:none; }
+.ch-fchip { flex-shrink:0; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--dust); border:1px solid var(--graphite); border-radius:6px; padding:6px 11px; background:var(--carbon); cursor:pointer; }
+.ch-fchip.on { border-color:var(--acid); color:var(--acid); background:color-mix(in srgb, var(--acid) 5%, transparent); }
+.ch-clear { display:block; margin:10px 20px 6px; background:none; border:none; cursor:pointer; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--acid); padding:0; }
+.ch-results { padding:0 20px; }
+.ch-result { position:relative; border:1px solid var(--graphite); background:var(--carbon); border-radius:12px; overflow:hidden; cursor:pointer; margin-bottom:10px; transition:filter .15s; }
+.ch-result:active { filter:brightness(1.2); }
+.ch-result-body { padding:10px 12px 12px; }
+.ch-result-coach { font-family:'Barlow',sans-serif; font-size:13px; color:var(--chalk); margin-top:4px; }
+.ch-result-coach span { color:var(--dust); font-size:12px; }
+.ch-empty { padding:48px 20px; text-align:center; font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:18px; text-transform:uppercase; letter-spacing:.04em; color:var(--dust); }
+.ch-empty span { display:block; margin-top:8px; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.08em; text-transform:none; color:var(--disabled); }

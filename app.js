@@ -2796,6 +2796,120 @@ if ('serviceWorker' in navigator) {
 // verzonnen sessies, verzonnen coaches, verzonnen like-tellers.
 // Geen backend, geen opslag. Verwijderen na de test.
 // ══════════════════════════════════════════════════════════════
+// ── ZOEKEN IN CHOOSE: icoon klapt uit tot veld + filterchips; actief = verticale resultaten ──
+let chSearchOpen = false;
+let chQuery = '';
+let chFilters = { time:null, goal:null, gear:null, load:null, level:null };  // single-select, null = uit
+const CH_GOAL_SYS = { 'recovery':['recovery'], 'volume':['capacity','power endurance'], 'max power':['power','performance'], 'fingers':['strength'], 'technique':['skill'] };
+const CH_GEAR_MAP = { 'gym wall':['Gym wall'], 'board':['Kilterboard','Spray wall'], 'fingerboard':['Fingerboard'], 'weights':['Weights'], 'none':[] };
+const CH_FILTER_DEF = [
+  { key:'time',  label:'time',      opts:[{v:30,l:'≤30'},{v:45,l:'≤45'},{v:60,l:'≤60'},{v:75,l:'≤75'},{v:90,l:'90+'}] },
+  { key:'goal',  label:'goal',      opts:['recovery','volume','max power','fingers','technique'].map(v=>({v,l:v})) },
+  { key:'gear',  label:'equipment', opts:['gym wall','board','fingerboard','weights','none'].map(v=>({v,l:v})) },
+  { key:'load',  label:'load',      opts:[1,2,3,4].map(v=>({v,l:String(v)})) },
+  { key:'level', label:'level',     opts:['all','beginner','intermediate','advanced'].map(v=>({v,l:v})) },
+];
+function chSearchActive() {
+  return chQuery.trim() !== '' || chFilters.time != null || !!chFilters.goal || !!chFilters.gear || chFilters.load != null || !!chFilters.level;
+}
+function chMatch(s) {
+  const q = chQuery.trim().toLowerCase();
+  if (q && !(s.name + ' ' + s.coach + ' ' + s.goal + ' ' + s.gear.join(' ')).toLowerCase().includes(q)) return false;
+  const f = chFilters;
+  if (f.time != null) {
+    if (f.time === 90) { if (s.mins < 90) return false; }
+    else if (s.mins > f.time) return false;
+  }
+  if (f.goal && !CH_GOAL_SYS[f.goal].includes(s.sys)) return false;
+  if (f.gear) {
+    if (f.gear === 'none') { if (s.gear.length) return false; }
+    else if (!s.gear.some(g => CH_GEAR_MAP[f.gear].includes(g))) return false;
+  }
+  if (f.load != null && s.load !== f.load) return false;
+  if (f.level && f.level !== 'advanced') {
+    // "geschikt voor mij": beginner alleen all levels, intermediate ook intermediate+
+    const ok = f.level === 'beginner' ? ['all levels'] : ['all levels', 'intermediate+'];
+    if (!ok.includes(s.level)) return false;
+  }
+  return true;
+}
+function toggleChSearch() {
+  chSearchOpen = !chSearchOpen;
+  document.getElementById('chSearchWrap').style.display = chSearchOpen ? '' : 'none';
+  document.getElementById('chSearchToggle').classList.toggle('on', chSearchOpen);
+  if (chSearchOpen) document.getElementById('chSearchInput').focus();
+  else clearChSearch();  // dichtklappen = zoeken verlaten, planken terug
+}
+function clearChSearch() {
+  chQuery = '';
+  chFilters = { time:null, goal:null, gear:null, load:null, level:null };
+  const inp = document.getElementById('chSearchInput');
+  if (inp) inp.value = '';
+  updateChSearchUI();
+  renderChoose();
+}
+function setChFilter(key, val) {
+  if (key === 'level' && val === 'all') chFilters.level = null;  // "all" = geen filter
+  else chFilters[key] = (chFilters[key] === val) ? null : val;   // actieve chip nogmaals = deselect
+  updateChSearchUI();
+  renderChoose();
+}
+function updateChSearchUI() {
+  document.querySelectorAll('#chSearchWrap .ch-fchip').forEach(el => {
+    const key = el.dataset.fg;
+    const val = key === 'time' || key === 'load' ? (el.dataset.fv === '' ? null : +el.dataset.fv) : el.dataset.fv;
+    const on = key === 'level' && val === 'all' ? chFilters.level == null : chFilters[key] === val;
+    el.classList.toggle('on', on);
+  });
+  const anyChip = chFilters.time != null || !!chFilters.goal || !!chFilters.gear || chFilters.load != null || !!chFilters.level;
+  const clr = document.querySelector('#chSearchWrap .ch-clear');
+  if (clr) clr.style.display = anyChip ? '' : 'none';
+}
+function buildChSearch() {
+  const wrap = document.getElementById('chSearchWrap');
+  if (!wrap) return;
+  const groups = CH_FILTER_DEF.map(g => `
+    <div class="ch-fgroup">
+      <div class="ch-flabel">${g.label}</div>
+      <div class="ch-fchips">${g.opts.map(o =>
+        `<button class="ch-fchip" data-fg="${g.key}" data-fv="${o.v}" onclick="setChFilter('${g.key}', ${typeof o.v === 'number' ? o.v : `'${o.v}'`})">${o.l}</button>`).join('')}</div>
+    </div>`).join('');
+  wrap.innerHTML = `
+    <div class="search-wrap" style="padding-top:10px;">
+      <div class="search-box"><div class="search-icon">⌕</div>
+        <input class="search-input" id="chSearchInput" placeholder="Search Easy Thirty, Vincent or max power..." autocomplete="off">
+      </div>
+    </div>
+    ${groups}
+    <button class="ch-clear" style="display:none;" onclick="clearChSearch()">clear all ×</button>`;
+  document.getElementById('chSearchInput').addEventListener('input', function () {
+    chQuery = this.value;
+    renderChoose();
+  });
+  enableWheelScroll('#chSearchWrap .ch-fchips');
+}
+function chResultCard(i) {
+  const s = MOCK_CHOOSE[i];
+  return `<div class="ch-result" onclick="openChoosePreview(${i})">
+    ${chStarBtn(i)}
+    <div class="ch-print" style="height:44px;">${chBlueprint(s.keys)}</div>
+    <div class="ch-result-body">
+      <div class="ch-name">${s.name}</div>
+      <div class="ch-result-coach">by ${s.coach} <span>· ${COACH_ROLE[s.coach] || 'coach'}</span></div>
+      <div class="ch-line">${s.goal} · ${s.mins} min · ${s.gear.join(', ')}</div>
+      <div class="ch-foot"><span style="display:flex;align-items:center;gap:6px;">load ${chPhalanx(s.load, true)}</span><span>${s.done} done</span></div>
+    </div>
+  </div>`;
+}
+function renderChooseResults() {
+  const hits = MOCK_CHOOSE.map((s, i) => ({ s, i })).filter(x => chMatch(x.s)).sort((a, b) => b.s.done - a.s.done);
+  if (!hits.length) return `<div class="ch-empty">No sessions match<span>Try fewer filters or a different word.</span></div>`;
+  return `<div class="ch-results">
+    <div class="ch-shelf-sub" style="padding:14px 0 8px;">${hits.length} session${hits.length === 1 ? '' : 's'} found</div>
+    ${hits.map(x => chResultCard(x.i)).join('')}
+  </div>`;
+}
+
 // Datamodel volgt CLAUDE.md Choose-flow punt 5 (vastgelegd, backend later):
 // sys = energiesysteem (matcht sessie-cats voor For you), goal = primary_goal,
 // gear = equipment[], level = recommended_level, load = expected_load (1-4,
@@ -2947,6 +3061,7 @@ const APEX_PICKS = ['The Grinder', 'Send Day', 'Easy Does It', 'Board Blitz'];
 function renderChoose() {
   const body = document.getElementById('chooseBody');
   if (!body) return;
+  if (chSearchActive()) { body.innerHTML = renderChooseResults(); return; }  // zoeken vervangt de planken
   const fi = 0;  // session of the week: redactionele keuze
   const f = MOCK_CHOOSE[fi];
   const fcol = C[f.color] || C.lime;
@@ -2988,6 +3103,17 @@ function toggleHeroWhy(btn) {
 }
 
 function openChoose() {
+  // catalogus opent altijd met de planken; zoekstaat van een vorig bezoek vervalt
+  chSearchOpen = false;
+  const wrap = document.getElementById('chSearchWrap');
+  if (wrap) wrap.style.display = 'none';
+  const tgl = document.getElementById('chSearchToggle');
+  if (tgl) tgl.classList.remove('on');
+  chQuery = '';
+  chFilters = { time:null, goal:null, gear:null, load:null, level:null };
+  const inp = document.getElementById('chSearchInput');
+  if (inp) inp.value = '';
+  updateChSearchUI();
   renderChoose();  // elke keer vers: tijd-plank en For you zijn live
   goTo('v-choose');
 }
@@ -3070,3 +3196,4 @@ function renderDiscover() {
 }
 renderDiscover();
 enableWheelScroll('#discoverShelf');
+buildChSearch();
