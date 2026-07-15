@@ -48,17 +48,50 @@ voedt de ACWR-berekening; heeft ~4 weken historie nodig).
 
 ## Ontwerptokens
 
-- **Acid (enige accentkleur): `#E6F557`.** De oude `#E8FF47` is overal vervangen;
-  nooit terug laten sluipen. Achtergrond `#0A0A0A`, oppervlakken `#111110`/`#161614`,
-  randen `#1E1E1C`/`#252523`, tekst `#F5F5F2`, subtekst `#9A9A96`.
+Alle kleuren staan als CSS-variabelen in `:root` (style.css); nergens anders
+kleurliterals. Uitzonderingen: de meta theme-color in index.html (kan geen
+`var()` lezen, waarde `#0B0C0A`), pure zwart-schaduwen (`rgba(0,0,0,.x)`) en
+de legacy-hexes in `nameColor()` (stringvergelijking, geen weergave). Tinten
+en gloed via `color-mix(in srgb, var(--x) N%, …)` — vereist browsers van
+2023+ (Chrome 111, Safari 16.2); geen fallback, bewuste keuze.
+
+- **Surfaces:** `--ink #0B0C0A` (achtergrond), `--carbon #11120F`
+  (kaarten/oppervlakken), `--graphite #292B25` (randen en dimme vlakken).
+- **Typografie-kleuren:** `--chalk #F4F2EA` (tekst, nooit puur wit),
+  `--dust #92968B` (gedempte tekst), `--disabled #55594F` (microlabels,
+  uit-staat).
+- **Merk: `--acid #E6F557`** met `--acid-text #0B0C0A` als tekst erop.
+  De oude `#E8FF47` is overal vervangen; nooit terug laten sluipen.
+- **Fingerprint (wat het traint):** `--prepare #72A7F2` (warm-up & activation,
+  antagonist/core/gym, recovery & mobility, stretching, cooldown),
+  `--volume #42D6A4` (capacity/aeroob volume, power endurance),
+  `--max-effort #FF861F` (max strength & power, finger strength),
+  `--skill #A58BFA` (technique & skills). Eigen oefeningen (`ux_`) = graphite
+  met YOURS-badge. In `app.js` blijven de oude kleur-*namen* (green/lime/
+  amber/red/blue/purple) bestaan als sleutels — localStorage, favorieten en
+  deel-links slaan namen op — maar ze wijzen naar de vier tokens.
+- **Load:** `--load-filled #E6F557` / `--load-empty #30332B`.
+- **Stoplicht (aparte familie):** `--sig-green #4ADE80`,
+  `--sig-orange #FB923C`, `--sig-red #F87171`.
+- **States:** `--danger #F87171` (destructieve acties), `--success`
+  (= chalk: done/success is neutraal, het vinkje draagt de betekenis).
+
+### Kleurregels
+1. Eén betekenis per kleur. Acid = merk, interactie, selectie en load; nooit
+   een fingerprint-kleur, nooit decoratie.
+2. Load-indicatoren (phalanx) altijd `--load-filled`/`--load-empty`. Dit
+   corrigeert de eerdere beslissing "phalanx in de dominante sessiekleur".
+3. Stoplichtkleuren zijn exclusief het autoregulatiesignaal. Done/success =
+   `--success`; destructief = `--danger`; tijd-cues (over/onder schema) zijn
+   neutraal dust, geen kleursignaal.
+4. Max 3 kleuren per sessiekaart; dominante prikkel 60–80%, prepare 10–25%
+   (richtlijn voor sessiemakers; bestaande sessies niet herbalanceren).
+5. Tekst chalk, nooit puur wit. Gedempt = dust. Randen = graphite.
+6. Geen willekeurige kleuren in sessiekaarten; alleen semantische tokens.
+
 - **Typografie:** Barlow Condensed 800/900 voor koppen (uppercase mag), Barlow voor
   lopende tekst, DM Mono uitsluitend voor datawaardes en microlabels.
   **Ondergrens 10px**; de bestaande 7–9px labels bij aanraking opschonen.
-- **Kleur betekent iets of is er niet.** Op de landing is acid de enige accentkleur
-  en betekent "actie". De semantische energiesysteemkleuren (blauw HoG, groen
-  capacity, paars drills, amber, enz.) verschijnen alleen binnen sessies en de
-  bibliotheek, waar ze informatie coderen. Stoplichtkleuren: `#4ADE80` groen,
-  `#FB923C` oranje, `#F87171` rood.
 - **Logo plat.** Geen glow, geen 3D, geen schaduwen op het mark. Kleine subtiele
   gloed op de splash is het maximum.
 - **Light mode (later, zie backlog):** acid werkt op licht alleen als vulling met
@@ -133,8 +166,9 @@ begroeting, tijd en Genereer.
    met import. Zelfde codeertruc als de deel-links. Dit is de derde
    verdedigingslinie voor dataverlies (naast `storage.persist()` en PWA-installatie,
    die er al zijn).
-4. **Token-refactor.** Inline kleuren naar CSS-variabelen. Pas daarná light mode
-   als alternatieve variabelenset achter `prefers-color-scheme`.
+4. **Light mode.** De token-refactor is gedaan (juli 2026, palette-overhaul);
+   light mode kan nu als alternatieve variabelenset achter
+   `prefers-color-scheme`.
 5. **Lege-staat-verfijning en microtypografie-opschoning** (10px-ondergrens,
    contrastfloor: geen #4A4A46-tekst op #0A0A0A voor kleine labels).
 6. **Zoek als icoon** in de topbar, bibliotheek als eigen weergave.
@@ -147,7 +181,7 @@ begroeting, tijd en Genereer.
 
 - Eén wijziging per commit-onderwerp, sw-cache bumpen bij deploy.
 - Sober Engels in UI-copy, geen consultant-taal, geen em-dashes in teksten.
-- Versienummer op de splash (nu v0.11) bij elke release ophogen, samen met de sw-cache.
+- Versienummer op de splash (nu v0.13) bij elke release ophogen, samen met de sw-cache.
 - Test na elke wijziging: splash met zichtbaar logo, naamvraag en herladen,
   sessie genereren en starten, deel-link openen in incognito, stoplicht loggen
   en dot terugzien bij Mijn sessies.
