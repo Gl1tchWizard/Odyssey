@@ -18,7 +18,7 @@
 <meta name="twitter:title" content="Crimpify — boulder sessions, built for you">
 <meta name="twitter:description" content="Generate a tailored boulder session in seconds. Train, log and share with your climbing partners.">
 <meta name="twitter:image" content="https://crimpify.com/og.png">
-<meta name="theme-color" content="#0A0A0A">
+<meta name="theme-color" content="#0B0C0A">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -40,7 +40,7 @@
   <div id="splashInner">
     <svg id="splashMark"><use href="#cf-mark"/></svg>
     <svg id="splashWord"><use href="#cf-word"/></svg>
-    <div id="splashBy">by Glitch Labs · v0.12</div>
+    <div id="splashBy">by Glitch Labs · v0.13</div>
   </div>
   <div id="splashFlash"></div>
 </div>
@@ -98,37 +98,37 @@
         <div id="signalCalWrap" style="display:none;">
           <div class="section-head" onclick="toggleLoadPanel()" style="cursor:pointer;"><div class="section-title">Last 2 weeks <span id="loadChev" style="font-size:11px;opacity:.5;">▾</span></div><div class="section-more" id="signalCalSummary"></div></div>
           <div id="signalCal" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:0 20px 10px;"></div>
-          <div id="loadPanel" style="display:none;margin:2px 20px 12px;padding:14px;border:1px solid #2A2A28;border-radius:10px;background:#0E0E0C;">
+          <div id="loadPanel" style="display:none;margin:2px 20px 12px;padding:14px;border:1px solid var(--graphite);border-radius:10px;background:var(--carbon);">
             <div style="display:flex;gap:14px;">
               <div style="flex:1;text-align:center;">
-                <div id="acwrAcute" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:#F5F5F2;">–</div>
-                <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:#6A6A66;margin-top:2px;">acute · 7d</div>
+                <div id="acwrAcute" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:var(--chalk);">–</div>
+                <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:var(--disabled);margin-top:2px;">acute · 7d</div>
               </div>
               <div style="flex:1;text-align:center;">
-                <div id="acwrChronic" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:#8A8A86;">–</div>
-                <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:#6A6A66;margin-top:2px;">chronic · weekly avg</div>
+                <div id="acwrChronic" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:var(--dust);">–</div>
+                <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:var(--disabled);margin-top:2px;">chronic · weekly avg</div>
               </div>
               <div style="flex:1;text-align:center;">
                 <div id="acwrRatio" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;">–</div>
-                <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:#6A6A66;margin-top:2px;">ratio</div>
+                <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:var(--disabled);margin-top:2px;">ratio</div>
               </div>
             </div>
-            <div id="acwrZoneBar" style="position:relative;height:8px;border-radius:4px;margin-top:12px;background:linear-gradient(90deg,#5A7A9A 0%,#5A7A9A 26%,#4ADE80 26%,#4ADE80 56%,#FB923C 56%,#FB923C 66%,#F87171 66%,#F87171 100%);">
-              <div id="acwrMarker" style="position:absolute;top:-3px;width:3px;height:14px;background:#F5F5F2;border-radius:2px;left:0%;"></div>
+            <div id="acwrZoneBar" style="position:relative;height:8px;border-radius:4px;margin-top:12px;background:linear-gradient(90deg,var(--dust) 0%,var(--dust) 26%,var(--sig-green) 26%,var(--sig-green) 56%,var(--sig-orange) 56%,var(--sig-orange) 66%,var(--sig-red) 66%,var(--sig-red) 100%);">
+              <div id="acwrMarker" style="position:absolute;top:-3px;width:3px;height:14px;background:var(--chalk);border-radius:2px;left:0%;"></div>
             </div>
-            <div id="acwrAdvice" style="font-family:'Barlow',sans-serif;font-size:12px;line-height:1.5;color:#C8C8C4;margin-top:10px;">–</div>
-            <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.08em;color:#4A4A46;margin-top:8px;">acwr model (gabbett) · load = duration × intensity factor (srpe, foster)</div>
+            <div id="acwrAdvice" style="font-family:'Barlow',sans-serif;font-size:12px;line-height:1.5;color:var(--dust);margin-top:10px;">–</div>
+            <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.08em;color:var(--disabled);margin-top:8px;">acwr model (gabbett) · load = duration × intensity factor (srpe, foster)</div>
           </div>
         </div>
         <!-- coach-voorstel (verplaatst naar landing-onderkant, compact en neutraal — acid is voor tijdbalk + deuren) -->
-        <div id="coachCard" style="display:none;margin:10px 20px 4px;padding:11px 13px;border:1px solid var(--border2);border-radius:10px;background:var(--s1);">
+        <div id="coachCard" style="display:none;margin:10px 20px 4px;padding:11px 13px;border:1px solid var(--graphite);border-radius:10px;background:var(--carbon);">
           <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8A8A86;">coach · today</div>
-            <div id="coachBadge" style="width:8px;height:8px;border-radius:50%;background:#4ADE80;"></div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dust);">coach · today</div>
+            <div id="coachBadge" style="width:8px;height:8px;border-radius:50%;background:var(--sig-green);"></div>
           </div>
-          <div id="coachName" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;text-transform:uppercase;letter-spacing:.03em;color:#F5F5F2;margin-top:4px;">–</div>
-          <div id="coachReason" style="font-family:'Barlow',sans-serif;font-size:12px;line-height:1.5;color:#9A9A96;margin-top:2px;">–</div>
-          <button id="coachApplyBtn" onclick="applyCoach()" style="margin-top:8px;width:100%;padding:9px;border-radius:8px;border:1px solid #3A3A38;background:none;color:#C8C8C4;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;">Use suggestion →</button>
+          <div id="coachName" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;text-transform:uppercase;letter-spacing:.03em;color:var(--chalk);margin-top:4px;">–</div>
+          <div id="coachReason" style="font-family:'Barlow',sans-serif;font-size:12px;line-height:1.5;color:var(--dust);margin-top:2px;">–</div>
+          <button id="coachApplyBtn" onclick="applyCoach()" style="margin-top:8px;width:100%;padding:9px;border-radius:8px;border:1px solid var(--graphite);background:none;color:var(--dust);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;">Use suggestion →</button>
         </div>
         <div style="height:12px;"></div>
       </div>
@@ -144,7 +144,7 @@
   </div>
 
   <!-- ══ CHOOSE PREVIEW (tussenlaag: kaart → preview → sessie; starten kan alleen hier) ══ -->
-  <div id="previewView" style="display:none;position:absolute;inset:0;z-index:60;background:var(--bg);flex-direction:column;">
+  <div id="previewView" style="display:none;position:absolute;inset:0;z-index:60;background:var(--ink);flex-direction:column;">
     <div class="topbar"><button class="back-btn" onclick="closeChoosePreview()">← back</button><div class="logo"><svg class="logo-mark"><use href="#cf-mark"/></svg><svg class="logo-word"><use href="#cf-word"/></svg></div></div>
     <div class="scroll-body">
       <div class="main-content" id="previewBody"></div>
@@ -179,13 +179,13 @@
     <div class="topbar"><button class="back-btn" onclick="goTo('v-build')">← back</button><div class="logo" onclick="goTo('v-browse')" style="cursor:pointer;"><svg class="logo-mark"><use href="#cf-mark"/></svg><svg class="logo-word"><use href="#cf-word"/></svg></div></div>
     <div class="scroll-body">
       <div class="main-content">
-        <div onclick="selectSession('minidose');goToSession();" style="margin:4px 20px 10px;padding:10px 14px;border:1px solid var(--border2);border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;">
-          <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#8A8A86;">short on time? <b style="color:#C8C8C4;font-weight:500;">minimal dose · ~20 min</b></div>
-          <div style="font-family:'DM Mono',monospace;font-size:13px;color:#8A8A86;">›</div>
+        <div onclick="selectSession('minidose');goToSession();" style="margin:4px 20px 10px;padding:10px 14px;border:1px solid var(--graphite);border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dust);">short on time? <b style="color:var(--dust);font-weight:500;">minimal dose · ~20 min</b></div>
+          <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--dust);">›</div>
         </div>
         <div id="generateSection">
           <div id="categorySections"></div>
-          <div onclick="selectSession('drills');goToSession();" style="margin:2px 20px 8px;padding:11px;border:1px dashed #2E2E2C;border-radius:8px;cursor:pointer;text-align:center;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8A8A86;">open the drill library →</div>
+          <div onclick="selectSession('drills');goToSession();" style="margin:2px 20px 8px;padding:11px;border:1px dashed var(--graphite);border-radius:8px;cursor:pointer;text-align:center;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dust);">open the drill library →</div>
         </div>
         <div class="active-preview" id="activePreview"></div>
         <div class="movement"><div class="mvmt-dot"></div><div class="mvmt-text">movement skill <b>always included</b></div></div>
@@ -204,18 +204,18 @@
       <div class="slab-topbar">
         <button class="back-btn" onclick="goTo('v-browse')">← back</button>
         <div style="display:flex;align-items:center;gap:12px;">
-          <button onclick="rerollSession(activeSessionId)" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--acid-d);background:none;border:1px solid rgba(230,245,87,.2);border-radius:4px;padding:5px 10px;cursor:pointer;">⟳ vary</button>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);" id="slabWeek">–</div>
+          <button onclick="rerollSession(activeSessionId)" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:color-mix(in srgb, var(--acid) 55%, transparent);background:none;border:1px solid color-mix(in srgb, var(--acid) 20%, transparent);border-radius:4px;padding:5px 10px;cursor:pointer;">⟳ vary</button>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--disabled);" id="slabWeek">–</div>
         </div>
       </div>
       <div class="slab-title" id="slabTitle">–</div>
       <div class="slab-meta" id="slabMeta">–</div>
-      <div class="slab-intent" id="slabIntent" style="font-family:'Barlow',sans-serif;font-size:13px;color:#D8E89A;letter-spacing:.01em;line-height:1.55;margin-top:10px;padding:11px 13px;background:rgba(230,245,87,.05);border:1px solid rgba(230,245,87,.12);border-radius:6px;">–</div>
+      <div class="slab-intent" id="slabIntent" style="font-family:'Barlow',sans-serif;font-size:13px;color:color-mix(in srgb, var(--acid) 45%, var(--chalk));letter-spacing:.01em;line-height:1.55;margin-top:10px;padding:11px 13px;background:color-mix(in srgb, var(--acid) 5%, transparent);border:1px solid color-mix(in srgb, var(--acid) 12%, transparent);border-radius:6px;">–</div>
       <div style="height:12px;"></div>
-      <div id="tapeTip" style="display:none;margin:0 0 8px;padding:9px 12px;border-radius:8px;background:#111;border:1px solid #2A2A28;align-items:center;gap:10px;">
-        <span id="tapeTipDot" style="width:10px;height:10px;border-radius:50%;background:#888;flex-shrink:0;"></span>
-        <span id="tapeTipName" style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.03em;color:#F5F5F2;flex:1;">–</span>
-        <span id="tapeTipMeta" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;color:#8A8A86;">–</span>
+      <div id="tapeTip" style="display:none;margin:0 0 8px;padding:9px 12px;border-radius:8px;background:var(--carbon);border:1px solid var(--graphite);align-items:center;gap:10px;">
+        <span id="tapeTipDot" style="width:10px;height:10px;border-radius:50%;background:var(--dust);flex-shrink:0;"></span>
+        <span id="tapeTipName" style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.03em;color:var(--chalk);flex:1;">–</span>
+        <span id="tapeTipMeta" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;color:var(--dust);">–</span>
       </div>
       <div class="slab-tape" id="slabTape"></div>
     </div>
@@ -224,10 +224,10 @@
     <div class="footer">
       <div class="footer-meta" id="slabFooterMeta">–</div>
       <div style="display:flex;gap:8px;align-items:center;">
-        <button id="editBtn" onclick="unlockEdit()" title="edit" style="display:none;width:44px;height:44px;border-radius:10px;border:1px solid #3A3A38;background:none;color:#C8C8C4;font-size:15px;cursor:pointer;">✎</button>
-        <button id="dupBtn" onclick="duplicateSession()" title="make your own copy" style="display:none;width:44px;height:44px;border-radius:10px;border:1px solid #3A3A38;background:none;color:#C8C8C4;font-size:15px;cursor:pointer;">⧉</button>
-        <button id="favStarBtn" onclick="toggleFavorite()" title="favourite" style="display:none;width:44px;height:44px;border-radius:10px;border:1px solid #3A3A38;background:none;color:#C8C8C4;font-size:17px;cursor:pointer;">☆</button>
-        <button id="shareBtn" onclick="shareSession()" title="share session" style="display:none;width:44px;height:44px;border-radius:10px;border:1px solid #3A3A38;background:none;color:#C8C8C4;cursor:pointer;align-items:center;justify-content:center;padding:0;">
+        <button id="editBtn" onclick="unlockEdit()" title="edit" style="display:none;width:44px;height:44px;border-radius:10px;border:1px solid var(--graphite);background:none;color:var(--dust);font-size:15px;cursor:pointer;">✎</button>
+        <button id="dupBtn" onclick="duplicateSession()" title="make your own copy" style="display:none;width:44px;height:44px;border-radius:10px;border:1px solid var(--graphite);background:none;color:var(--dust);font-size:15px;cursor:pointer;">⧉</button>
+        <button id="favStarBtn" onclick="toggleFavorite()" title="favourite" style="display:none;width:44px;height:44px;border-radius:10px;border:1px solid var(--graphite);background:none;color:var(--dust);font-size:17px;cursor:pointer;">☆</button>
+        <button id="shareBtn" onclick="shareSession()" title="share session" style="display:none;width:44px;height:44px;border-radius:10px;border:1px solid var(--graphite);background:none;color:var(--dust);cursor:pointer;align-items:center;justify-content:center;padding:0;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
         </button>
         <button id="saveBigBtn" class="start-btn" onclick="openSaveFav()" style="display:none;">Lock in →</button>
@@ -261,7 +261,7 @@
         <div class="timer-controls">
           <button class="timer-btn secondary" id="timerResetBtn" onclick="resetTimerConfirm()" disabled style="opacity:.4;">Reset</button>
           <button class="timer-btn primary" id="timerStartBtn" onclick="toggleTimer()">Start</button>
-          <button class="timer-btn secondary" id="timerFinishBtn" onclick="finishBlock()" style="display:none;border-color:#4ADE8066;color:#86EFAC;">Finish ✓</button>
+          <button class="timer-btn secondary" id="timerFinishBtn" onclick="finishBlock()" style="display:none;border-color:var(--graphite);color:var(--success);">Finish ✓</button>
         </div>
       </div>
       <div class="detail-info" id="detailInfo"></div>
@@ -282,9 +282,9 @@
     </div>
     <div style="position:relative;flex:1;display:flex;flex-direction:column;overflow:hidden;">
       <div class="guided-stack" id="guidedStack"></div>
-      <div id="guidedStartOverlay" style="display:none;position:absolute;inset:0;background:rgba(5,5,5,.82);backdrop-filter:blur(2px);flex-direction:column;align-items:center;justify-content:center;z-index:10;">
-        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7A7A76;margin-bottom:14px;">ready to begin?</div>
-        <button onclick="guidedBegin()" style="width:200px;padding:16px;border-radius:12px;border:none;background:#60A5FA;color:#0A0A0A;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 24px rgba(96,165,250,.35);">Start ▸</button>
+      <div id="guidedStartOverlay" style="display:none;position:absolute;inset:0;background:color-mix(in srgb, var(--ink) 82%, transparent);backdrop-filter:blur(2px);flex-direction:column;align-items:center;justify-content:center;z-index:10;">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dust);margin-bottom:14px;">ready to begin?</div>
+        <button onclick="guidedBegin()" style="width:200px;padding:16px;border-radius:12px;border:none;background:var(--prepare);color:var(--ink);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 24px color-mix(in srgb, var(--prepare) 35%, transparent);">Start ▸</button>
       </div>
     </div>
     <div class="footer">
@@ -303,9 +303,9 @@
         <button class="back-btn" onclick="guardedExit(drillBack)">← back</button>
         <div class="detail-block-num" id="drillProg">–</div>
       </div>
-      <div class="detail-name" id="drillTitle" style="font-size:24px;color:#A78BFA;">Movement drills</div>
-      <div class="detail-cat" id="drillSub" style="color:#A78BFA;">tap a drill open for the instructions</div>
-      <input id="drillSearch" type="search" placeholder="search… (e.g. finger, feet, deadpoint)" oninput="dpFilter = this.value; renderDrillPlayer();" style="margin-top:10px;width:100%;padding:11px 13px;border-radius:10px;border:1px solid #2E2E2C;background:#0E0E0C;color:#F5F5F2;font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
+      <div class="detail-name" id="drillTitle" style="font-size:24px;color:var(--skill);">Movement drills</div>
+      <div class="detail-cat" id="drillSub" style="color:var(--skill);">tap a drill open for the instructions</div>
+      <input id="drillSearch" type="search" placeholder="search… (e.g. finger, feet, deadpoint)" oninput="dpFilter = this.value; renderDrillPlayer();" style="margin-top:10px;width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--graphite);background:var(--ink);color:var(--chalk);font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
     </div>
     <div class="scroll-body" id="drillStack" style="padding:10px 16px;"></div>
     <div class="footer">
@@ -316,30 +316,30 @@
 
   <!-- ══ VIEW 6: BOULDER CHECKLIST ══ -->
   <div class="view" id="v-check">
-    <div id="checkSuccess" style="display:none;position:absolute;inset:0;z-index:20;background:rgba(5,12,5,.9);backdrop-filter:blur(3px);flex-direction:column;align-items:center;justify-content:center;transition:opacity .4s;">
+    <div id="checkSuccess" style="display:none;position:absolute;inset:0;z-index:20;background:color-mix(in srgb, var(--ink) 90%, transparent);backdrop-filter:blur(3px);flex-direction:column;align-items:center;justify-content:center;transition:opacity .4s;">
       <div style="font-size:54px;margin-bottom:10px;">✓</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;color:#86EFAC;text-transform:uppercase;letter-spacing:.04em;">Goal reached!</div>
-      <div style="font-family:'DM Mono',monospace;font-size:11px;color:#4ADE80;letter-spacing:.06em;margin-top:6px;">25+ boulders — everything after is bonus</div>
-      <button onclick="document.getElementById('checkSuccess').style.display='none'" style="margin-top:20px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#86EFAC;background:none;border:1px solid #4ADE8044;border-radius:6px;padding:8px 16px;cursor:pointer;">continue</button>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;color:var(--success);text-transform:uppercase;letter-spacing:.04em;">Goal reached!</div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--dust);letter-spacing:.06em;margin-top:6px;">25+ boulders — everything after is bonus</div>
+      <button onclick="document.getElementById('checkSuccess').style.display='none'" style="margin-top:20px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--success);background:none;border:1px solid var(--graphite);border-radius:6px;padding:8px 16px;cursor:pointer;">continue</button>
     </div>
     <div class="detail-header">
       <div class="detail-topbar">
         <button class="back-btn" onclick="guardedExit(()=>goTo('v-session'))">← session</button>
         <div class="detail-block-num" id="checkProg">–</div>
       </div>
-      <div class="detail-name" id="checkTitle" style="font-size:24px;color:#86EFAC;">Volume boulders</div>
-      <div class="detail-cat" id="checkSub" style="color:#4ADE80;">25-35 boulders · 6th grade</div>
+      <div class="detail-name" id="checkTitle" style="font-size:24px;color:var(--chalk);">Volume boulders</div>
+      <div class="detail-cat" id="checkSub" style="color:var(--dust);">25-35 boulders · 6th grade</div>
     </div>
     <div style="text-align:center;padding:18px 20px 8px;flex-shrink:0;">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:72px;line-height:1;color:#86EFAC;" id="checkCount">0</div>
-      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;color:#4A6A4A;text-transform:uppercase;margin-top:2px;" id="checkRange">goal 25-35</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:72px;line-height:1;color:var(--chalk);" id="checkCount">0</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--disabled);text-transform:uppercase;margin-top:2px;" id="checkRange">goal 25-35</div>
       <div style="display:flex;gap:10px;justify-content:center;margin-top:18px;">
-        <button onclick="checkAdjust(-1)" style="width:56px;height:56px;border-radius:14px;border:1px solid #4ADE8044;background:rgba(74,222,128,.08);color:#86EFAC;font-size:26px;font-weight:700;cursor:pointer;">−</button>
-        <button onclick="checkAdjust(1)" style="width:120px;height:56px;border-radius:14px;border:none;background:#4ADE80;color:#0A0A0A;font-size:18px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;cursor:pointer;box-shadow:0 0 16px rgba(74,222,128,.25);">+ boulder</button>
+        <button onclick="checkAdjust(-1)" style="width:56px;height:56px;border-radius:14px;border:1px solid var(--graphite);background:var(--carbon);color:var(--chalk);font-size:26px;font-weight:700;cursor:pointer;">−</button>
+        <button onclick="checkAdjust(1)" style="width:120px;height:56px;border-radius:14px;border:none;background:var(--acid);color:var(--acid-text);font-size:18px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;cursor:pointer;box-shadow:0 0 16px color-mix(in srgb, var(--acid) 25%, transparent);">+ boulder</button>
       </div>
     </div>
     <div class="scroll-body" style="padding:8px 20px 0;">
-      <div class="dp-lbl" style="color:#4A6A4A;">boxes</div>
+      <div class="dp-lbl" style="color:var(--disabled);">boxes</div>
       <div id="checkGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:14px;"></div>
       <div class="detail-section-lbl">why this block</div>
       <div class="detail-card"><p id="checkWhy"></p></div>
@@ -356,26 +356,26 @@
       <div class="detail-topbar">
         <button class="back-btn" onclick="guardedExit(()=>goTo('v-session'))">← session</button>
         <div style="display:flex;align-items:center;gap:10px;">
-          <button onclick="dfSwitch()" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#A78BFA;background:none;border:1px solid #A78BFA44;border-radius:5px;padding:5px 10px;cursor:pointer;">⇄ switch</button>
+          <button onclick="dfSwitch()" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--skill);background:none;border:1px solid color-mix(in srgb, var(--skill) 27%, transparent);border-radius:5px;padding:5px 10px;cursor:pointer;">⇄ switch</button>
           <div class="detail-block-num" id="dfProg">–</div>
         </div>
       </div>
-      <div class="detail-name" id="dfName" style="font-size:26px;color:#C4B5FD;">–</div>
-      <div class="detail-cat" id="dfTag" style="color:#A78BFA;">–</div>
+      <div class="detail-name" id="dfName" style="font-size:26px;color:color-mix(in srgb, var(--skill) 55%, var(--chalk));">–</div>
+      <div class="detail-cat" id="dfTag" style="color:var(--skill);">–</div>
     </div>
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 20px;overflow-y:auto;">
       <div style="display:flex;align-items:center;gap:18px;">
-        <button onclick="dfAdjust(-60)" style="width:34px;height:34px;border-radius:50%;border:1px solid #2A2A28;background:none;color:#6A6A66;font-size:20px;line-height:1;cursor:pointer;flex-shrink:0;">−</button>
-        <div id="dfTimer" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:96px;line-height:1;color:#F5F5F2;letter-spacing:-.02em;min-width:200px;text-align:center;">5:00</div>
-        <button onclick="dfAdjust(60)" style="width:34px;height:34px;border-radius:50%;border:1px solid #2A2A28;background:none;color:#6A6A66;font-size:20px;line-height:1;cursor:pointer;flex-shrink:0;">+</button>
+        <button onclick="dfAdjust(-60)" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--graphite);background:none;color:var(--disabled);font-size:20px;line-height:1;cursor:pointer;flex-shrink:0;">−</button>
+        <div id="dfTimer" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:96px;line-height:1;color:var(--chalk);letter-spacing:-.02em;min-width:200px;text-align:center;">5:00</div>
+        <button onclick="dfAdjust(60)" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--graphite);background:none;color:var(--disabled);font-size:20px;line-height:1;cursor:pointer;flex-shrink:0;">+</button>
       </div>
-      <div id="dfState" style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7A7A76;margin-top:6px;">target time</div>
-      <button onclick="dfToggle()" id="dfPlayBtn" style="margin-top:24px;width:200px;padding:14px;border-radius:10px;border:none;background:#A78BFA;color:#0A0A0A;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 16px rgba(167,139,250,.25);">Start</button>
-      <button onclick="dfOpenInfo()" id="dfInfoBtn" style="margin-top:10px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#A78BFA;background:none;border:1px solid #A78BFA44;border-radius:6px;padding:7px 14px;cursor:pointer;">instructions ▾</button>
+      <div id="dfState" style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dust);margin-top:6px;">target time</div>
+      <button onclick="dfToggle()" id="dfPlayBtn" style="margin-top:24px;width:200px;padding:14px;border-radius:10px;border:none;background:var(--skill);color:var(--ink);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 16px color-mix(in srgb, var(--skill) 25%, transparent);">Start</button>
+      <button onclick="dfOpenInfo()" id="dfInfoBtn" style="margin-top:10px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--skill);background:none;border:1px solid color-mix(in srgb, var(--skill) 27%, transparent);border-radius:6px;padding:7px 14px;cursor:pointer;">instructions ▾</button>
       <div id="dfInfo" style="display:none;max-width:340px;margin-top:14px;text-align:left;">
-        <div class="dp-lbl">setup</div><p style="font-family:'Barlow',sans-serif;font-size:13px;color:#C8C8C4;line-height:1.55;" id="dfSetup"></p>
-        <div class="dp-lbl">execution</div><p style="font-family:'Barlow',sans-serif;font-size:13px;color:#C8C8C4;line-height:1.55;" id="dfDo"></p>
-        <div class="dp-lbl" style="color:#A78BFA;">goal</div><p style="font-family:'Barlow',sans-serif;font-size:13px;color:#C4B5FD;line-height:1.55;" id="dfGoal"></p>
+        <div class="dp-lbl">setup</div><p style="font-family:'Barlow',sans-serif;font-size:13px;color:var(--dust);line-height:1.55;" id="dfSetup"></p>
+        <div class="dp-lbl">execution</div><p style="font-family:'Barlow',sans-serif;font-size:13px;color:var(--dust);line-height:1.55;" id="dfDo"></p>
+        <div class="dp-lbl" style="color:var(--skill);">goal</div><p style="font-family:'Barlow',sans-serif;font-size:13px;color:color-mix(in srgb, var(--skill) 55%, var(--chalk));line-height:1.55;" id="dfGoal"></p>
       </div>
     </div>
     <div class="footer">
@@ -385,150 +385,150 @@
   </div>
 
   <!-- ══ SESSION SUMMARY POPUP ══ -->
-  <div id="sessionSummary" style="display:none;position:absolute;inset:0;z-index:60;background:rgba(5,5,5,.94);backdrop-filter:blur(4px);flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;overflow-y:auto;">
+  <div id="sessionSummary" style="display:none;position:absolute;inset:0;z-index:60;background:color-mix(in srgb, var(--ink) 94%, transparent);backdrop-filter:blur(4px);flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;overflow-y:auto;">
     <div style="width:100%;max-width:330px;">
       <div style="text-align:center;">
-        <div style="font-size:40px;color:#4ADE80;margin-bottom:6px;">✓</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;text-transform:uppercase;letter-spacing:.04em;color:#F5F5F2;">Session done</div>
-        <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.06em;color:#7A7A76;margin-top:4px;" id="summaryTotal">–</div>
+        <div style="font-size:40px;color:var(--success);margin-bottom:6px;">✓</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;text-transform:uppercase;letter-spacing:.04em;color:var(--chalk);">Session done</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--dust);margin-top:4px;" id="summaryTotal">–</div>
       </div>
 
       <!-- totaal: besteed vs gepland -->
       <div style="margin-top:20px;display:flex;align-items:flex-end;justify-content:center;gap:18px;">
         <div style="text-align:center;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:44px;line-height:1;color:#F5F5F2;" id="summarySpentBig">0</div>
-          <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:#7A7A76;margin-top:3px;">min spent</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:44px;line-height:1;color:var(--chalk);" id="summarySpentBig">0</div>
+          <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--dust);margin-top:3px;">min spent</div>
         </div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:24px;color:#3A3A38;padding-bottom:10px;">/</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:24px;color:var(--disabled);padding-bottom:10px;">/</div>
         <div style="text-align:center;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:44px;line-height:1;color:#6A6A66;" id="summaryPlannedBig">0</div>
-          <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:#7A7A76;margin-top:3px;">min planned</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:44px;line-height:1;color:var(--disabled);" id="summaryPlannedBig">0</div>
+          <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--dust);margin-top:3px;">min planned</div>
         </div>
       </div>
       <div style="margin-top:6px;text-align:center;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.06em;" id="summaryDiff">–</div>
 
       <!-- verdeling: gestapelde balk per blok -->
-      <div class="dp-lbl" style="color:#5A5A56;margin-top:18px;">breakdown</div>
-      <div id="summaryBar" style="display:flex;height:14px;border-radius:7px;overflow:hidden;background:#1A1A18;"></div>
+      <div class="dp-lbl" style="color:var(--disabled);margin-top:18px;">breakdown</div>
+      <div id="summaryBar" style="display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--carbon);"></div>
 
       <div id="summaryBlocks" style="margin-top:16px;display:flex;flex-direction:column;gap:8px;"></div>
-      <div style="margin-top:20px;padding:16px;border:1px solid rgba(230,245,87,.16);border-radius:10px;background:rgba(230,245,87,.04);">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;letter-spacing:.04em;line-height:1.15;color:#E6F557;text-align:center;" id="summaryQuote">–</div>
+      <div style="margin-top:20px;padding:16px;border:1px solid color-mix(in srgb, var(--acid) 16%, transparent);border-radius:10px;background:color-mix(in srgb, var(--acid) 4%, transparent);">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;letter-spacing:.04em;line-height:1.15;color:var(--acid);text-align:center;" id="summaryQuote">–</div>
         <div style="display:none;" id="summaryQuoteAuthor">–</div>
       </div>
       <div id="signalAsk" style="margin-top:20px;">
-        <div style="text-align:center;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#9A9A96;">how did this session feel?</div>
+        <div style="text-align:center;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dust);">how did this session feel?</div>
         <div style="display:flex;gap:10px;margin-top:12px;">
-          <button onclick="signalTap('green')" style="flex:1;padding:14px;border-radius:12px;border:1px solid #4ADE8055;background:rgba(74,222,128,.12);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;">
-            <span style="width:20px;height:20px;border-radius:50%;background:#4ADE80;box-shadow:0 0 12px rgba(74,222,128,.5);"></span>
-            <span style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#4ADE80;">strong</span>
+          <button onclick="signalTap('green')" style="flex:1;padding:14px;border-radius:12px;border:1px solid color-mix(in srgb, var(--sig-green) 33%, transparent);background:color-mix(in srgb, var(--sig-green) 12%, transparent);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;">
+            <span style="width:20px;height:20px;border-radius:50%;background:var(--sig-green);box-shadow:0 0 12px color-mix(in srgb, var(--sig-green) 50%, transparent);"></span>
+            <span style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--sig-green);">strong</span>
           </button>
-          <button onclick="signalTap('orange')" style="flex:1;padding:14px;border-radius:12px;border:1px solid #FB923C55;background:rgba(251,146,60,.12);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;">
-            <span style="width:20px;height:20px;border-radius:50%;background:#FB923C;box-shadow:0 0 12px rgba(251,146,60,.5);"></span>
-            <span style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#FB923C;">on the edge</span>
+          <button onclick="signalTap('orange')" style="flex:1;padding:14px;border-radius:12px;border:1px solid color-mix(in srgb, var(--sig-orange) 33%, transparent);background:color-mix(in srgb, var(--sig-orange) 12%, transparent);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;">
+            <span style="width:20px;height:20px;border-radius:50%;background:var(--sig-orange);box-shadow:0 0 12px color-mix(in srgb, var(--sig-orange) 50%, transparent);"></span>
+            <span style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--sig-orange);">on the edge</span>
           </button>
-          <button onclick="signalTap('red')" style="flex:1;padding:14px;border-radius:12px;border:1px solid #F8717155;background:rgba(248,113,113,.12);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;">
-            <span style="width:20px;height:20px;border-radius:50%;background:#F87171;box-shadow:0 0 12px rgba(248,113,113,.5);"></span>
-            <span style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#F87171;">too much</span>
+          <button onclick="signalTap('red')" style="flex:1;padding:14px;border-radius:12px;border:1px solid color-mix(in srgb, var(--sig-red) 33%, transparent);background:color-mix(in srgb, var(--sig-red) 12%, transparent);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;">
+            <span style="width:20px;height:20px;border-radius:50%;background:var(--sig-red);box-shadow:0 0 12px color-mix(in srgb, var(--sig-red) 50%, transparent);"></span>
+            <span style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--sig-red);">too much</span>
           </button>
         </div>
         <div style="display:flex;align-items:center;justify-content:center;gap:18px;margin-top:12px;">
-          <div onclick="signalSkip()" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#5A5A56;cursor:pointer;">skip</div>
-          <div onclick="shareSummary()" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--acid-d);cursor:pointer;">share session</div>
+          <div onclick="signalSkip()" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--disabled);cursor:pointer;">skip</div>
+          <div onclick="shareSummary()" style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:color-mix(in srgb, var(--acid) 55%, transparent);cursor:pointer;">share session</div>
         </div>
       </div>
-      <div id="signalAdvice" style="display:none;margin-top:20px;padding:16px;border:1px solid #3A3A38;border-radius:12px;background:#0E0E0C;">
+      <div id="signalAdvice" style="display:none;margin-top:20px;padding:16px;border:1px solid var(--graphite);border-radius:12px;background:var(--ink);">
         <div id="signalAdviceTitle" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;text-transform:uppercase;letter-spacing:.04em;">–</div>
-        <div id="signalAdviceTxt" style="font-family:'Barlow',sans-serif;font-size:13px;line-height:1.55;color:#C8C8C4;margin-top:6px;">–</div>
+        <div id="signalAdviceTxt" style="font-family:'Barlow',sans-serif;font-size:13px;line-height:1.55;color:var(--dust);margin-top:6px;">–</div>
         <div style="display:flex;gap:8px;margin-top:14px;">
-          <button onclick="shareSummary()" style="flex:1;padding:13px;border-radius:10px;border:1px solid #3A3A38;background:none;color:#C8C8C4;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;">Share session</button>
-          <button onclick="closeSummary()" style="flex:1;padding:13px;border-radius:10px;border:none;background:#E6F557;color:#0A0A0A;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;">Done</button>
+          <button onclick="shareSummary()" style="flex:1;padding:13px;border-radius:10px;border:1px solid var(--graphite);background:none;color:var(--dust);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;">Share session</button>
+          <button onclick="closeSummary()" style="flex:1;padding:13px;border-radius:10px;border:none;background:var(--acid);color:var(--acid-text);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;">Done</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- ══ BLOCK PICKER ══ -->
-  <div id="blockPicker" style="display:none;position:absolute;inset:0;z-index:55;background:rgba(5,5,5,.94);backdrop-filter:blur(4px);flex-direction:column;padding:24px 20px;">
+  <div id="blockPicker" style="display:none;position:absolute;inset:0;z-index:55;background:color-mix(in srgb, var(--ink) 94%, transparent);backdrop-filter:blur(4px);flex-direction:column;padding:24px 20px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:24px;text-transform:uppercase;letter-spacing:.03em;color:#F5F5F2;">Add a block</div>
-      <button onclick="closeBlockPicker()" style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#9A9A96;background:none;border:1px solid #2A2A28;border-radius:6px;padding:7px 12px;cursor:pointer;">close</button>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:24px;text-transform:uppercase;letter-spacing:.03em;color:var(--chalk);">Add a block</div>
+      <button onclick="closeBlockPicker()" style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dust);background:none;border:1px solid var(--graphite);border-radius:6px;padding:7px 12px;cursor:pointer;">close</button>
     </div>
-    <input id="blockSearch" type="search" placeholder="search… (e.g. hangs, volume, stretch)" oninput="renderBlockPicker(this.value)" style="width:100%;padding:12px 14px;margin-bottom:10px;border-radius:10px;border:1px solid #2E2E2C;background:#0E0E0C;color:#F5F5F2;font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
+    <input id="blockSearch" type="search" placeholder="search… (e.g. hangs, volume, stretch)" oninput="renderBlockPicker(this.value)" style="width:100%;padding:12px 14px;margin-bottom:10px;border-radius:10px;border:1px solid var(--graphite);background:var(--ink);color:var(--chalk);font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
     <div id="blockPickerList" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:20px;"></div>
   </div>
 
   <!-- ══ LOCK-IN DIALOG ══ -->
-  <div id="saveFavDialog" style="display:none;position:absolute;inset:0;z-index:56;background:rgba(5,5,5,.88);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:30px;">
-    <div style="background:#111;border:1px solid #2A2A28;border-radius:16px;padding:24px 22px;width:100%;max-width:300px;">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.03em;color:#F5F5F2;">Lock it in</div>
-      <div style="font-family:'Barlow',sans-serif;font-size:12px;color:#9A9A96;margin-top:6px;line-height:1.5;">Locking freezes the structure so you can start and share it. People you share with cannot change your version.</div><div id="favDialogHint" style="display:none;"></div>
-      <input id="favNameInput" type="text" placeholder="Name it (optional)" style="margin-top:14px;width:100%;padding:12px;border-radius:8px;border:1px solid #2E2E2C;background:#0A0A0A;color:#F5F5F2;font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
+  <div id="saveFavDialog" style="display:none;position:absolute;inset:0;z-index:56;background:color-mix(in srgb, var(--ink) 88%, transparent);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:30px;">
+    <div style="background:var(--carbon);border:1px solid var(--graphite);border-radius:16px;padding:24px 22px;width:100%;max-width:300px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.03em;color:var(--chalk);">Lock it in</div>
+      <div style="font-family:'Barlow',sans-serif;font-size:12px;color:var(--dust);margin-top:6px;line-height:1.5;">Locking freezes the structure so you can start and share it. People you share with cannot change your version.</div><div id="favDialogHint" style="display:none;"></div>
+      <input id="favNameInput" type="text" placeholder="Name it (optional)" style="margin-top:14px;width:100%;padding:12px;border-radius:8px;border:1px solid var(--graphite);background:var(--ink);color:var(--chalk);font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
       <div style="display:flex;gap:10px;margin-top:16px;">
-        <button onclick="closeSaveFav()" style="flex:1;padding:12px;border-radius:10px;border:1px solid #3A3A38;background:none;color:#C8C8C4;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;cursor:pointer;">Cancel</button>
-        <button onclick="confirmSaveFav()" style="flex:1;padding:12px;border-radius:10px;border:none;background:#E6F557;color:#0A0A0A;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;cursor:pointer;">Lock in</button>
+        <button onclick="closeSaveFav()" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--graphite);background:none;color:var(--dust);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;cursor:pointer;">Cancel</button>
+        <button onclick="confirmSaveFav()" style="flex:1;padding:12px;border-radius:10px;border:none;background:var(--acid);color:var(--acid-text);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;cursor:pointer;">Lock in</button>
       </div>
     </div>
   </div>
 
   <!-- ══ NEW EXERCISE ══ -->
-  <div id="newExerciseDialog" style="display:none;position:absolute;inset:0;z-index:58;background:rgba(5,5,5,.92);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:24px;">
-    <div style="background:#111;border:1px solid #2A2A28;border-radius:16px;padding:22px;width:100%;max-width:320px;max-height:90%;overflow-y:auto;">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.03em;color:#F5F5F2;">New exercise</div>
-      <input id="neName" type="text" placeholder="Name (e.g. Hip-shift ladder)" style="margin-top:14px;width:100%;padding:11px;border-radius:8px;border:1px solid #2E2E2C;background:#0A0A0A;color:#F5F5F2;font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
+  <div id="newExerciseDialog" style="display:none;position:absolute;inset:0;z-index:58;background:color-mix(in srgb, var(--ink) 92%, transparent);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:24px;">
+    <div style="background:var(--carbon);border:1px solid var(--graphite);border-radius:16px;padding:22px;width:100%;max-width:320px;max-height:90%;overflow-y:auto;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.03em;color:var(--chalk);">New exercise</div>
+      <input id="neName" type="text" placeholder="Name (e.g. Hip-shift ladder)" style="margin-top:14px;width:100%;padding:11px;border-radius:8px;border:1px solid var(--graphite);background:var(--ink);color:var(--chalk);font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
       <div style="display:flex;gap:8px;margin-top:8px;">
-        <input id="neMin" type="number" min="3" placeholder="min" style="flex:1;padding:11px;border-radius:8px;border:1px solid #2E2E2C;background:#0A0A0A;color:#F5F5F2;font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
-        <input id="neRpe" type="text" placeholder="rpe (e.g. 7-8)" style="flex:1;padding:11px;border-radius:8px;border:1px solid #2E2E2C;background:#0A0A0A;color:#F5F5F2;font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
+        <input id="neMin" type="number" min="3" placeholder="min" style="flex:1;padding:11px;border-radius:8px;border:1px solid var(--graphite);background:var(--ink);color:var(--chalk);font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
+        <input id="neRpe" type="text" placeholder="rpe (e.g. 7-8)" style="flex:1;padding:11px;border-radius:8px;border:1px solid var(--graphite);background:var(--ink);color:var(--chalk);font-family:'Barlow',sans-serif;font-size:14px;outline:none;">
       </div>
-      <textarea id="neWhy" rows="3" placeholder="Instructions: what you do and why" style="margin-top:8px;width:100%;padding:11px;border-radius:8px;border:1px solid #2E2E2C;background:#0A0A0A;color:#F5F5F2;font-family:'Barlow',sans-serif;font-size:13px;outline:none;resize:vertical;"></textarea>
-      <input id="neLink" type="url" placeholder="Link (Instagram / YouTube / Kilter)" style="margin-top:8px;width:100%;padding:11px;border-radius:8px;border:1px solid #2E2E2C;background:#0A0A0A;color:#9A9A96;font-family:'DM Mono',monospace;font-size:11px;outline:none;">
+      <textarea id="neWhy" rows="3" placeholder="Instructions: what you do and why" style="margin-top:8px;width:100%;padding:11px;border-radius:8px;border:1px solid var(--graphite);background:var(--ink);color:var(--chalk);font-family:'Barlow',sans-serif;font-size:13px;outline:none;resize:vertical;"></textarea>
+      <input id="neLink" type="url" placeholder="Link (Instagram / YouTube / Kilter)" style="margin-top:8px;width:100%;padding:11px;border-radius:8px;border:1px solid var(--graphite);background:var(--ink);color:var(--dust);font-family:'DM Mono',monospace;font-size:11px;outline:none;">
       <div style="display:flex;gap:10px;margin-top:16px;">
-        <button onclick="closeNewExercise()" style="flex:1;padding:12px;border-radius:10px;border:1px solid #3A3A38;background:none;color:#C8C8C4;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;cursor:pointer;">Cancel</button>
-        <button onclick="confirmNewExercise()" style="flex:1;padding:12px;border-radius:10px;border:none;background:#A3E635;color:#0A0A0A;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;cursor:pointer;">Add</button>
+        <button onclick="closeNewExercise()" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--graphite);background:none;color:var(--dust);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;cursor:pointer;">Cancel</button>
+        <button onclick="confirmNewExercise()" style="flex:1;padding:12px;border-radius:10px;border:none;background:var(--acid);color:var(--acid-text);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;cursor:pointer;">Add</button>
       </div>
     </div>
   </div>
 
   <!-- ══ SHARE DIALOG ══ -->
-  <div id="shareDialog" style="display:none;position:absolute;inset:0;z-index:57;background:rgba(5,5,5,.88);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:30px;">
-    <div style="background:#111;border:1px solid #2A2A28;border-radius:16px;padding:24px 22px;width:100%;max-width:320px;">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.03em;color:#F5F5F2;">Share this session</div>
-      <div style="font-family:'Barlow',sans-serif;font-size:12px;color:#9A9A96;margin-top:6px;line-height:1.5;">Anyone with the link gets exactly this session, and can adapt and start it.</div>
-      <input id="shareLinkInput" type="text" readonly style="margin-top:14px;width:100%;padding:11px;border-radius:8px;border:1px solid #2E2E2C;background:#0A0A0A;color:#9A9A96;font-family:'DM Mono',monospace;font-size:10px;outline:none;">
+  <div id="shareDialog" style="display:none;position:absolute;inset:0;z-index:57;background:color-mix(in srgb, var(--ink) 88%, transparent);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:30px;">
+    <div style="background:var(--carbon);border:1px solid var(--graphite);border-radius:16px;padding:24px 22px;width:100%;max-width:320px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.03em;color:var(--chalk);">Share this session</div>
+      <div style="font-family:'Barlow',sans-serif;font-size:12px;color:var(--dust);margin-top:6px;line-height:1.5;">Anyone with the link gets exactly this session, and can adapt and start it.</div>
+      <input id="shareLinkInput" type="text" readonly style="margin-top:14px;width:100%;padding:11px;border-radius:8px;border:1px solid var(--graphite);background:var(--ink);color:var(--dust);font-family:'DM Mono',monospace;font-size:10px;outline:none;">
       <div style="display:flex;gap:10px;margin-top:14px;">
-        <button onclick="closeShareDialog()" style="flex:1;padding:12px;border-radius:10px;border:1px solid #3A3A38;background:none;color:#C8C8C4;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;cursor:pointer;">Close</button>
-        <button id="copyLinkBtn" onclick="copyShareLink()" style="flex:1;padding:12px;border-radius:10px;border:none;background:#E6F557;color:#0A0A0A;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;cursor:pointer;">Copy link</button>
+        <button onclick="closeShareDialog()" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--graphite);background:none;color:var(--dust);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;cursor:pointer;">Close</button>
+        <button id="copyLinkBtn" onclick="copyShareLink()" style="flex:1;padding:12px;border-radius:10px;border:none;background:var(--acid);color:var(--acid-text);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;cursor:pointer;">Copy link</button>
       </div>
     </div>
   </div>
 
 
   <!-- ══ RECAP OF A FINISHED SESSION ══ -->
-  <div id="recapView" style="display:none;position:absolute;inset:0;z-index:62;background:rgba(5,5,5,.95);backdrop-filter:blur(4px);flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;overflow-y:auto;">
+  <div id="recapView" style="display:none;position:absolute;inset:0;z-index:62;background:color-mix(in srgb, var(--ink) 95%, transparent);backdrop-filter:blur(4px);flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;overflow-y:auto;">
     <div style="width:100%;max-width:330px;">
       <div style="text-align:center;">
-        <div id="recapDot" style="width:16px;height:16px;border-radius:50%;margin:0 auto 10px;background:#3A3A38;"></div>
-        <div id="recapName" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;text-transform:uppercase;letter-spacing:.03em;color:#F5F5F2;line-height:1.1;">–</div>
-        <div id="recapMeta" style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.06em;color:#7A7A76;margin-top:6px;">–</div>
+        <div id="recapDot" style="width:16px;height:16px;border-radius:50%;margin:0 auto 10px;background:var(--graphite);"></div>
+        <div id="recapName" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;text-transform:uppercase;letter-spacing:.03em;color:var(--chalk);line-height:1.1;">–</div>
+        <div id="recapMeta" style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--dust);margin-top:6px;">–</div>
       </div>
-      <div id="recapBar" style="display:flex;height:14px;border-radius:7px;overflow:hidden;background:#1A1A18;margin-top:18px;"></div>
+      <div id="recapBar" style="display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--carbon);margin-top:18px;"></div>
       <div id="recapBlocks" style="margin-top:14px;display:flex;flex-direction:column;gap:8px;"></div>
-      <div id="recapNote" style="display:none;font-family:'Barlow',sans-serif;font-size:12px;line-height:1.5;color:#8A8A86;margin-top:14px;"></div>
+      <div id="recapNote" style="display:none;font-family:'Barlow',sans-serif;font-size:12px;line-height:1.5;color:var(--dust);margin-top:14px;"></div>
       <div style="display:flex;gap:8px;margin-top:20px;">
-        <button onclick="closeRecap()" style="flex:1;padding:13px;border-radius:10px;border:1px solid #3A3A38;background:none;color:#C8C8C4;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;">Close</button>
-        <button id="recapAgainBtn" onclick="recapAgain()" style="flex:1;padding:13px;border-radius:10px;border:1px solid #3A3A38;background:none;color:#C8C8C4;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;">Again</button>
-        <button id="recapShareBtn" onclick="recapShare()" style="flex:1;padding:13px;border-radius:10px;border:none;background:var(--acid);color:#0A0A0A;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;">Share</button>
+        <button onclick="closeRecap()" style="flex:1;padding:13px;border-radius:10px;border:1px solid var(--graphite);background:none;color:var(--dust);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;">Close</button>
+        <button id="recapAgainBtn" onclick="recapAgain()" style="flex:1;padding:13px;border-radius:10px;border:1px solid var(--graphite);background:none;color:var(--dust);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;">Again</button>
+        <button id="recapShareBtn" onclick="recapShare()" style="flex:1;padding:13px;border-radius:10px;border:none;background:var(--acid);color:var(--acid-text);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;">Share</button>
       </div>
     </div>
   </div>
   <!-- ══ EXIT CONFIRM DIALOG ══ -->
-  <div id="confirmExit" style="display:none;position:absolute;inset:0;z-index:70;background:rgba(5,5,5,.85);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:30px;">
-    <div style="background:#111;border:1px solid #2A2A28;border-radius:16px;padding:24px 22px;max-width:300px;text-align:center;">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;text-transform:uppercase;letter-spacing:.03em;color:#F5F5F2;" id="confirmTitle">Leave session?</div>
-      <div style="font-family:'Barlow',sans-serif;font-size:14px;color:#9A9A96;line-height:1.5;margin-top:8px;" id="confirmMsg">Your timer is still running. Are you sure?</div>
+  <div id="confirmExit" style="display:none;position:absolute;inset:0;z-index:70;background:color-mix(in srgb, var(--ink) 85%, transparent);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:30px;">
+    <div style="background:var(--carbon);border:1px solid var(--graphite);border-radius:16px;padding:24px 22px;max-width:300px;text-align:center;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;text-transform:uppercase;letter-spacing:.03em;color:var(--chalk);" id="confirmTitle">Leave session?</div>
+      <div style="font-family:'Barlow',sans-serif;font-size:14px;color:var(--dust);line-height:1.5;margin-top:8px;" id="confirmMsg">Your timer is still running. Are you sure?</div>
       <div style="display:flex;gap:10px;margin-top:20px;">
-        <button onclick="confirmStay()" style="flex:1;padding:13px;border-radius:10px;border:1px solid #3A3A38;background:none;color:#C8C8C4;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;">Stay</button>
-        <button onclick="confirmLeave()" style="flex:1;padding:13px;border-radius:10px;border:none;background:#F87171;color:#0A0A0A;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;">Leave</button>
+        <button onclick="confirmStay()" style="flex:1;padding:13px;border-radius:10px;border:1px solid var(--graphite);background:none;color:var(--dust);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;">Stay</button>
+        <button onclick="confirmLeave()" style="flex:1;padding:13px;border-radius:10px;border:none;background:var(--danger);color:var(--ink);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;">Leave</button>
       </div>
     </div>
   </div>
