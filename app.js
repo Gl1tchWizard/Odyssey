@@ -1949,6 +1949,7 @@ function toggleFavorite() {
   saveFavs(favs);
   buildRecent();
   updateFavStar();
+  if (typeof syncChooseStars === 'function') syncChooseStars();  // Choose-sterren meebewegen
 }
 function encodeSession() {
   const s = getSession(activeSessionId);
@@ -2858,10 +2859,45 @@ function chPhalanx(load, mini) {
   const blocks = [1,2,3,4].map(n => `<i${n <= load ? ' class="on"' : ''}></i>`).join('');
   return `<span class="phalanx${mini ? ' mini' : ''}">${blocks}</span>`;
 }
-function chCard(i) {
+// ster = opslaan, nooit sociaal: hergebruikt crimpify_favs (dedupe op naam, max 12)
+function isChooseSaved(name) { return loadFavs().some(f => f.name === name); }
+function chooseFavEntry(s) {
+  return { name: s.name, keys: s.keys.slice(), color: s.color || 'lime', rpe: s.rpe || '–', intent: s.intent || '', time: s.mins };
+}
+function toggleChooseSave(ev, i) {
+  if (ev) ev.stopPropagation();  // kaart-onclick opent de preview
+  const s = MOCK_CHOOSE[i];
+  if (!s) return;
+  let favs = loadFavs();
+  const was = favs.some(f => f.name === s.name);
+  favs = was ? favs.filter(f => f.name !== s.name) : [chooseFavEntry(s), ...favs];
+  saveFavs(favs);
+  buildRecent();
+  syncChooseStars();
+  updateFavStar();
+  if (!was) showToast('Saved on this device');
+}
+// in-place refresh van alle sterknoppen: geen re-render, dus railscroll en focus blijven staan
+function syncChooseStars() {
+  const set = new Set(loadFavs().map(f => f.name));
+  document.querySelectorAll('[data-chstar]').forEach(el => {
+    const s = MOCK_CHOOSE[+el.dataset.chstar];
+    if (!s) return;
+    const on = set.has(s.name);
+    el.classList.toggle('on', on);
+    el.textContent = el.dataset.label ? (on ? '★ Saved' : '☆ Save') : (on ? '★' : '☆');
+  });
+}
+function chStarBtn(i, label) {
+  const on = isChooseSaved(MOCK_CHOOSE[i].name);
+  if (label) return `<button class="pv-act${on ? ' on' : ''}" id="pvSaveBtn" data-chstar="${i}" data-label="1" onclick="toggleChooseSave(event, ${i})">${on ? '★ Saved' : '☆ Save'}</button>`;
+  return `<button class="ch-star${on ? ' on' : ''}" data-chstar="${i}" aria-label="save" onclick="toggleChooseSave(event, ${i})">${on ? '★' : '☆'}</button>`;
+}
+function chCard(i, noStar) {
   const s = MOCK_CHOOSE[i];
   const col = C[s.color] || C.lime;
   return `<div class="ch-card" onclick="openChoosePreview(${i})">
+    ${noStar ? '' : chStarBtn(i)}
     <div class="ch-print">${chBlueprint(s.keys)}</div>
     <div class="ch-card-body">
       <div class="ch-name">${s.name}</div>
@@ -2875,7 +2911,7 @@ function chShelf(shelf) {
   if (!shelf || !shelf.idxs.length) return '';
   return `<div class="ch-shelf-head"><div class="ch-shelf-title">${shelf.title}</div></div>
     ${shelf.sub ? `<div class="ch-shelf-sub">${shelf.sub}</div>` : ''}
-    <div class="ch-shelf">${shelf.idxs.map(chCard).join('')}</div>`;
+    <div class="ch-shelf">${shelf.idxs.map(ix => chCard(ix)).join('')}</div>`;
 }
 
 // For you: client-side uit localStorage-historie (recente energiesystemen en signalen).
@@ -3029,7 +3065,8 @@ function openGenerate() {
 function renderDiscover() {
   const el = document.getElementById('discoverShelf');
   if (!el) return;
-  el.innerHTML = APEX_PICKS.map(n => MOCK_CHOOSE.findIndex(s => s.name === n)).filter(i => i >= 0).map(chCard).join('');
+  // landing blijft sterloos (één sterk moment); opslaan kan in de Choose-view
+  el.innerHTML = APEX_PICKS.map(n => MOCK_CHOOSE.findIndex(s => s.name === n)).filter(i => i >= 0).map(ix => chCard(ix, true)).join('');
 }
 renderDiscover();
 enableWheelScroll('#discoverShelf');

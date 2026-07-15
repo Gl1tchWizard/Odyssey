@@ -429,7 +429,9 @@ body {
 .ch-shelf::-webkit-scrollbar { display:none; }
 
 /* discovery-kaart: vingerafdruk ~50%, daaronder naam en metadata; tik = view session (opent preview) */
-.ch-card { flex-shrink:0; width:166px; border-radius:12px; overflow:hidden; border:1px solid var(--graphite); background:var(--carbon); cursor:pointer; transition:filter .15s; }
+.ch-card { position:relative; flex-shrink:0; width:166px; border-radius:12px; overflow:hidden; border:1px solid var(--graphite); background:var(--carbon); cursor:pointer; transition:filter .15s; }
+.ch-star { position:absolute; top:5px; right:5px; width:32px; height:32px; z-index:2; border:none; border-radius:8px; cursor:pointer; font-size:16px; line-height:1; color:var(--dust); background:color-mix(in srgb, var(--ink) 55%, transparent); }
+.ch-star.on { color:var(--acid); }
 .ch-card:active { filter:brightness(1.2); }
 .ch-print { height:80px; position:relative; display:flex; gap:2px; }
 .ch-print div { height:100%; }
