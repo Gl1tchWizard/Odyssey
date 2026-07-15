@@ -36,12 +36,15 @@ offline-capable PWA. Live op https://crimpify.com via GitHub Pages.
 | key | inhoud |
 |---|---|
 | `crimpify_history` | array, nieuwste eerst, max 50: `{id, variant, time, ts, sig, load}` |
-| `crimpify_favs` | max 12: `{name, keys, color, rpe, intent, time}` |
-| `crimpify_draft` | `{keys, name, color, rpe, intent, locked, owned}` |
+| `crimpify_favs` | max 12: `{name, keys, color, rpe, intent, time, basedOn?}` |
+| `crimpify_draft` | `{keys, name, color, rpe, intent, locked, owned, basedOn?}` |
 | `crimpify_custom_blocks` | eigen oefeningen, keys met `ux_`-prefix |
 | `crimpify_hidden_blocks` | verborgen blokken |
 | `crimpify_name` | voornaam voor de begroeting |
 | `crimpify_active` | onafgemaakte training voor de Continue-kaart: `{keys, name, color, sessionId, idx, spent, ts}`; verloopt na 12 uur |
+
+`basedOn` is optioneel en additief: `{title, coach}` op kopieën uit de
+catalogus; oude entries zonder basedOn blijven geldig.
 
 `sig` is het stoplicht: `'green' | 'orange' | 'red' | null`. `load` = duur ×
 intensiteitsfactor (zie `INTENSITY_FACTORS` in de code, Foster/Gabbett-model,
@@ -181,6 +184,31 @@ blijft verborgen; mag terug als icoon, niet als balk bovenaan.
    duration, primary_goal, skills[], energy_blocks[], equipment[],
    recommended_level, expected_load, completion_count, save_count) en de
    analytics-funnel (impression → opened → started → completed → repeated).
+6. **Ster = opslaan, nooit sociaal.** De ster op kaarten, resultaatkaarten en
+   preview bewaart de sessie lokaal via het bestaande favorietenmechanisme
+   (`crimpify_favs`, dedupe op naam, max 12). Geen likes, geen tellers aan de
+   ster. Opslaan geeft de toast "Saved on this device"; opgeslagen sessies
+   verschijnen vanzelf bij Saved op de landing. Alleen in de Choose-view;
+   de landing-Discover-plank blijft bewust sterloos (één sterk moment).
+7. **Customize = lokale kopie.** Originelen in de catalogus zijn read-only en
+   worden nooit gemuteerd. Customize opent de bestaande builder met een
+   bewerkbare kopie die `basedOn: {title, coach}` draagt; boven de slab staat
+   "BASED ON [origineel] by [coach]". Standaardtitel:
+   `[origineel] · [naam] version` (fallback `your version`, middot, geen
+   em-dash), aanpasbaar bij het vastleggen. basedOn reist mee door draft en
+   favorieten maar nooit door deel-links. Gewone ster-saves krijgen géén
+   basedOn; attributie markeert afleiding, niet bezit.
+8. **Zoeken = icoon.** Het zoekicoon (⌕) in de v-choose-topbar klapt uit tot
+   zoekveld + vijf single-select filterchips (time, goal, equipment, load,
+   level). Zolang tekst of een chip actief is vervangen verticale
+   resultaatkaarten (coach prominent) de planken; leegmaken of dichtklappen
+   herstelt de planken. Actieve chips = acid outline; clear all alleen
+   zichtbaar bij actieve filters. Guest-first: alle opslag en kopieën blijven
+   op het toestel (productprincipe 1).
+9. **Fase 2 (backend): remix-tellers en echte completions.** Een remix telt
+   pas wanneer de kopie wordt opgeslagen; een completion pas wanneer een
+   sessie is afgemaakt. Tot die tijd blijft "N done" het enige mock-getal;
+   geen nieuwe nepgetallen introduceren.
 
 ## Backlog in volgorde
 
@@ -201,7 +229,8 @@ blijft verborgen; mag terug als icoon, niet als balk bovenaan.
    `prefers-color-scheme`.
 5. **Lege-staat-verfijning en microtypografie-opschoning** (10px-ondergrens,
    contrastfloor: geen #4A4A46-tekst op #0A0A0A voor kleine labels).
-6. **Zoek als icoon** in de topbar, bibliotheek als eigen weergave.
+6. **Zoek als icoon** in de topbar, bibliotheek als eigen weergave. (Voor de
+   Choose-catalogus gedaan, juli 2026; dit punt betreft nog de landing.)
 7. Later, uit de concept-mocks over te nemen skelet-ideeën: vaste bottom-nav,
    shortcuts-rij (horizontaal scrollend, acht energiesystemen, geen "Mobility"
    als categorie). Afgewezen uit die mocks: avatar, notificatiebel,
@@ -211,7 +240,7 @@ blijft verborgen; mag terug als icoon, niet als balk bovenaan.
 
 - Eén wijziging per commit-onderwerp, sw-cache bumpen bij deploy.
 - Sober Engels in UI-copy, geen consultant-taal, geen em-dashes in teksten.
-- Versienummer op de splash (nu v0.13) bij elke release ophogen, samen met de sw-cache.
+- Versienummer op de splash (nu v0.17) bij elke release ophogen, samen met de sw-cache.
 - Test na elke wijziging: splash met zichtbaar logo, naamvraag en herladen,
   sessie genereren en starten, deel-link openen in incognito, stoplicht loggen
   en dot terugzien bij Mijn sessies.
