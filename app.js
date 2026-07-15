@@ -1991,6 +1991,16 @@ function doShare() {
     openShareDialog(url);
   }
 }
+// toast: één element, korte bevestiging, verdwijnt vanzelf
+let _toastTimer = null;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
+}
 function openShareDialog(url) {
   document.getElementById('shareLinkInput').value = url;
   document.getElementById('shareDialog').style.display = 'flex';

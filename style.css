@@ -449,3 +449,10 @@ body {
 .pv-block-t { font-weight:900; font-size:17px; }
 .pv-chips { display:flex; flex-wrap:wrap; gap:8px; }
 .pv-chip { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--dust); border:1px solid var(--graphite); border-radius:6px; padding:6px 11px; background:var(--carbon); }
+
+/* toast: korte bevestiging, boven alle overlays (preview 60, confirm 70) */
+#toast { position:absolute; left:50%; bottom:84px; transform:translateX(-50%) translateY(8px); z-index:120;
+  background:var(--carbon); border:1px solid var(--graphite); color:var(--chalk);
+  font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.08em; padding:10px 16px; border-radius:8px;
+  opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; box-shadow:0 8px 24px rgba(0,0,0,.5); }
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
