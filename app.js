@@ -324,6 +324,15 @@ const BLOCKLIB = {
     why:'3×3 heavy pull-ups (weighted if 3 is easy), full rest. Maintain pull strength in six minutes.' },
   mdCore: { n:'Micro core', t:5, c:'var(--prepare)', rpe:'6-7', sets:3, fixed:true,
     why:'3 rounds: 20 sec hollow hold plus 8 hanging knee raises. Maintain tension without eating time.' },
+  // ── front-load fasen (voor de Fresh First-sessie): drie flexibele blokken met
+  //    gelijke basis-t, zodat ze in gelijke derden meeschalen met de tijd-slider.
+  //    Kleur volgt uit de groep (orange → teal → blue = hardst eerst, rustig laatst).
+  frontGrowth: { n:'Limit work (fresh)', t:20, c:'var(--max-effort)', rpe:'8-9',
+    why:'First third, while your nervous system is fresh. Your hardest material: limit boulders, a project, committing dynos, complex coordination. This is the point of the session. Long rests, real effort, and you walk away before the quality drops.' },
+  frontBuild: { n:'Working boulders', t:20, c:'var(--volume)', rpe:'6-7',
+    why:'Middle third. Material you are developing: not comfortable, not impossible. Boulders you can nearly do. This is where skills consolidate. Keep the quality high and rest enough to try hard.' },
+  frontMaint: { n:'Easy wind-down', t:20, c:'var(--prepare)', rpe:'3-4',
+    why:'Final third. Easy volume, simple movement, familiar problems. Warm-up-style climbing belongs here, at the end, not the start. Move smooth and leave feeling good.' },
   stretch: { n:'Stretch', t:10, c:'var(--prepare)', rpe:'-',
     why:'Pancake progression (Aidan Roberts: Leaning → Rocking), shoulder flexion, T-spine and lats. 2 min per position. Breathe out.' },
   stretchLong: { n:'Extended stretch', t:25, c:'var(--prepare)', rpe:'-',
@@ -1794,12 +1803,12 @@ function ensureDraftMode() {
 const BLOCK_GROUPS = [
   { name:'Warm-up & activation',        keys:['dynamic','warmup','warmupFinger','gymWarmup','mobilityOpen','tensionAct','easyTen','noHangsEmil','tendonClimb','tendonFull'] },
   { name:'Technique & skills',          keys:['drillsOnly','drillBlocks','drillLibrary','skillLight','slab'] },
-  { name:'Capacity · aerobic volume', keys:['volume','boardVolume','easyClimb','sprayLight','mediumTwenty'] },
+  { name:'Capacity · aerobic volume', keys:['volume','boardVolume','easyClimb','sprayLight','mediumTwenty','frontBuild'] },
   { name:'Power endurance',            keys:['peFlow','fourByFour','hehe','linked','compStyle'] },
-  { name:'Max strength & power',         keys:['limitBlocks','project','board1','campus','dynos','boardApply','pyramide'] },
+  { name:'Max strength & power',         keys:['limitBlocks','project','board1','campus','dynos','boardApply','pyramide','frontGrowth'] },
   { name:'Finger strength',               keys:['maxHangs','nohangs','activeCurls'] },
   { name:'Antagonist, core & gym',     keys:['pullStrength','pushStrength','coreLegs','mini1','mini2','mini3','lockoffs'] },
-  { name:'Recovery & mobility',       keys:['stretch','stretchLong','hog'] },
+  { name:'Recovery & mobility',       keys:['stretch','stretchLong','hog','frontMaint'] },
 ];
 // ── KLEURGRAMMATICA ──
 // kleur = wat het traint (categorie), badge = waar het vandaan komt, tekst = hoe zwaar.
@@ -3031,9 +3040,13 @@ const MOCK_CHOOSE = [
   // echte gecureerde sessie: denkt in aantallen (count-blokken), niet in tijd
   { cat:'coach',    name:'Easy Thirty',    coach:'Vincent',       mins:60, color:'green',  rpe:'4-5', done:57,  load:2, sys:'capacity', goal:'Easy volume', gear:['Gym wall'], level:'all levels', keys:['dynamic','easyTen','mediumTwenty'],
     intent:'Thirty boulders, counted, not timed. Warm up and flow.',
-    why:'A session that thinks in boulders instead of minutes: ten easy ones to warm up, twenty medium ones as the main course. You tick them off as you climb, and quality decides whether a boulder counts.' }
+    why:'A session that thinks in boulders instead of minutes: ten easy ones to warm up, twenty medium ones as the main course. You tick them off as you climb, and quality decides whether a boulder counts.' },
+  // huis-sessie op een gevestigd principe: intensiteit vooraan terwijl je fris bent (geen merkclaim)
+  { cat:'coach',    name:'Fresh First',    coach:'Crimpify',      mins:60, color:'amber',  rpe:'8-9', done:88,  load:4, sys:'performance', goal:'Hardest first', gear:['Gym wall'], level:'intermediate+', keys:['frontGrowth','frontBuild','frontMaint'], addedDate:'2026-07-16',
+    intent:'Hardest work first while you are fresh, easy volume last. Arrive warm.',
+    why:'Most climbers do it backwards: they warm up forever, then try hard when they are already tired. Fresh First flips it. The hardest material goes first, while your nervous system is sharp and your focus is full, because that is when you can actually move the needle. The middle third builds the boulders you are developing. Easy volume and simple movement come last, as the wind-down, not the opener. Arrive warm, spend your best energy on what matters, and finish smooth.' }
 ];
-const COACH_ROLE = { 'Mila Berg':'strength coach', 'Teo Marchetti':'power & comp coach', 'Ana Kovač':'endurance coach', 'Ines Fujimoto':'technique coach', 'Jonas Steen':'recovery coach', 'Vincent':'easy day coach' };
+const COACH_ROLE = { 'Mila Berg':'strength coach', 'Teo Marchetti':'power & comp coach', 'Ana Kovač':'endurance coach', 'Ines Fujimoto':'technique coach', 'Jonas Steen':'recovery coach', 'Vincent':'easy day coach', 'Crimpify':'the house method' };
 function coachShort(name) { const p = name.split(' '); return p.length > 1 ? p[0] + ' ' + p[1][0] + '.' : name; }
 
 // vingerafdruk: de echte bloksequentie, breedte naar rato van basisduur, categoriekleuren
