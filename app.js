@@ -1,11 +1,19 @@
 // ══ DATA ══
+// Sessiekleuren: namen blijven bestaan (localStorage, favs en deel-links slaan
+// namen op), waarden wijzen naar de vier fingerprint-tokens.
+const FP = t => ({
+  color: 'var(--' + t + ')',
+  text:  'color-mix(in srgb, var(--' + t + ') 55%, var(--chalk))',
+  bg:    'color-mix(in srgb, var(--' + t + ') 7%, var(--ink))',
+  border:'color-mix(in srgb, var(--' + t + ') 18%, transparent)',
+});
 const C = {
-  green:  { color:'#4ADE80', text:'#86EFAC', bg:'#0F1A0C', border:'rgba(74,222,128,.18)' },
-  lime:   { color:'#A3E635', text:'#BEF264', bg:'#141A08', border:'rgba(163,230,53,.18)' },
-  amber:  { color:'#F59E0B', text:'#FCD34D', bg:'#191208', border:'rgba(245,158,11,.18)' },
-  red:    { color:'#F87171', text:'#FCA5A5', bg:'#180A0A', border:'rgba(248,113,113,.15)' },
-  blue:   { color:'#60A5FA', text:'#93C5FD', bg:'#090F18', border:'rgba(96,165,250,.15)' },
-  purple: { color:'#A78BFA', text:'#C4B5FD', bg:'#100E1A', border:'rgba(167,139,250,.15)' },
+  green:  FP('volume'),
+  lime:   FP('volume'),
+  amber:  FP('max-effort'),
+  red:    FP('max-effort'),
+  blue:   FP('prepare'),
+  purple: FP('skill'),
 };
 
 const PRINCIPLES = [
@@ -64,9 +72,9 @@ const DRILLS = [
     setup:'Fingerboard, portable edge or a good rail. Pick an edge you can comfortably hold in half crimp or open hand. Make sure you are warmed up.',
     do:'No dead hanging: actively drive force with your fingers as if you want to curl the edge toward you. Pull your fingertips deliberately into the edge and keep the tension constantly high. Work in isometric holds of 7 to 10 seconds at around 80 to 90 percent of your max — heavy, but stop 1 to 2 counts before failure. Rest 2 to 3 minutes fully between sets. 4 to 6 sets. Feel your forearm and fingers actively working the whole hold, not passively hanging off the tendons.',
     goal:'Maximum finger strength through short, high isometric tension. Active curling instead of passive hanging recruits more, with less total load on your tendons.' },
-  { n:'One drill, full focus', tag:'meta / approach', cat:'meta', dur:'1-3m extra', src:'technique',
-    setup:'Just one drill per session. A ladder is a series of boulders increasing in difficulty, with more rest as it gets harder.',
-    do:'The drill adds one technique pillar to a warm-up that would otherwise run on autopilot. Take a minute or two to read your boulders and pick climbs that suit the movement of the day. Feel free to borrow holds from neighbouring routes if they fit better. Not everything works out? A handful of good repetitions is already a win.',
+  { n:'One skill, full focus', tag:'meta / approach', cat:'meta', dur:'1-3m extra', src:'technique',
+    setup:'Just one skill per session. A ladder is a series of boulders increasing in difficulty, with more rest as it gets harder.',
+    do:'The skill adds one technique pillar to a warm-up that would otherwise run on autopilot. Take a minute or two to read your boulders and pick climbs that suit the movement of the day. Feel free to borrow holds from neighbouring routes if they fit better. Not everything works out? A handful of good repetitions is already a win.',
     goal:'No stress. One pillar per session, added deliberately. Consistency over perfection.' },
 
   // ── Your own drills, same structure ──
@@ -89,7 +97,7 @@ const DRILLS = [
   { n:'Silent / Quiet Feet', tag:'foot precision & control', cat:'feet', dur:'10-15m', src:'external',
     setup:'Pick boulders 1-2 grades below your onsight level.',
     do:'Climb without your feet making any sound. Place every foot softly, deliberately and precisely — no stomping, no dragging. Did a foot make noise? Back to the previous foothold and again. Keep eye contact with your foot until it is placed. Climb back down with silent feet too.',
-    goal:'Precision, control and trust in your feet. One of the most cited footwork drills because it forces total focus on your feet.' },
+    goal:'Precision, control and trust in your feet. One of the most cited footwork skills because it forces total focus on your feet.' },
   { n:'Sticky Feet', tag:'foot precision', cat:'feet', dur:'10-15m', src:'external',
     setup:'Boulders 1-2 grades below onsight.',
     do:'The moment your foot touches a foothold it is glued — as if there is superglue under your big toe. No more corrections. This forces you to decide in advance where and in which orientation your foot needs to be, because the stance determines your next move.',
@@ -97,7 +105,7 @@ const DRILLS = [
   { n:'Downclimbing', tag:'foot awareness', cat:'feet', dur:'10-15m', src:'external',
     setup:'Boulders 1-2 grades below onsight, climb up first.',
     do:'Climb the boulder back down until both hands are on the start holds again. Downclimbing is feet-first, so you must consciously feel and search your foot placements. Try to touch the mat with your feet instead of jumping off.',
-    goal:'Builds deliberate foot awareness and control. Underrated drill because most climbers only practise going up.' },
+    goal:'Builds deliberate foot awareness and control. Underrated skill because most climbers only practise going up.' },
   { n:'Foothold Stab (precision)', tag:'precision & balance', cat:'precision', dur:'10m', src:'external',
     setup:'Standing in front of the wall, climbing shoes on, about 60 cm from the wall.',
     do:'Balance on one leg and "stab" your raised foot at pre-chosen footholds — big toe calmly and exactly on the hold, as if pecking at it. 20x per foot, stay in balance the whole time. Harder: pick footholds that demand a high step or precarious balance. Do not take your eye off the hold until your foot sits perfectly.',
@@ -138,7 +146,7 @@ function drillOfDay() {
 // Every key is a reusable training block. t = base time at a 90 min session.
 const BLOCKLIB = {
   // ── openers ──
-  dynamic: { n:'Charlie warm-up', t:10, c:'#60A5FA', rpe:'1-2', guided:true,
+  dynamic: { n:'Charlie warm-up', t:10, c:'var(--prepare)', rpe:'1-2', guided:true,
     links:[{label:'Follow-along video', url:'https://m.youtube.com/watch?v=58fr4fxk5MA'}],
     why:'Fixed 10 min opener. Quick cardio first, then dynamic stretches with big breaths at end range. Runs automatically — pause or skip whenever you want.',
     items:[
@@ -165,111 +173,119 @@ const BLOCKLIB = {
       { n:'Leg swings front/back L', note:'10 — left leg', sec:12 },
       { n:'Leg swings front/back R', note:'10 — right leg', sec:12 },
     ] },
-  warmup: { n:'Progressive warm-up + drills', t:30, c:'#3A3A38', rpe:'2-5', drills:true,
-    why:'Boulder ladder that gets progressively harder: 4, 4, 5a, 5b, 5c, 6a, 6a, 6b up to 6c. From 6a rest 3 min. The goal is not sending boulders but getting properly warm. Vary wall angle and style. Aim for 10-20 boulders, 1-2 per grade. Add the drill of the day (below) — one pillar per session.' },
-  warmupFinger: { n:'Warm-up + fingers', t:35, c:'#3A3A38', rpe:'2-5', drills:true,
+  warmup: { n:'Progressive warm-up + skills', t:30, c:'var(--prepare)', rpe:'2-5', drills:true,
+    why:'Boulder ladder that gets progressively harder: 4, 4, 5a, 5b, 5c, 6a, 6a, 6b up to 6c. From 6a rest 3 min. The goal is not sending boulders but getting properly warm. Vary wall angle and style. Aim for 10-20 boulders, 1-2 per grade. Add the skill of the day (below) — one pillar per session.' },
+  warmupFinger: { n:'Warm-up + fingers', t:35, c:'var(--prepare)', rpe:'2-5', drills:true,
     why:'Progressive warm-up (boulder ladder 4 → 6c) plus specific finger prep: easy hangs, lifting pin building up, at least 15 min of tendon preparation. For heavy finger work this is non-negotiable.' },
-  mobilityOpen: { n:'Dynamic stretching + tendon glides', t:20, c:'#60A5FA', rpe:'-',
+  mobilityOpen: { n:'Dynamic stretching + tendon glides', t:20, c:'var(--prepare)', rpe:'-',
     why:'Jumping jacks 30, seals 20, split jumps 20, trunk twists 20, leg swings 20+20, arm/elbow/shoulder circles. Tendon glides on top.' },
 
   // ── capacity cores ──
-  volume: { n:'Volume boulders', t:40, c:'#4ADE80', rpe:'6', sets:30, rest:3, checklist:true, target:30, range:'25-35',
+  volume: { n:'Volume boulders', t:40, c:'var(--volume)', rpe:'6', sets:30, rest:3, checklist:true, target:30, range:'25-35',
     why:'25-35 boulders around 6a/6b. 3 min rest from 6a, timer on. Drop a grade when quality fades (first 5c, then 5b). Stop at technical failure, not muscular failure.' },
-  linked: { n:'Linked boulders', t:40, c:'#4ADE80', rpe:'6-7', sets:8, rest:4,
+  linked: { n:'Linked boulders', t:40, c:'var(--volume)', rpe:'6-7', sets:8, rest:4,
     why:'Link two boulders together (climb down or step straight through). Grades around 5c-6a per boulder so the link stays doable. 3-4 min rest between links. 6-10 links total.' },
-  boardVolume: { n:'Kilterboard volume', t:40, c:'#4ADE80', rpe:'6-7', sets:18, rest:3,
+  boardVolume: { n:'Kilterboard volume', t:40, c:'var(--volume)', rpe:'6-7', sets:18, rest:3,
     why:'15-20 boulders below your board max (6a-6b on the board). 3 min rest, timer on. Watch your skin — stop at flappers or move to the gym wall. Repeat boulders that could flow better.' },
 
+  // ── count-blokken: denken in aantal boulders op een niveau, niet in tijd.
+  //    checklist:true + target/range sturen de boulder-teller; grade is data
+  //    (nog nergens op gefilterd), t blijft de tijdschatting voor tape en schaling.
+  easyTen: { n:'10 easy boulders', t:15, c:'var(--prepare)', rpe:'3-4', grade:'easy', checklist:true, target:10, range:'10',
+    why:'Ten boulders well below your limit, 2-3 grades under your max. Move calmly, place feet deliberately, breathe. This is the warm-up: leave every boulder feeling easier than the last.' },
+  mediumTwenty: { n:'20 medium boulders', t:35, c:'var(--volume)', rpe:'5-6', grade:'medium', checklist:true, target:20, range:'20',
+    why:'Twenty boulders around your comfortable flash level. Rest as needed, keep the quality high and do not count boulders that fall apart. Twenty good ones beat twenty-five sloppy ones.' },
+
   // ── power endurance cores ──
-  hehe: { n:'HEHE sets', t:42, c:'#A3E635', rpe:'7-8', sets:4, rest:8,
+  hehe: { n:'HEHE sets', t:42, c:'var(--volume)', rpe:'7-8', sets:4, rest:8,
     why:'Set = hard boulder (doable but not flashable, ~6b/6c) → straight into a very easy one → straight into a hard one again → finish easy. 3-6 sets, 5-10 min rest between sets. First 2-3 sets just short of failure. Progression: more sets first, only then harder.' },
-  fourByFour: { n:'4×4 circuits', t:42, c:'#A3E635', rpe:'7-8', sets:4, rest:4,
+  fourByFour: { n:'4×4 circuits', t:42, c:'var(--volume)', rpe:'7-8', sets:4, rest:4,
     why:'Pick 4 boulders 2-3 grades below max (~5c-6a), different styles, slightly overhanging, no rest positions. Climb all 4 back to back without rest, then rest 4 min. 4 rounds. Too easy if you never come close to falling; too hard if you already fail in round 2.' },
-  peFlow: { n:'PE Flow', t:42, c:'#A3E635', rpe:'6-8',
+  peFlow: { n:'PE Flow', t:42, c:'var(--volume)', rpe:'6-8',
     why:'Power endurance by feel. Climb blocks of 2-4 boulders back to back with short rests. Alternate hard and easy. 30-45 min of near-continuous movement with building pump. Stop when technique falls apart.' },
 
   // ── power cores ──
-  board1: { n:'Board Session 1', t:42, c:'#F59E0B', rpe:'8', sets:6, rest:4,
+  board1: { n:'Board Session 1', t:42, c:'var(--max-effort)', rpe:'8', sets:6, rest:4,
     why:'4-8 boulders at your limit. Different styles, grips and wall angles. Pick boulders you can climb within 4 tries: first try = too easy, hopeless after 4 tries = too hard. Weekly progression: wk1 4, wk2 5, wk3 6, wk4 7 boulders. 3+ min rest.' },
-  limitBlocks: { n:'Limit boulder blocks', t:42, c:'#F59E0B', rpe:'9', sets:3, rest:8,
+  limitBlocks: { n:'Limit boulder blocks', t:42, c:'var(--max-effort)', rpe:'9', sets:3, rest:8,
     why:'2-3 limit blocks of 2-4 moves. Rest 2 min per move (4-move block = 8 min rest). Max effort, fast movement, form under tension. Do not repeat moves to polish beta — this is testing your limit. Power drops = stop.' },
-  campus: { n:'Campus boarding', t:22, c:'#F59E0B', rpe:'8', sets:5, rest:3,
+  campus: { n:'Campus boarding', t:22, c:'var(--max-effort)', rpe:'8', sets:5, rest:3,
     why:'~20 total impacts. Ladders 1-2-3 or 1-3-5. Use rungs you control easily and hit fast. Focus on speed and precision, not distance. Avoid failure and slow grinding reps.' },
-  dynos: { n:'Dynos', t:20, c:'#F59E0B', rpe:'8', sets:4, rest:2,
+  dynos: { n:'Dynos', t:20, c:'var(--max-effort)', rpe:'8', sets:4, rest:2,
     why:'3-4 dynos on flat walls, no overhang. 3 reps per dyno. Vary direction and foot positions. Drive from the feet, accuracy first. 2+ min rest per full attempt.' },
-  maxHangs: { n:'Max hangs', t:28, c:'#F59E0B', rpe:'8-9', sets:4, rest:4,
+  maxHangs: { n:'Max hangs', t:28, c:'var(--max-effort)', rpe:'8-9', sets:4, rest:4,
     why:'3-5 sets of 3-5 sec @ 90-95% of max hang load. Half crimp unless it hurts. Edge 10-30mm. Pull into the edge, shoulder engaged. 3-5 min rest between reps. Fingers not perfect? Skip — no exceptions.' },
 
   // ── performance cores ──
-  compStyle: { n:'Comp blocks', t:50, c:'#F87171', rpe:'8-9', sets:6, rest:5,
+  compStyle: { n:'Comp blocks', t:50, c:'var(--volume)', rpe:'8-9', sets:6, rest:5,
     why:'Pick 6 physically demanding boulders (ones you normally just barely send). Per boulder: climb it 3x within 5 min, then rest 5 min, then the next. Ideally you make it three times, on your last legs. Three easy sends = go harder next time. Failing on the third is fine, as long as it does not happen on every boulder.' },
-  pyramide: { n:'Pyramid', t:50, c:'#F87171', rpe:'7-9', sets:8, rest:3,
+  pyramide: { n:'Pyramid', t:50, c:'var(--max-effort)', rpe:'7-9', sets:8, rest:3,
     why:'8 progressively harder boulders, weaknesses included (e.g. dynamic if that is your weakness): 6a, 6a, 6b, 6a dyn, 6c, 6c dyn, 7a, 7a+. Three tries per boulder, ~3 min rest between tries. Failure only in the top grades — otherwise adjust the difficulty.' },
-  project: { n:'Project attempts', t:48, c:'#F87171', rpe:'9-10', sets:8, rest:6,
+  project: { n:'Project attempts', t:48, c:'var(--max-effort)', rpe:'9-10', sets:8, rest:6,
     why:'Max 8-10 attempts. Full recovery between tries (5-8 min — feels long, is needed). Between attempts: evaluate beta, filming helps. Power drops = done for today.' },
 
   // ── recovery cores ──
-  easyClimb: { n:'Easy climbing', t:40, c:'#60A5FA', rpe:'3-4',
+  easyClimb: { n:'Easy climbing', t:40, c:'var(--prepare)', rpe:'3-4',
     why:'At least 2 grades below max (4-5b). Focus on calm movement and footwork. No mini-projects, no temptation.' },
-  hog: { n:'HoG session', t:10, c:'#60A5FA', rpe:'2-3', sets:3, rest:2, fixed:true,
+  hog: { n:'HoG session', t:10, c:'var(--prepare)', rpe:'2-3', sets:3, rest:2, fixed:true,
     links:[{label:'Open Grip Gains', url:'https://gripgains.ca'}],
     why:'Follow the Grip Gains schedule. Rotation: week 1 Crusher/Micro/Crusher, week 2 Micro/Crusher/Micro. Crusher = FDS, Micro = FDP. Open the app for your sets and weights.' },
 
   // ── skill cores ──
-  drillBlocks: { n:'Drill blocks', t:45, c:'#A78BFA', rpe:'5-6', sets:3, rest:2, drills:true,
-    why:'3 drills × 15 min on boulders 2 grades below max. Per drill: first deliberately slow, then at normal speed, then on a just-challenging boulder. Film yourself at least once per drill.' },
-  boardApply: { n:'Board application', t:12, c:'#4ADE80', rpe:'6', sets:4, rest:3,
-    why:'Apply the drills on 3-4 Kilterboard boulders. No score — only quality of movement counts.' },
+  drillBlocks: { n:'Skill blocks', t:45, c:'var(--skill)', rpe:'5-6', sets:3, rest:2, drills:true,
+    why:'3 skills × 15 min on boulders 2 grades below max. Per skill: first deliberately slow, then at normal speed, then on a just-challenging boulder. Film yourself at least once per skill.' },
+  boardApply: { n:'Board application', t:12, c:'var(--max-effort)', rpe:'6', sets:4, rest:3,
+    why:'Apply the skills on 3-4 Kilterboard boulders. No score — only quality of movement counts.' },
 
   // ── conditioning / closers ──
-  mini1: { n:'Mini circuit 1', t:15, c:'#E6F557', rpe:'6', sets:5, rest:2,
+  mini1: { n:'Mini circuit 1', t:15, c:'var(--prepare)', rpe:'6', sets:5, rest:2,
     why:'Dumbbell bench 3×10 RIR4 · Gorilla squat 3×8 RIR4 · Seated rows 3×10 RIR4 · Dips (assisted) 3×5 RIR3 · Facepulls 3×10.' },
-  mini2: { n:'Mini circuit 2', t:15, c:'#E6F557', rpe:'6', sets:4, rest:2,
+  mini2: { n:'Mini circuit 2', t:15, c:'var(--prepare)', rpe:'6', sets:4, rest:2,
     why:'Dumbbell deadlift 3×12 RIR4 · Compression (Y,T,row) 4×4 RIR3 · External rotations 3×10 RIR4 · Forearm conditioning 3×15 RIR2.' },
-  mini3: { n:'Mini circuit 3', t:15, c:'#E6F557', rpe:'7', sets:3, rest:3,
+  mini3: { n:'Mini circuit 3', t:15, c:'var(--prepare)', rpe:'7', sets:3, rest:3,
     why:'Weighted pull-ups 3×3 RIR1 · Dumbbell press 3×4 RIR2 · Lateral raises 3×8 RIR4.' },
-  lockoffs: { n:'Lock-offs', t:10, c:'#E6F557', rpe:'7', sets:2, rest:2,
+  lockoffs: { n:'Lock-offs', t:10, c:'var(--prepare)', rpe:'7', sets:2, rest:2,
     why:'2×10 sec at 90 and 120 degrees. Stop 2 sec before failure. Wide grip.' },
-  gymWarmup: { n:'Gym warm-up', t:10, c:'#3A3A38', rpe:'2-3',
+  gymWarmup: { n:'Gym warm-up', t:10, c:'var(--prepare)', rpe:'2-3',
     why:'Get up to temperature calmly: 5 min cardio (rowing, bike or jump rope) plus shoulder mobility, band pull-aparts and a few light warm-up sets for the first exercise. Prepare tendons and joints for load.' },
-  pullStrength: { n:'Pull strength', t:18, c:'#F59E0B', rpe:'7-8', sets:4, rest:3,
+  pullStrength: { n:'Pull strength', t:18, c:'var(--prepare)', rpe:'7-8', sets:4, rest:3,
     why:'Weighted pull-ups or rows as the main lift. 3-5 sets of 3-6 reps with a controlled eccentric. Full rest between sets — this is strength, not conditioning.' },
-  pushStrength: { n:'Push strength', t:15, c:'#F59E0B', rpe:'7-8', sets:4, rest:3,
+  pushStrength: { n:'Push strength', t:15, c:'var(--prepare)', rpe:'7-8', sets:4, rest:3,
     why:'Bench press or overhead press. 3-4 sets of 6-10 reps. Keep 1-2 reps in reserve (RIR), bar speed high. Antagonist balance for your shoulders after all the pulling in climbing.' },
-  coreLegs: { n:'Core & legs', t:12, c:'#E6F557', rpe:'6-7', sets:3, rest:2,
+  coreLegs: { n:'Core & legs', t:12, c:'var(--prepare)', rpe:'6-7', sets:3, rest:2,
     why:'Single-leg Romanian deadlift, Bulgarian split squats and anti-rotation core (TRX body saws or pallof press). 3 sets, 8-10 reps. Stability and strength for your lower body — often neglected in climbers.' },
-  slab: { n:'Slab (if energy allows)', t:12, c:'#A3E635', rpe:'5',
+  slab: { n:'Slab (if energy allows)', t:12, c:'var(--skill)', rpe:'5',
     why:'Easy slab as a technical dessert. Balance and footwork. Skip without guilt if you are empty — walk away fresh.' },
-  skillLight: { n:'Movement skill light', t:12, c:'#A3E635', rpe:'3-4', drills:true,
-    why:'One drill of your choice on easy terrain. Pure coordination, zero strength. Cool the nervous system down.' },
-  drillsOnly: { n:'Movement drills', t:20, c:'#A78BFA', rpe:'4-5', drills:true,
-    why:'A short focused drill session as the main course. Pick the drill of the day and work it deliberately on boulders below your max. Quality of movement counts, no score.' },
-  drillLibrary: { n:'Drill library', t:30, c:'#A78BFA', rpe:'4-5', library:true,
-    why:'The full library. Pick the drills you want to do today yourself.' },
-  sprayLight: { n:'Spray wall (short)', t:15, c:'#4ADE80', rpe:'4-5',
-    why:'Short, light spray session. Deliberately keep the RPE low (4-5) so your fingers stay fresh for HoG afterwards. 6-10 boulders well below your max, focus on smooth movement and the drill of the day. No limit work — this is not a power session.' },
-  nohangs: { n:'No hangs + stretch', t:8, c:'#2A2A28', rpe:'-', sets:2, rest:1,
+  skillLight: { n:'Movement skill light', t:12, c:'var(--skill)', rpe:'3-4', drills:true,
+    why:'One skill of your choice on easy terrain. Pure coordination, zero strength. Cool the nervous system down.' },
+  drillsOnly: { n:'Movement skills', t:20, c:'var(--skill)', rpe:'4-5', drills:true,
+    why:'A short focused skill session as the main course. Pick the skill of the day and work it deliberately on boulders below your max. Quality of movement counts, no score.' },
+  drillLibrary: { n:'Skill library', t:30, c:'var(--skill)', rpe:'4-5', library:true,
+    why:'The full library. Pick the skills you want to do today yourself.' },
+  sprayLight: { n:'Spray wall (short)', t:15, c:'var(--volume)', rpe:'4-5',
+    why:'Short, light spray session. Deliberately keep the RPE low (4-5) so your fingers stay fresh for HoG afterwards. 6-10 boulders well below your max, focus on smooth movement and the skill of the day. No limit work — this is not a power session.' },
+  nohangs: { n:'No hangs + stretch', t:8, c:'var(--max-effort)', rpe:'-', sets:2, rest:1,
     why:'No hangs 2×30 sec half crimp. Then a short stretch: shoulders and forearms.' },
   // ── minimal dose micro blocks (minimum effective dose; López/Lattice research on short frequent finger training) ──
-  activeCurls: { n:'Active finger curls', t:12, c:'#F59E0B', rpe:'8-9', sets:'4-6', rest:2, fixed:true,
+  activeCurls: { n:'Active finger curls', t:12, c:'var(--max-effort)', rpe:'8-9', sets:'4-6', rest:2, fixed:true,
     why:'Power pulls on an edge or fingerboard: no dead hanging but actively driving force as if curling the edge toward you. Isometric holds of 7-10 sec at 80-90% of your max, stop 1-2 counts before failure, 2-3 min full rest, 4-6 sets. Active curling recruits more with less total tendon load.' },
-  mdFinger: { n:'Finger prep', t:5, c:'#3A3A38', rpe:'3-5', fixed:true,
+  mdFinger: { n:'Finger prep', t:5, c:'var(--prepare)', rpe:'3-5', fixed:true,
     why:'Progressive loading on the edge: 3-4 short, increasingly heavy hangs with full rest. Bring the tendons up to tension before the maximal work — never max hang cold.' },
-  mdMaxHangs: { n:'Micro max hangs', t:12, c:'#F59E0B', rpe:'8-9', sets:5, rest:2, fixed:true,
+  mdMaxHangs: { n:'Micro max hangs', t:12, c:'var(--max-effort)', rpe:'8-9', sets:5, rest:2, fixed:true,
     why:'5 hangs of 7-10 sec at 85-90% of your max (half crimp), 2 min full rest between hangs. Short and heavy delivers most of the strength adaptation in a fraction of the time. Stop 1-2 counts before failure.' },
-  mdNoHangs: { n:'Micro no-hangs', t:10, c:'#F59E0B', rpe:'8', sets:4, rest:2, fixed:true,
+  mdNoHangs: { n:'Micro no-hangs', t:10, c:'var(--max-effort)', rpe:'8', sets:4, rest:2, fixed:true,
     why:'Lifting edge or block off the floor: 4 lifts per hand of 8-10 sec at high intensity, 2 min rest. Shoulder-friendly alternative with the same finger stimulus, easy to dose exactly.' },
-  mdPull: { n:'Micro pull', t:6, c:'#E6F557', rpe:'7-8', sets:3, rest:2, fixed:true,
+  mdPull: { n:'Micro pull', t:6, c:'var(--prepare)', rpe:'7-8', sets:3, rest:2, fixed:true,
     why:'3×3 heavy pull-ups (weighted if 3 is easy), full rest. Maintain pull strength in six minutes.' },
-  mdCore: { n:'Micro core', t:5, c:'#E6F557', rpe:'6-7', sets:3, fixed:true,
+  mdCore: { n:'Micro core', t:5, c:'var(--prepare)', rpe:'6-7', sets:3, fixed:true,
     why:'3 rounds: 20 sec hollow hold plus 8 hanging knee raises. Maintain tension without eating time.' },
-  stretch: { n:'Stretch', t:10, c:'#2A2A28', rpe:'-',
+  stretch: { n:'Stretch', t:10, c:'var(--prepare)', rpe:'-',
     why:'Pancake progression (Aidan Roberts: Leaning → Rocking), shoulder flexion, T-spine and lats. 2 min per position. Breathe out.' },
-  stretchLong: { n:'Extended stretch', t:25, c:'#2A2A28', rpe:'-',
-    why:'Full routine: pancake 2 min, pigeon, shoulder flexion drills, T-spine rotations, lats, wrist flexors. Aidan Roberts mobility line.' },
+  stretchLong: { n:'Extended stretch', t:25, c:'var(--prepare)', rpe:'-',
+    why:'Full routine: pancake 2 min, pigeon, shoulder flexion work, T-spine rotations, lats, wrist flexors. Aidan Roberts mobility line.' },
 
   // ── activation protocols ──
-  tensionAct: { n:'Tension activation', t:12, c:'#F59E0B', rpe:'6', sets:3, rest:2,
+  tensionAct: { n:'Tension activation', t:12, c:'var(--prepare)', rpe:'6', sets:3, rest:2,
     why:'Preload the nervous system before limit work. Heavy isometrics, short and fresh: heel-hook isometric pulls at 60/90/120 degrees, 1 rep per angle, far from failure.' },
 };
 
@@ -292,7 +308,7 @@ const sessions = [
     intent:'Strength training outside climbing: pull, push, core and legs. Antagonist balance and general strength without finger load.',
     slots:[ 'gymWarmup', 'pullStrength', 'pushStrength', 'coreLegs', ['mini1','mini2','mini3'], 'stretch' ] },
   { id:'skill', cat:'Skill', name:'Skill', desc:'Technique isolation\ndeliberate climbing', color:'purple', rpe:'5-6', tags:['skill','technique','drills','movement'],
-    intent:'Technique as the main course. Three drills done thoroughly instead of two in passing — video feedback recommended.',
+    intent:'Technique as the main course. Three skills done thoroughly instead of two in passing — video feedback recommended.',
     slots:[ 'dynamic', 'warmup', 'drillBlocks', 'boardApply', 'stretch' ] },
   { id:'perf', cat:'Performance', name:'Performance', desc:'Performing\nprojects and formats', color:'red', rpe:'8-10', tags:['performance','project','comp','pyramid'],
     intent:'Perform when it counts. Full recovery between attempts, every attempt with intention. Note what worked.',
@@ -303,8 +319,8 @@ const sessions = [
   { id:'minidose', cat:'Minimal Dose', name:'Minimal Dose', desc:'High return\n~20 minutes', color:'amber', rpe:'8', tags:['minimal dose','short','fingers','efficient'],
     intent:'Minimum effective dose: the smallest volume that still drives adaptation. Fingers first, fresh and heavy, short total time. Sustainable two to four times a week next to a busy life.',
     slots:[ 'mdFinger', ['mdMaxHangs','mdNoHangs'], ['mdPull','mdCore'] ] },
-  { id:'drills', cat:'Drills', name:'Drill library', desc:'Full library\npick your own', color:'purple', rpe:'4-5', tags:['drills','technique','movement','skill','library'],
-    intent:'The full drill library. Pick the drills you want to do, with instructions.',
+  { id:'drills', cat:'Skills', name:'Skill library', desc:'Full library\npick your own', color:'purple', rpe:'4-5', tags:['drills','skills','technique','movement','skill','library'],
+    intent:'The full skill library. Pick the skills you want to do, with instructions.',
     slots:[ 'drillLibrary' ] },
 ];
 
@@ -360,9 +376,10 @@ function logSessionDone(id, variant, time, sig, snap) {
   if (snap) { e.keys = snap.keys; e.name = snap.name; e.color = snap.color; e.blocks = snap.blocks; }
   h.unshift(e);
   saveHistory(h);
+  if (typeof clearActive === 'function') clearActive();
   rebuildRecent();
   renderSignalCal();
-  if (typeof renderCoach === 'function') renderCoach();
+  if (typeof renderTodaysPick === 'function') renderTodaysPick();
   if (typeof renderStreakLine === 'function') renderStreakLine();
 }
 function agoLabel(ts) {
@@ -400,7 +417,7 @@ const variantOffset = {};
 // handmatige duur per blok: { sessionId: { slotIndex: minutes } }
 const durationOverride = {};
 
-const timeValues = [30,45,60,75,90,105,120,150];
+const timeValues = [30,45,60,75,90,105,120,150,Infinity];  // Infinity = geen tijdslimiet (MOCK-prototype)
 let activeTimeIdx = 2;
 let activeSessionId = 'capacity';
 let currentBlocks = [];
@@ -420,6 +437,8 @@ function blockClockElapsed() { return blockClockStart ? Math.round((Date.now() -
 
 // ── HELPERS ──
 function getT() { return timeValues[activeTimeIdx]; }
+// eindige tijd voor opslag/encoding: bij ∞ de som van de huidige blokduren
+function getTFinite() { return isFinite(getT()) ? getT() : currentBlocks.reduce((s,b)=>s+b.t,0); }
 
 // ── DRAFT (eigen/aangepaste sessie) ──
 let customSession = null;   // {id:'custom', cat, name, desc, color, rpe, intent, slots:[]}
@@ -427,7 +446,7 @@ let customKeys = null;      // array van blok-keys van de draft
 
 function saveDraft() {
   try {
-    if (customKeys && customSession) localStorage.setItem('crimpify_draft', JSON.stringify({ keys: customKeys, name: customSession.name, color: customSession.color, rpe: customSession.rpe, intent: customSession.intent, locked: sessionLocked, owned: sessionOwned }));
+    if (customKeys && customSession) localStorage.setItem('crimpify_draft', JSON.stringify({ keys: customKeys, name: customSession.name, color: customSession.color, rpe: customSession.rpe, intent: customSession.intent, locked: sessionLocked, owned: sessionOwned, basedOn: customSession.basedOn || undefined }));
   } catch {}
 }
 function loadDraft() {
@@ -442,7 +461,7 @@ function composeFromKeys(keys) {
   }, 0);
   const flexBase = base.filter(b=>!isFixed(b)).reduce((sum,b)=>sum+b.t,0);
   const flexBudget = Math.max(0, getT() - fixedTotal);
-  const ratio = flexBase > 0 ? flexBudget / flexBase : 1;
+  const ratio = flexBase > 0 && isFinite(flexBudget) ? flexBudget / flexBase : 1;  // ∞ = natuurlijke lengte
   return base.map(b=>{
     const ov = durationOverride['custom'] && durationOverride['custom'][b._slot];
     if (ov != null) return {...b, t: ov};
@@ -475,7 +494,7 @@ function getBlocks(id) {
   }, 0);
   const flexBase = base.filter(b=>!isFixed(b)).reduce((sum,b)=>sum+b.t,0);
   const flexBudget = Math.max(0, getT() - fixedTotal);
-  const ratio = flexBase > 0 ? flexBudget / flexBase : 1;
+  const ratio = flexBase > 0 && isFinite(flexBudget) ? flexBudget / flexBase : 1;  // ∞ = natuurlijke lengte
   return base.map(b=>{
     const ov = durationOverride[id] && durationOverride[id][b._slot];
     if (ov != null) return {...b, t: ov};
@@ -507,6 +526,7 @@ function getSession(id) { if (id === 'custom') return customSession; return sess
 function goTo(viewId) {
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById(viewId).classList.add('active');
+  if (viewId === 'v-browse' && typeof renderContinue === 'function') renderContinue();
   stopTimer();
   if (viewId !== 'v-guided') { gRunning = false; clearInterval(gInterval); }
   if (viewId !== 'v-drills' && typeof dpIntervals !== 'undefined') { dpIntervals.forEach((iv,i)=>{ if(iv) clearInterval(iv); dpIntervals[i]=null; }); }
@@ -550,7 +570,7 @@ function guardedExit(fn) {
     _pendingExit = fn;
     const v = activeView();
     const msg = v === 'v-check'
-      ? `Je hebt ${checkCount} boulders geteld. Die raak je kwijt als je weggaat.`
+      ? `You counted ${checkCount} boulders. Leaving now loses that count.`
       : 'Your timer is still running. Are you sure?';
     document.getElementById('confirmMsg').textContent = msg;
     document.getElementById('confirmExit').style.display = 'flex';
@@ -635,6 +655,7 @@ function fmtMin(sec){
 }
 
 function showSessionSummary() {
+  clearActive();  // sessie afgerond — geen Continue-kaart meer
   const blocks = Object.keys(sessionLog).map(k=>sessionLog[k]);
   const totalSpent = blocks.reduce((s,b)=>s+(b.spent||0),0);
   const totalPlanned = blocks.reduce((s,b)=>s+(b.planned||0),0);
@@ -648,25 +669,25 @@ function showSessionSummary() {
   // verschil-regel
   const totDiff = spentMin - plannedMin;
   const diffEl = document.getElementById('summaryDiff');
-  if (Math.abs(totDiff) < 1) { diffEl.textContent = 'precies op schema'; diffEl.style.color = '#7A7A76'; }
-  else if (totDiff > 0) { diffEl.textContent = `${totDiff} min longer than planned`; diffEl.style.color = '#FCD34D'; }
-  else { diffEl.textContent = `${Math.abs(totDiff)} min shorter than planned`; diffEl.style.color = '#86EFAC'; }
+  if (Math.abs(totDiff) < 1) { diffEl.textContent = 'precies op schema'; diffEl.style.color = 'var(--dust)'; }
+  else if (totDiff > 0) { diffEl.textContent = `${totDiff} min longer than planned`; diffEl.style.color = 'var(--dust)'; }
+  else { diffEl.textContent = `${Math.abs(totDiff)} min shorter than planned`; diffEl.style.color = 'var(--dust)'; }
 
   // gestapelde verdelingsbalk (per blok, naar rato van bestede tijd)
   const barTotal = totalSpent || 1;
   document.getElementById('summaryBar').innerHTML = blocks.map(b=>{
     const pct = ((b.spent||0) / barTotal * 100).toFixed(1);
-    return `<div title="${b.name}" style="width:${pct}%;background:${b.color||'#60A5FA'};"></div>`;
+    return `<div title="${b.name}" style="width:${pct}%;background:${b.color||'var(--prepare)'};"></div>`;
   }).join('');
 
   document.getElementById('summaryBlocks').innerHTML = blocks.map(b=>{
     const planned = b.planned||0, spent = b.spent||0;
     const diff = spent - planned;
     const diffTxt = Math.abs(diff) < 30 ? 'on time' : (diff > 0 ? `+${fmtMin(Math.abs(diff))}` : `−${fmtMin(Math.abs(diff))}`);
-    const diffCol = Math.abs(diff) < 30 ? '#7A7A76' : (diff > 0 ? '#FCD34D' : '#86EFAC');
-    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:#111;border-radius:8px;border-left:3px solid ${b.color||'#60A5FA'};">
-      <div style="flex:1;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;text-transform:uppercase;letter-spacing:.03em;color:#D8D8D4;">${b.name}</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;color:${b.color||'#D8D8D4'};">${fmtMin(spent)}</div>
+    const diffCol = 'var(--dust)';  // tijd-cues neutraal: geen kleursignaal op over/onder schema
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--carbon);border-radius:8px;border-left:3px solid ${b.color||'var(--prepare)'};">
+      <div style="flex:1;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;text-transform:uppercase;letter-spacing:.03em;color:var(--chalk);">${b.name}</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;color:${b.color||'var(--chalk)'};">${fmtMin(spent)}</div>
       <div style="font-family:'DM Mono',monospace;font-size:9px;color:${diffCol};min-width:48px;text-align:right;">${diffTxt}</div>
     </div>`;
   }).join('');
@@ -680,14 +701,14 @@ function showSessionSummary() {
 
   // logging gebeurt pas bij de stoplicht-tik (of overslaan)
   const s = getSession(activeSessionId);
-  const totalMin = spentMin || (s ? getT() : 60);
+  const totalMin = spentMin || (s ? getTFinite() : 60);
   const coreBlock = blocks.filter((b,i)=>i>0).sort((a,b)=>b.spent-a.spent)[0];
   const variant = coreBlock ? coreBlock.name : (s ? s.name : '');
   _pendingLog = s ? { id: s.id, variant, time: totalMin, snap: {
     keys: currentBlocks.map(b => b._key),
     name: s.name,
     color: s.color || 'lime',
-    blocks: blocks.map(b => ({ name: b.name, spent: b.spent||0, color: b.color || '#60A5FA' }))
+    blocks: blocks.map(b => ({ name: b.name, spent: b.spent||0, color: b.color || 'var(--prepare)' }))
   } } : null;
   // stoplicht-UI terugzetten naar beginstand
   document.getElementById('signalAsk').style.display = '';
@@ -697,9 +718,9 @@ function showSessionSummary() {
 // ── STOPLICHT (sessie-autoregulatie, één tik) ──
 let _pendingLog = null;
 const SIGNAL_ADVICE = {
-  green:  { col:'#4ADE80', title:'Green', txt:'Strong work, and you stayed fresh. Next session can take a little more: one set, one grade, or five minutes.' },
-  orange: { col:'#FB923C', title:'Orange', txt:'Right at or just over the edge. Keep the volume flat or take a little off next session, and grab an extra rest day if one presents itself.' },
-  red:    { col:'#F87171', title:'Red — recover now', txt:'Stop signal. Plan 1-2 days of rest; make the next session light (Recovery or Skill). Pain that will not fade? Get it checked.' },
+  green:  { col:'var(--sig-green)', title:'Green', txt:'Strong work, and you stayed fresh. Next session can take a little more: one set, one grade, or five minutes.' },
+  orange: { col:'var(--sig-orange)', title:'Orange', txt:'Right at or just over the edge. Keep the volume flat or take a little off next session, and grab an extra rest day if one presents itself.' },
+  red:    { col:'var(--sig-red)', title:'Red — recover now', txt:'Stop signal. Plan 1-2 days of rest; make the next session light (Recovery or Skill). Pain that will not fade? Get it checked.' },
 };
 function signalTap(sig) {
   if (_pendingLog) { logSessionDone(_pendingLog.id, _pendingLog.variant, _pendingLog.time, sig, _pendingLog.snap); _pendingLog = null; }
@@ -707,7 +728,7 @@ function signalTap(sig) {
   document.getElementById('signalAsk').style.display = 'none';
   const box = document.getElementById('signalAdvice');
   box.style.display = '';
-  box.style.borderColor = a.col + '55';
+  box.style.borderColor = 'color-mix(in srgb, ' + a.col + ' 33%, transparent)';
   document.getElementById('signalAdviceTitle').textContent = a.title;
   document.getElementById('signalAdviceTitle').style.color = a.col;
   document.getElementById('signalAdviceTxt').textContent = a.txt;
@@ -730,8 +751,74 @@ function closeSummary() {
   if (_pendingLog) { logSessionDone(_pendingLog.id, _pendingLog.variant, _pendingLog.time, null, _pendingLog.snap); _pendingLog = null; }
   document.getElementById('sessionSummary').style.display = 'none';
   sessionLog = {};
+  sessionStartTime = null;
+  clearActive();
   recentFolded = false; applyRecentFold();
   goTo('v-browse');
+}
+
+// ── ONAFGEMAAKTE SESSIE (Continue-kaart) ──
+// crimpify_active bewaart de lopende training per blokgrens; hervatten kan na
+// reload of app-sluiting. Lopende timers overleven dat niet, blokvoortgang wel.
+function saveActive() {
+  if (!sessionStartTime) return;  // alleen echt gestarte sessies
+  try {
+    const s = getSession(activeSessionId);
+    if (!s || !currentBlocks.length) return;
+    const spent = {};
+    Object.keys(sessionLog).forEach(k => { spent[k] = sessionLog[k].spent || 0; });
+    localStorage.setItem('crimpify_active', JSON.stringify({
+      keys: currentBlocks.map(b => b._key), name: s.name, color: s.color || 'lime',
+      sessionId: s.id, idx: currentBlockIdx, spent, ts: Date.now(),
+    }));
+  } catch {}
+}
+function clearActive() {
+  try { localStorage.removeItem('crimpify_active'); } catch {}
+  if (typeof renderContinue === 'function') renderContinue();
+}
+function loadActive() {
+  try {
+    const a = JSON.parse(localStorage.getItem('crimpify_active') || 'null');
+    if (!a || !Array.isArray(a.keys) || !a.keys.length) return null;
+    if (Date.now() - a.ts > 12 * 3600000) { localStorage.removeItem('crimpify_active'); return null; }  // verlopen
+    return a;
+  } catch { return null; }
+}
+function renderContinue() {
+  const el = document.getElementById('continueCard');
+  if (!el) return;
+  const a = loadActive();
+  if (!a) { el.innerHTML = ''; return; }
+  const keys = a.keys.filter(k => BLOCKLIB[k]);
+  const spentMin = Object.values(a.spent || {}).reduce((s, v) => s + v, 0) / 60;
+  const plannedMin = keys.reduce((s, k) => s + (BLOCKLIB[k].t || 0), 0);
+  const left = Math.max(1, Math.round(plannedMin - spentMin));
+  el.innerHTML = `<div class="continue-card" onclick="resumeActive()">
+    <div style="min-width:0;">
+      <div class="pick-kicker">continue</div>
+      <div class="continue-name">${a.name}</div>
+      <div class="continue-meta">Block ${Math.min(a.idx + 1, keys.length)} of ${keys.length} · ~${left} min remaining</div>
+    </div>
+    <button class="pick-btn" onclick="event.stopPropagation();resumeActive()">Resume →</button>
+  </div>`;
+}
+function resumeActive() {
+  const a = loadActive();
+  if (!a) return;
+  customSession = { id:'custom', cat:'again', name: a.name, desc:'', color: a.color || 'lime', rpe:'–', intent:'Picked up where you left off.' };
+  customKeys = a.keys.filter(k => BLOCKLIB[k]);
+  activeSessionId = 'custom';
+  sessionLocked = true;
+  sessionOwned = true;
+  buildSlab();
+  sessionLog = {};
+  Object.keys(a.spent || {}).forEach(k => {
+    const i = parseInt(k), b = currentBlocks[i];
+    if (b) sessionLog[i] = { name: b.n, planned: b.t * 60, spent: a.spent[k], color: b.c };
+  });
+  sessionStartTime = Date.now();
+  openBlock(Math.min(a.idx, currentBlocks.length - 1));
 }
 
 function startSession() {
@@ -763,6 +850,7 @@ function openBlock(idx) {
   const b = currentBlocks[idx];
   timerElapsed = 0;
   blockClockStart = Date.now();   // start de echte klok voor dit blok
+  saveActive();                   // blokgrens: voortgang bewaren voor de Continue-kaart
   updateSlabProgress(idx);
   if (b && b.guided && b.items) {
     startGuided(idx);
@@ -910,9 +998,9 @@ function startDrillPlayer(blockIdx) {
   const per = Math.max(3, Math.round(b.t / n));
   dpTimers = dpDrills.map(()=> per*60);
   dpIntervals = dpDrills.map(()=> null);
-  document.getElementById('drillSub').textContent = `${n} drills · target ${per} min each · tap open for instructions`;
-  document.getElementById('drillFooter').innerHTML = `movement drills<br><b style="color:#A78BFA;">${b.t} min total</b>`;
-  document.getElementById('drillTitle').textContent = 'Movement drills';
+  document.getElementById('drillSub').textContent = `${n} skills · target ${per} min each · tap open for instructions`;
+  document.getElementById('drillFooter').innerHTML = `movement skills<br><b style="color:var(--skill);">${b.t} min total</b>`;
+  document.getElementById('drillTitle').textContent = 'Movement skills';
   renderDrillPlayer();
   goTo('v-drills');
 }
@@ -926,9 +1014,9 @@ function startDrillLibrary(blockIdx) {
   dpDrills = DRILLS.filter(d=>d.cat !== 'meta');
   dpTimers = dpDrills.map(()=> 5*60); // 5 min richttijd per drill, vrij aan te passen
   dpIntervals = dpDrills.map(()=> null);
-  document.getElementById('drillTitle').textContent = 'Drill-bibliotheek';
-  document.getElementById('drillSub').textContent = `${dpDrills.length} drills · pick your own · tap open for instructions`;
-  document.getElementById('drillFooter').innerHTML = `${dpDrills.length} drills`;
+  document.getElementById('drillTitle').textContent = 'Skill library';
+  document.getElementById('drillSub').textContent = `${dpDrills.length} skills · pick your own · tap open for instructions`;
+  document.getElementById('drillFooter').innerHTML = `${dpDrills.length} skills`;
   renderDrillPlayer();
   goTo('v-drills');
 }
@@ -981,10 +1069,10 @@ function dfRender() {
   const s = Math.max(0,dfRemain)%60;
   const t = document.getElementById('dfTimer');
   t.textContent = `${m}:${s.toString().padStart(2,'0')}`;
-  // geel in de laatste minuut
-  if (dfRemain <= 60 && dfRemain > 0) t.style.color = '#E6F557';
-  else if (dfRemain <= 0) t.style.color = '#E6F557';
-  else t.style.color = '#F5F5F2';
+  // acid in de laatste minuut (aandacht = interactie)
+  if (dfRemain <= 60 && dfRemain > 0) t.style.color = 'var(--acid)';
+  else if (dfRemain <= 0) t.style.color = 'var(--acid)';
+  else t.style.color = 'var(--chalk)';
 }
 
 function dfAdjust(deltaSec) {
@@ -1043,9 +1131,9 @@ function dfSwitch() {
   dpDrills = DRILLS.filter(d=>d.cat !== 'meta');
   dpTimers = dpDrills.map(()=> 5*60);
   dpIntervals = dpDrills.map(()=> null);
-  document.getElementById('drillTitle').textContent = 'Pick a drill';
-  document.getElementById('drillSub').textContent = `replace "${dfDrills[swapTargetIdx].n}" — tap a drill to pick it`;
-  document.getElementById('drillFooter').innerHTML = `switch drill<br><b style="color:#A78BFA;">${dpDrills.length} options</b>`;
+  document.getElementById('drillTitle').textContent = 'Pick a skill';
+  document.getElementById('drillSub').textContent = `replace "${dfDrills[swapTargetIdx].n}" — tap a skill to pick it`;
+  document.getElementById('drillFooter').innerHTML = `switch skill<br><b style="color:var(--skill);">${dpDrills.length} options</b>`;
   renderDrillPlayer();
   goTo('v-drills');
 }
@@ -1064,12 +1152,16 @@ function startChecklist(blockIdx) {
   const b = currentBlocks[blockIdx];
   checkCount = 0;
   checkTarget = b.target || 30;
-  checkMax = parseInt((b.range||'25-35').split('-')[1]) || 35;
+  const range = b.range || '25-35';
+  const parts = range.split('-');
+  checkMax = parseInt(parts[1] || parts[0]) || 35;  // '20' = exact doel, '25-35' = bereik
   document.getElementById('checkTitle').textContent = b.n;
-  document.getElementById('checkRange').textContent = `goal ${b.range||'25-35'}`;
-  document.getElementById('checkSub').textContent = `${b.range||'25-35'} boulders · rpe ${b.rpe}`;
+  document.getElementById('checkRange').textContent = `goal ${range}`;
+  document.getElementById('checkSub').textContent = `${range} boulders${b.grade ? ' · ' + b.grade : ''} · rpe ${b.rpe}`;
   document.getElementById('checkWhy').textContent = b.why;
-  document.getElementById('checkFooter').innerHTML = `volume boulders<br><b style="color:#4ADE80;">goal ${b.range||'25-35'}</b>`;
+  document.getElementById('checkFooter').innerHTML = `${b.n.toLowerCase()}<br><b style="color:var(--success);">goal ${range}</b>`;
+  const sub = document.getElementById('checkSuccessSub');
+  if (sub) sub.textContent = `${parseInt(parts[0]) || 25}+ boulders, everything after is bonus`;
   renderCheck();
   goTo('v-check');
 }
@@ -1091,22 +1183,22 @@ function renderCheck() {
   const minR = checkTargetMin();
   // geleidelijke kleuropbouw
   let col;
-  if (checkCount === 0) col = '#3A3A38';
-  else if (checkCount < minR * 0.5) col = '#5A7A5A';        // net begonnen, dof groen
-  else if (checkCount < minR) col = '#A3E635';              // bijna in zone, lime
-  else if (checkCount <= checkMax) col = '#4ADE80';         // in doelzone, fel groen
-  else col = '#FCD34D';                                     // erover, amber
+  if (checkCount === 0) col = 'var(--disabled)';
+  else if (checkCount < minR * 0.5) col = 'var(--dust)';                                  // net begonnen
+  else if (checkCount < minR) col = 'color-mix(in srgb, var(--chalk) 70%, var(--dust))';  // bijna in zone
+  else if (checkCount <= checkMax) col = 'var(--success)';                                // in doelzone
+  else col = 'var(--dust)';                                                               // erover, rustig aan
   cEl.style.color = col;
   cEl.style.transition = 'color .3s';
   // glow in de doelzone
-  cEl.style.textShadow = (checkCount >= minR && checkCount <= checkMax) ? '0 0 24px rgba(74,222,128,.45)' : 'none';
+  cEl.style.textShadow = (checkCount >= minR && checkCount <= checkMax) ? '0 0 24px color-mix(in srgb, var(--chalk) 30%, transparent)' : 'none';
   // grid
   const grid = document.getElementById('checkGrid');
   let html = '';
   for (let i=1; i<=checkMax; i++) {
     const filled = i <= checkCount;
     const inRange = i >= minR;
-    html += `<div onclick="checkSetTo(${i})" style="aspect-ratio:1;border-radius:6px;border:1px solid ${filled?'#4ADE80':(inRange?'#2A4A2A':'#1E1E1C')};background:${filled?'rgba(74,222,128,.25)':'transparent'};display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:9px;color:${filled?'#86EFAC':'#3A3A38'};cursor:pointer;transition:all .15s;">${i}</div>`;
+    html += `<div onclick="checkSetTo(${i})" style="aspect-ratio:1;border-radius:6px;border:1px solid ${filled?'var(--success)':(inRange?'var(--disabled)':'var(--graphite)')};background:${filled?'color-mix(in srgb, var(--success) 18%, transparent)':'transparent'};display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:9px;color:${filled?'var(--success)':'var(--disabled)'};cursor:pointer;transition:all .15s;">${i}</div>`;
   }
   grid.innerHTML = html;
 }
@@ -1137,7 +1229,7 @@ function renderDrillPlayer() {
   const stack = document.getElementById('drillStack');
   const q = (dpFilter||'').toLowerCase().trim();
   const shown = dpDrills.filter(d=>dpMatch(d,q)).length;
-  document.getElementById('drillProg').textContent = q ? `${shown} / ${dpDrills.length} drills` : `${dpDrills.length} drills`;
+  document.getElementById('drillProg').textContent = q ? `${shown} / ${dpDrills.length} skills` : `${dpDrills.length} skills`;
   stack.innerHTML = dpDrills.map((d,i)=>{
     if (!dpMatch(d,q)) return '';
     const running = dpIntervals[i] != null;
@@ -1154,13 +1246,13 @@ function renderDrillPlayer() {
       <div class="dp-detail">
         <div class="dp-detail-inner">
           <div class="dp-lbl">setup</div><p>${d.setup}</p>
-          <div class="dp-lbl">uitvoering</div><p>${d.do}</p>
-          <div class="dp-lbl" style="color:#A78BFA;">goal</div><p style="color:#C4B5FD;">${d.goal}</p>
+          <div class="dp-lbl">execution</div><p>${d.do}</p>
+          <div class="dp-lbl" style="color:var(--skill);">goal</div><p style="color:color-mix(in srgb, var(--skill) 55%, var(--chalk));">${d.goal}</p>
         </div>
       </div>
       <div class="dp-controls">
         ${drillMode === 'swap'
-          ? `<button class="dp-tbtn" onclick="dfApplySwap(${i})" style="border-color:#A78BFA;background:rgba(167,139,250,.18);">Pick this one →</button>`
+          ? `<button class="dp-tbtn" onclick="dfApplySwap(${i})" style="border-color:var(--skill);background:color-mix(in srgb, var(--skill) 18%, transparent);">Pick this one →</button>`
           : `<button class="dp-tbtn" id="dp-btn-${i}" onclick="dpToggleTimer(${i})">${running?'Pause':'Start timer'}</button>
              <button class="dp-tbtn done-btn" onclick="dpMarkDone(${i})">Done ✓</button>`}
       </div>
@@ -1198,7 +1290,7 @@ function dpToggleTimer(i) {
     if (t) t.textContent = fmtMMSS(dpTimers[i]);
     if (dpTimers[i] <= 0) {
       clearInterval(dpIntervals[i]); dpIntervals[i] = null;
-      if (t) t.style.color = '#4ADE80';
+      if (t) t.style.color = 'var(--success)';
       const btn = document.getElementById('dp-btn-'+i);
       if (btn) btn.textContent = 'Done ✓';
       const c = document.getElementById('dp-'+i); if (c) c.classList.remove('active');
@@ -1226,42 +1318,31 @@ function buildRecent() {
   // 1. concept-draft (verder waar je was)
   const draft = loadDraft();
   if (draft && draft.keys && draft.keys.length) {
-    html += `<div class="recent-card" style="background:rgba(230,245,87,.05);border-color:rgba(230,245,87,.3);" onclick="openDraft()">
+    html += `<div class="recent-card" style="background:color-mix(in srgb, var(--acid) 5%, transparent);border-color:color-mix(in srgb, var(--acid) 30%, transparent);" onclick="openDraft()">
       <div class="rc-top" style="background:var(--acid);"></div>
       <div class="rc-body">
         <div class="rc-name" style="color:var(--acid);">▶ ${draft.name || 'Concept'}</div>
-        <div class="rc-meta" style="color:#A3A300;">verder gaan</div>
-        <div class="rc-date">${draft.keys.length} blokken</div>
+        <div class="rc-meta" style="color:color-mix(in srgb, var(--acid) 65%, var(--ink));">continue</div>
+        <div class="rc-date">${draft.keys.length} blocks</div>
       </div>
     </div>`;
   }
 
-  // 2. favorieten
+  // 2. favorieten — Saved toont alleen wat je zelf bewaarde of bouwde; recaps
+  //    van losse sessies lopen via de rhythm-strip. Stoplicht-dot = jongste
+  //    gelogde sessie met dezelfde naam.
   const favs = loadFavs();
+  const hist = loadHistory();
   favs.forEach((f, i) => {
     const col = C[f.color] || C.lime;
+    const last = hist.find(e => (e.name || '') === f.name);
+    const dot = last && last.sig ? `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${SIG_COL[last.sig]};margin-right:5px;"></span>` : '';
     html += `<div class="recent-card" style="background:${col.bg};border-color:${col.border};" onclick="openFav(${i})" ontouchstart="favPressStart(${i})" ontouchend="favPressEnd()" ontouchmove="favPressEnd()" onmousedown="favPressStart(${i})" onmouseup="favPressEnd()">
       <div class="rc-top" style="background:${col.color};"></div>
       <div class="rc-body">
         <div class="rc-name" style="color:${col.text};">★ ${f.name}</div>
-        <div class="rc-meta" style="color:${col.color};">favoriet</div>
-        <div class="rc-date">${f.keys.length} blokken · ${f.time}'</div>
-      </div>
-    </div>`;
-  });
-
-  // 3. slimme recents (uit historie)
-  recent.forEach(r => {
-    const s = getSession(r.id);
-    if (!s) return;
-    const col = C[s.color];
-    const isActive = s.id === activeSessionId;
-    html += `<div class="recent-card${isActive?' active':''}" style="background:${col.bg};border-color:${isActive?col.color:col.border};${isActive?'--rc-color:'+col.color+';':''}" onclick="openRecap(${r.ts})">
-      <div class="rc-top" style="background:${col.color};"></div>
-      <div class="rc-body">
-        <div class="rc-name" style="color:${col.text};">${s.name}</div>
-        <div class="rc-meta" style="color:${col.color};">${r.variant || 'rpe '+s.rpe}</div>
-        <div class="rc-date">${(function(){const c=r.sig==='green'?'#4ADE80':r.sig==='orange'?'#FB923C':r.sig==='red'?'#F87171':null;return c?'<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:'+c+';margin-right:5px;"></span>':'';})()}${r.ago} · ${r.time}'</div>
+        <div class="rc-meta" style="color:${col.color};">favourite</div>
+        <div class="rc-date">${dot}${f.keys.length} blocks · ${f.time}'</div>
       </div>
     </div>`;
   });
@@ -1285,7 +1366,7 @@ function favPressStart(i) {
 }
 function favPressEnd() { clearTimeout(_favPressTimer); setTimeout(()=>{ _favLongPressed = false; }, 300); }
 
-// ── STOPLICHT-KALENDER (laatste 28 dagen, afgeleid uit historie) ──
+// ── STOPLICHT-KALENDER (weergave: laatste 14 dagen; ACWR rekent los hiervan over de volle historie) ──
 function renderSignalCal() {
   const wrap = document.getElementById('signalCalWrap');
   const cal = document.getElementById('signalCal');
@@ -1293,12 +1374,11 @@ function renderSignalCal() {
   const h = loadHistory();
   if (!h.length) { wrap.style.display = 'none'; return; }
   wrap.style.display = '';
-  const SIG_COL = { green:'#4ADE80', orange:'#FB923C', red:'#F87171' };
   const SIG_RANK = { red:3, orange:2, green:1 };
   // per dag: zwaarste signaal wint; sessie zonder signaal = neutraal gevuld
   const days = [];
   const now = new Date(); now.setHours(0,0,0,0);
-  for (let i = 27; i >= 0; i--) {
+  for (let i = 13; i >= 0; i--) {
     const d = new Date(now.getTime() - i*86400000);
     const entries = h.filter(e => { const t = new Date(e.ts); t.setHours(0,0,0,0); return t.getTime() === d.getTime(); });
     let col = null, load = 0;
@@ -1306,17 +1386,25 @@ function renderSignalCal() {
       load += e.load || 0;
       if (e.sig && (!col || SIG_RANK[e.sig] > SIG_RANK[col])) col = e.sig;
     });
-    days.push({ trained: entries.length > 0, col, load });
+    // entries staat nieuwste-eerst; recap opent de laatste sessie van die dag
+    days.push({ trained: entries.length > 0, n: entries.length, col, load, day: d.getDay(), ts: entries.length ? entries[0].ts : null });
   }
-  cal.innerHTML = days.map(d => {
-    const bg = d.trained ? (d.col ? SIG_COL[d.col] : '#4A4A46') : '#161614';
-    const glow = d.col === 'red' ? 'box-shadow:0 0 8px rgba(248,113,113,.4);' : '';
-    return `<div title="${d.trained ? 'load ' + d.load : ''}" style="aspect-ratio:1;border-radius:3px;background:${bg};${glow}"></div>`;
-  }).join('');
-  // mini-samenvatting: sessies + rood-teller
-  const trained = days.filter(d=>d.trained).length;
-  const reds = days.filter(d=>d.col==='red').length;
-  document.getElementById('signalCalSummary').textContent = `${trained} sessions` + (reds ? ` · ${reds}× red` : '');
+  // strip: dag-letters + één dot per dag. Dot = stoplichtsignaal van die dag,
+  // neutraal gevuld bij een sessie zonder signaal, leeg zonder training.
+  // Nooit sessietype-kleuren: de strip toont hoe het gaat, niet wat je trainde.
+  cal.innerHTML = `<div class="rhythm-letters">${days.map(d => `<span>${'SMTWTFS'[d.day]}</span>`).join('')}</div>
+    <div class="rhythm-dots">${days.map(d => {
+      const fill = d.trained ? `background:${d.col ? SIG_COL[d.col] : 'var(--disabled)'};` : 'border:1px solid var(--graphite);';
+      const glow = d.col === 'red' ? 'box-shadow:0 0 8px color-mix(in srgb, var(--sig-red) 40%, transparent);' : '';
+      const click = d.ts ? ` onclick="openRecap(${d.ts})"` : '';
+      return `<i${click} title="${d.trained ? 'load ' + d.load : ''}" style="${fill}${glow}${d.ts ? 'cursor:pointer;' : ''}"></i>`;
+    }).join('')}</div>`;
+  // samenvatting: sessies in het venster + ACWR-zone in één woord (tik = ACWR-paneel)
+  const trained = days.reduce((s,d)=>s+d.n,0);
+  const { ratio } = computeACWR();
+  const zoneWord = ratio == null ? 'building history'
+    : ratio < 0.8 ? 'load light' : ratio <= 1.3 ? 'load balanced' : ratio <= 1.5 ? 'load climbing' : 'load high';
+  document.getElementById('signalCalSummary').textContent = `${trained} session${trained === 1 ? '' : 's'} · ${zoneWord}`;
 }
 
 // ── ACWR: acute vs chronische belasting (Gabbett) ──
@@ -1332,11 +1420,11 @@ function computeACWR() {
   return { acute, chronic: Math.round(chronic), ratio };
 }
 function acwrZone(r) {
-  if (r == null) return { name:'not enough data', col:'#8A8A86', txt:'Not enough history yet for a reliable ratio. Keep training for 2-3 weeks and this picture becomes meaningful.' };
-  if (r < 0.8) return { name:'undertraining', col:'#5A7A9A', txt:'You are training clearly less than you are used to this week. Fine as a recovery week; if it lasts longer, build back up gradually.' };
-  if (r <= 1.3) return { name:'sweet spot', col:'#4ADE80', txt:'Your load sits nicely on top of your base. This is the zone where you adapt with the lowest injury risk.' };
-  if (r <= 1.5) return { name:'elevated', col:'#FB923C', txt:'Your acute load is climbing relative to your base. No alarm yet, but do not add extra volume or intensity this week.' };
-  return { name:'high risk', col:'#F87171', txt:'You are training far more than your body is used to; this is the elevated injury-risk zone. Take rest or shift down to Recovery and Skill.' };
+  if (r == null) return { name:'not enough data', col:'var(--dust)', txt:'Not enough history yet for a reliable ratio. Keep training for 2-3 weeks and this picture becomes meaningful.' };
+  if (r < 0.8) return { name:'undertraining', col:'var(--dust)', txt:'You are training clearly less than you are used to this week. Fine as a recovery week; if it lasts longer, build back up gradually.' };
+  if (r <= 1.3) return { name:'sweet spot', col:'var(--sig-green)', txt:'Your load sits nicely on top of your base. This is the zone where you adapt with the lowest injury risk.' };
+  if (r <= 1.5) return { name:'elevated', col:'var(--sig-orange)', txt:'Your acute load is climbing relative to your base. No alarm yet, but do not add extra volume or intensity this week.' };
+  return { name:'high risk', col:'var(--sig-red)', txt:'You are training far more than your body is used to; this is the elevated injury-risk zone. Take rest or shift down to Recovery and Skill.' };
 }
 function renderLoadPanel() {
   const { acute, chronic, ratio } = computeACWR();
@@ -1369,7 +1457,7 @@ function toggleLoadPanel() {
 
 // ── RECAP OF A FINISHED SESSION (openen vanuit Mijn sessies) ──
 let _recapEntry = null;
-const SIG_COL = { green:'#4ADE80', orange:'#FB923C', red:'#F87171' };
+const SIG_COL = { green:'var(--sig-green)', orange:'var(--sig-orange)', red:'var(--sig-red)' };
 function openRecap(ts) {
   const e = loadHistory().find(x => x.ts === ts);
   if (!e) return;
@@ -1381,17 +1469,17 @@ function openRecap(ts) {
   const d = new Date(e.ts);
   const sigTxt = e.sig === 'green' ? 'strong' : e.sig === 'orange' ? 'on the edge' : e.sig === 'red' ? 'too much' : 'no signal';
   el('recapMeta').textContent = nlDate(d) + ' · ' + (e.time || 0) + ' min · ' + sigTxt;
-  el('recapDot').style.background = SIG_COL[e.sig] || '#3A3A38';
-  el('recapDot').style.boxShadow = SIG_COL[e.sig] ? '0 0 14px ' + SIG_COL[e.sig] + '80' : 'none';
+  el('recapDot').style.background = SIG_COL[e.sig] || 'var(--graphite)';
+  el('recapDot').style.boxShadow = SIG_COL[e.sig] ? '0 0 14px color-mix(in srgb, ' + SIG_COL[e.sig] + ' 50%, transparent)' : 'none';
 
   const blocks = e.blocks || [];
   const total = blocks.reduce((sum,b)=>sum+(b.spent||0),0) || 1;
-  el('recapBar').innerHTML = blocks.map(b => '<div style="width:' + ((b.spent||0)/total*100).toFixed(1) + '%;background:' + (b.color||'#60A5FA') + ';"></div>').join('');
+  el('recapBar').innerHTML = blocks.map(b => '<div style="width:' + ((b.spent||0)/total*100).toFixed(1) + '%;background:' + (b.color||'var(--prepare)') + ';"></div>').join('');
   el('recapBar').style.display = blocks.length ? 'flex' : 'none';
   el('recapBlocks').innerHTML = blocks.map(b =>
-    '<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:#111;border-radius:8px;border-left:3px solid ' + (b.color||'#60A5FA') + ';">' +
-      '<div style="flex:1;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:15px;text-transform:uppercase;letter-spacing:.03em;color:#D8D8D4;">' + b.name + '</div>' +
-      '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:18px;color:' + (b.color||'#D8D8D4') + ';">' + Math.round((b.spent||0)/60) + ' min</div>' +
+    '<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--carbon);border-radius:8px;border-left:3px solid ' + (b.color||'var(--prepare)') + ';">' +
+      '<div style="flex:1;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:15px;text-transform:uppercase;letter-spacing:.03em;color:var(--chalk);">' + b.name + '</div>' +
+      '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:18px;color:' + (b.color||'var(--chalk)') + ';">' + Math.round((b.spent||0)/60) + ' min</div>' +
     '</div>').join('');
 
   const canShare = Array.isArray(e.keys) && e.keys.length;
@@ -1451,28 +1539,28 @@ function coachSuggest() {
   const sig2 = h[1] ? h[1].sig : null;
   const HEAVY = ['strength','power','perf','pe'];
 
-  if (!h.length) return { id:'capacity', time:60, badge:'#4ADE80',
+  if (!h.length) return { id:'capacity', time:60, badge:'var(--sig-green)',
     reason:'No history yet. Start with an aerobic base: volume with good technique, everything else builds on that.' };
-  if (sig1 === 'red') return { id:'recovery', time:45, badge:'#F87171',
+  if (sig1 === 'red') return { id:'recovery', time:45, badge:'var(--sig-red)',
     reason:'Your last session was red. Active recovery today: circulation and mobility, no load of significance.' };
-  if (ratio != null && ratio > 1.5) return { id:'recovery', time:45, badge:'#F87171',
+  if (ratio != null && ratio > 1.5) return { id:'recovery', time:45, badge:'var(--sig-red)',
     reason:'Your acute load is far above what you are used to (ratio ' + ratio.toFixed(2) + '). Recovering now prevents injuries later.' };
-  if (sig1 === 'orange' && sig2 === 'orange') return { id:'skill', time:60, badge:'#FB923C',
+  if (sig1 === 'orange' && sig2 === 'orange') return { id:'skill', time:60, badge:'var(--sig-orange)',
     reason:'Orange twice in a row. Technique work keeps you moving without stacking more load.' };
-  if (ratio != null && ratio > 1.3) return { id:'capacity', time:45, badge:'#FB923C',
+  if (ratio != null && ratio > 1.3) return { id:'capacity', time:45, badge:'var(--sig-orange)',
     reason:'Your load is climbing (ratio ' + ratio.toFixed(2) + '). Light aerobic volume, no added intensity this week.' };
   // rest is the default advice right after a session; the person's own rhythm corrects it
   const gap = typicalGapDays(h);
-  if (daysSince === 0) return { rest:true, id:'recovery', time:30, badge:'#60A5FA',
+  if (daysSince === 0) return { rest:true, id:'recovery', time:30, badge:'var(--dust)',
     reason: gap != null && gap <= 1
       ? 'You already trained today. You usually train daily, so a second session is fine, but keep it light.'
       : 'You already trained today. Adaptation happens in the rest, not in the session.' };
-  if (daysSince === 1 && (gap == null || gap >= 2)) return { rest:true, id:'recovery', time:30, badge:'#60A5FA',
+  if (daysSince === 1 && (gap == null || gap >= 2)) return { rest:true, id:'recovery', time:30, badge:'var(--dust)',
     reason: gap == null
       ? 'You trained yesterday. One rest day lets the adaptation land; not enough history yet to know your rhythm.'
       : 'You trained yesterday, and you usually train every ' + gap + ' days. Rest today, sharp again tomorrow.' };
   if (last && HEAVY.includes(last.id) && daysSince <= 1) {
-    return { id:'skill', time:60, badge:'#4ADE80',
+    return { id:'skill', time:60, badge:'var(--sig-green)',
       reason:'Heavy training yesterday (' + (getSession(last.id) ? getSession(last.id).name : last.id) + '). Alternate: technique or light volume today, intensity again tomorrow.' };
   }
   // progressie: roteer weg van het laatst getrainde systeem
@@ -1480,36 +1568,99 @@ function coachSuggest() {
   const lastIdx = rotation.indexOf(last ? last.id : '');
   const nextId = rotation[(lastIdx + 1 + rotation.length) % rotation.length] || 'capacity';
   const extra = sig1 === 'green' ? ' Your last session was green, so you can add a little: a set, a grade or five minutes.' : '';
-  return { id: nextId, time:60, badge:'#4ADE80',
+  return { id: nextId, time:60, badge:'var(--sig-green)',
     reason:'Fresh enough for quality. ' + (getSession(nextId) ? getSession(nextId).name : nextId) + ' is up next in your rotation.' + extra };
 }
-function renderCoach() {
-  const card = document.getElementById('coachCard');
+// MOCK-prototype: verzoen wat je lijf nodig heeft (coachSuggest) met de tijd die je hébt (slider).
+// De suggestie loopt live mee met de tijdbalk; autoregulatie wint altijd van ambitie.
+function adaptCoachToTime(pick) {
+  const t = getT();
+  const p = { ...pick };
+  if (!isFinite(t)) {
+    p.reason += ' No time limit set. The stoplight ends this session, not the clock.';
+    return p;
+  }
+  if (t <= 30) {
+    if (p.rest || p.id === 'recovery') {
+      p.time = 30;
+      p.reason += ' Thirty minutes of easy movement is plenty today.';
+      return p;
+    }
+    return { id:'minidose', time:30, badge:p.badge,
+      reason:'Short window today. Minimal dose: fingers and pull in twenty focused minutes, no filler.' };
+  }
+  if (t >= 75) {
+    if (p.rest) {
+      p.reason += ' Planning ' + t + ' minutes on a rest day? You know best. If you go, keep it light and log it honestly.';
+      return p;
+    }
+    if (p.id === 'recovery') {
+      p.reason += ' You have ' + t + ' minutes, your body asked for ' + p.time + '. Recovery does not scale; do it well and go home.';
+      return p;
+    }
+  }
+  return p;
+}
+
+// ── TODAY'S PICK: het primaire moment op de landing. De coach/ACWR-logica
+// (coachSuggest + adaptCoachToTime) blijft ongewijzigd; alleen de vorm is nieuw. ──
+function deriveGear(blocks) {
+  // materiaal van het kernblok (grootste), niet van een kleine afsluiter
+  const FING = ['maxHangs','nohangs','activeCurls','mdFinger','mdMaxHangs','mdNoHangs','hog'];
+  const BOARD = ['board1','boardVolume','boardApply','campus'];
+  const GYM = ['gymWarmup','pullStrength','pushStrength','coreLegs','mini1','mini2','mini3'];
+  const core = blocks.slice().sort((a, b) => b.t - a.t)[0];
+  const k = core ? core._key : '';
+  if (FING.includes(k)) return 'Fingerboard';
+  if (BOARD.includes(k)) return 'Board';
+  if (GYM.includes(k)) return 'Gym';
+  return 'Gym wall';
+}
+// verwachte belasting van een gegenereerde sessie: intensiteitsfactor → vier standen
+function loadDots(id) {
+  const f = INTENSITY_FACTORS[id] != null ? INTENSITY_FACTORS[id] : 0.65;
+  return f >= 0.85 ? 4 : f >= 0.7 ? 3 : f >= 0.5 ? 2 : 1;
+}
+function renderTodaysPick() {
+  const card = document.getElementById('todaysPick');
   if (!card) return;
-  const pick = coachSuggest();
+  const pick = adaptCoachToTime(coachSuggest());
   _coachPick = pick;
   const s = getSession(pick.id);
-  if (!s) { card.style.display = 'none'; return; }
-  card.style.display = '';
-  const btn = document.getElementById('coachApplyBtn');
+  if (!s) { card.innerHTML = ''; return; }
+  const reason = loadHistory().length ? pick.reason : 'A good first session to get you going.';
   if (pick.rest) {
-    document.getElementById('coachName').textContent = 'Rest day';
-    document.getElementById('coachName').style.color = '#93C5FD';
-    btn.textContent = 'Train anyway? Easy recovery →';
-  } else {
-    const col = C[s.color] || C.lime;
-    document.getElementById('coachName').textContent = s.name + ' · ' + pick.time + ' min';
-    document.getElementById('coachName').style.color = col.text;
-    btn.textContent = 'Use suggestion →';
+    card.innerHTML = `<div class="pick-card">
+      <div class="pick-body">
+        <div class="pick-kicker">today's pick</div>
+        <div class="pick-name">Rest day</div>
+        <div class="pick-reason">${reason}</div>
+        <button class="pick-btn ghost" onclick="applyCoach()">Easy recovery →</button>
+      </div>
+    </div>`;
+    return;
   }
-  document.getElementById('coachReason').textContent = pick.reason;
-  document.getElementById('coachBadge').style.background = pick.badge;
+  const blocks = getBlocks(pick.id);
+  const total = blocks.reduce((sum, b) => sum + b.t, 0);
+  const band = blocks.map(b => `<div style="flex:${b.t};background:${b.c};" title="${b.n}"></div>`).join('');
+  const t = getT();
+  card.innerHTML = `<div class="pick-card">
+    <div class="pick-band">${band}</div>
+    <div class="pick-body">
+      <div class="pick-kicker">today's pick</div>
+      <div class="pick-name">${s.name}</div>
+      <div class="pick-meta"><span>${s.desc.split('\n')[0].toLowerCase()}</span><span>${isFinite(t) ? t : total} min</span><span>${deriveGear(blocks)}</span><span class="pick-load">load ${chPhalanx(loadDots(pick.id), true)}</span></div>
+      <div class="pick-reason">${reason}</div>
+      <button class="pick-btn" onclick="applyCoach()">Start session</button>
+    </div>
+  </div>`;
 }
 function applyCoach() {
   if (!_coachPick) return;
-  const ti = timeValues.indexOf(_coachPick.time);
+  const pick = _coachPick;  // vastpakken: setTimeIdx hieronder ververst _coachPick via renderTodaysPick
+  const ti = timeValues.indexOf(pick.time);
   if (ti >= 0) setTimeIdx(ti);
-  selectSession(_coachPick.id);
+  selectSession(pick.id);
   goToSession();
 }
 
@@ -1538,6 +1689,7 @@ function openDraft() {
   const d = loadDraft();
   if (!d) return;
   customSession = { id:'custom', cat:'own', name:d.name || 'My session', desc:'', color:d.color || 'lime', rpe:d.rpe || '–', intent:d.intent || 'Self-assembled.' };
+  if (d.basedOn) customSession.basedOn = d.basedOn;
   customKeys = d.keys.slice();
   activeSessionId = 'custom';
   sessionLocked = !!d.locked;
@@ -1551,6 +1703,7 @@ function openFav(i) {
   const f = loadFavs()[i];
   if (!f) return;
   customSession = { id:'custom', cat:'own', name:f.name, desc:'', color:f.color || 'lime', rpe:f.rpe || '–', intent:f.intent || 'Favourite session.' };
+  if (f.basedOn) customSession.basedOn = f.basedOn;
   customKeys = f.keys.slice();
   activeSessionId = 'custom';
   sessionLocked = true;   // favourites were locked in earlier
@@ -1574,15 +1727,42 @@ function ensureDraftMode() {
 // Indeling volgt de opbouw van een sessie én de energiesysteem-taxonomie:
 // warm-up → techniek → energiesysteem-werk (capaciteit / PE / max) → vingers → antagonist → herstel
 const BLOCK_GROUPS = [
-  { name:'Warm-up & activation',        keys:['dynamic','warmup','warmupFinger','gymWarmup','mobilityOpen','tensionAct'] },
-  { name:'Technique & drills',          keys:['drillsOnly','drillBlocks','drillLibrary','skillLight','slab'] },
-  { name:'Capacity · aerobic volume', keys:['volume','boardVolume','easyClimb','sprayLight'] },
+  { name:'Warm-up & activation',        keys:['dynamic','warmup','warmupFinger','gymWarmup','mobilityOpen','tensionAct','easyTen'] },
+  { name:'Technique & skills',          keys:['drillsOnly','drillBlocks','drillLibrary','skillLight','slab'] },
+  { name:'Capacity · aerobic volume', keys:['volume','boardVolume','easyClimb','sprayLight','mediumTwenty'] },
   { name:'Power endurance',            keys:['peFlow','fourByFour','hehe','linked','compStyle'] },
   { name:'Max strength & power',         keys:['limitBlocks','project','board1','campus','dynos','boardApply','pyramide'] },
-  { name:'Finger strength',               keys:['maxHangs','nohangs','activeCurls','hog'] },
+  { name:'Finger strength',               keys:['maxHangs','nohangs','activeCurls'] },
   { name:'Antagonist, core & gym',     keys:['pullStrength','pushStrength','coreLegs','mini1','mini2','mini3','lockoffs'] },
-  { name:'Recovery & mobility',       keys:['stretch','stretchLong'] },
+  { name:'Recovery & mobility',       keys:['stretch','stretchLong','hog'] },
 ];
+// ── KLEURGRAMMATICA ──
+// kleur = wat het traint (categorie), badge = waar het vandaan komt, tekst = hoe zwaar.
+// Elke categorie één kleur uit de C-palette; blokken erven die van hun groep.
+const CAT_COLOR = {
+  'Warm-up & activation':       'var(--prepare)',
+  'Technique & skills':         'var(--skill)',
+  'Capacity · aerobic volume': 'var(--volume)',
+  'Power endurance':            'var(--volume)',
+  'Max strength & power':       'var(--max-effort)',
+  'Finger strength':            'var(--max-effort)',
+  'Antagonist, core & gym':     'var(--prepare)',
+  'Recovery & mobility':        'var(--prepare)',
+};
+const UX_COLOR = 'var(--graphite)';  // eigen oefeningen: geen aparte kleur, wel een YOURS-badge
+function applyCategoryColors() {
+  BLOCK_GROUPS.forEach(g => {
+    const col = CAT_COLOR[g.name];
+    if (!col) return;
+    g.keys.forEach(k => { if (BLOCKLIB[k]) BLOCKLIB[k].c = col; });
+  });
+  Object.keys(BLOCKLIB).filter(k => k.startsWith('ux_')).forEach(k => { BLOCKLIB[k].c = UX_COLOR; });
+}
+function yoursBadge(key) {
+  return key && key.startsWith('ux_')
+    ? `<span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--dust);border:1px solid var(--graphite);border-radius:3px;padding:0 4px;margin-left:6px;vertical-align:middle;">YOURS</span>`
+    : '';
+}
 // verborgen blokken (gebruiker kan de bibliotheek opschonen)
 function loadHidden() { try { return JSON.parse(localStorage.getItem('crimpify_hidden_blocks') || '[]'); } catch { return []; } }
 function saveHidden(a) { try { localStorage.setItem('crimpify_hidden_blocks', JSON.stringify(a)); } catch {} }
@@ -1629,14 +1809,14 @@ function renderBlockPicker(query) {
       })
       .map(k=>{
         const b = BLOCKLIB[k];
-        const bm = b.bm ? `<span style="font-size:7px;letter-spacing:.1em;color:#E6F557;border:1px solid rgba(230,245,87,.3);border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:middle;">BENCHMARK</span>` : '';
+        const bm = b.bm ? `<span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--acid);border:1px solid color-mix(in srgb, var(--acid) 30%, transparent);border-radius:3px;padding:0 4px;margin-left:6px;vertical-align:middle;">BENCHMARK</span>` : '';
         const del = k.startsWith('ux_')
-          ? `<div onclick="event.stopPropagation();deleteCustomBlock('${k}')" style="font-family:'DM Mono',monospace;font-size:13px;color:#F87171;padding:6px 10px;margin-right:2px;">×</div>`
-          : `<div onclick="event.stopPropagation();hideBlock('${k}')" style="font-family:'DM Mono',monospace;font-size:13px;color:#5A5A56;padding:6px 10px;margin-right:2px;">×</div>`;
-        return `<div onclick="pickBlock('${k}')" style="display:flex;align-items:center;gap:8px;padding:12px 14px;background:#111;border-radius:8px;border-left:3px solid ${b.c};cursor:pointer;">
+          ? `<div onclick="event.stopPropagation();deleteCustomBlock('${k}')" style="font-family:'DM Mono',monospace;font-size:13px;color:var(--danger);padding:6px 10px;margin-right:2px;">×</div>`
+          : `<div onclick="event.stopPropagation();hideBlock('${k}')" style="font-family:'DM Mono',monospace;font-size:13px;color:var(--disabled);padding:6px 10px;margin-right:2px;">×</div>`;
+        return `<div onclick="pickBlock('${k}')" style="display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--carbon);border-radius:8px;border-left:3px solid ${b.c};cursor:pointer;">
           <div style="flex:1;">
-            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.03em;color:${nameColor(b.c)};">${b.n}${bm}</div>
-            <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.08em;color:#6A6A66;margin-top:2px;">rpe ${b.rpe || '–'} · base ${b.t}'</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.03em;color:${nameColor(b.c)};">${b.n}${bm}${yoursBadge(k)}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--disabled);margin-top:2px;">rpe ${b.rpe || '–'} · base ${b.t}'</div>
           </div>
           ${del}
           <div style="font-family:'DM Mono',monospace;font-size:12px;color:${nameColor(b.c)};">+</div>
@@ -1645,26 +1825,26 @@ function renderBlockPicker(query) {
     if (!items) return '';
     const open = q ? true : (_openGroups && _openGroups.has(g.name));
     const count = g.keys.filter(k=>BLOCKLIB[k] && !hidden.includes(k)).length;
-    const accent = BLOCKLIB[g.keys.find(k=>BLOCKLIB[k])] ? BLOCKLIB[g.keys.find(k=>BLOCKLIB[k])].c : '#5A5A56';
-    const head = `<div onclick="toggleBlockGroup('${g.name.replace(/'/g,"\\'")}')" style="display:flex;align-items:center;gap:9px;padding:12px 4px;margin-top:4px;cursor:pointer;border-bottom:1px solid #1E1E1C;">
+    const accent = CAT_COLOR[g.name] || 'var(--disabled)';
+    const head = `<div onclick="toggleBlockGroup('${g.name.replace(/'/g,"\\'")}')" style="display:flex;align-items:center;gap:9px;padding:12px 4px;margin-top:4px;cursor:pointer;border-bottom:1px solid var(--graphite);">
       <span style="width:8px;height:8px;border-radius:2px;background:${accent};flex-shrink:0;"></span>
-      <span style="flex:1;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;letter-spacing:.05em;text-transform:uppercase;color:#D8D8D4;">${g.name}</span>
-      <span style="font-family:'DM Mono',monospace;font-size:9px;color:#6A6A66;">${count}</span>
-      <span style="font-family:'DM Mono',monospace;font-size:11px;color:#6A6A66;">${open?'▾':'▸'}</span>
+      <span style="flex:1;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;letter-spacing:.05em;text-transform:uppercase;color:var(--chalk);">${g.name}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--disabled);">${count}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--disabled);">${open?'▾':'▸'}</span>
     </div>`;
     return head + (open ? `<div style="display:flex;flex-direction:column;gap:8px;padding:8px 0 2px;">${items}</div>` : '');
   }).join('');
-  const newBtn = `<div onclick="openNewExercise()" style="display:flex;align-items:center;justify-content:center;padding:13px;border:1px dashed #3A3A38;border-radius:8px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#A3E635;">+ new exercise</div>`;
+  const newBtn = `<div onclick="openNewExercise()" style="display:flex;align-items:center;justify-content:center;padding:13px;border:1px dashed var(--graphite);border-radius:8px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--acid);">+ new exercise</div>`;
   // terugzet-sectie voor verborgen blokken
   const hiddenList = hidden.filter(k=>BLOCKLIB[k]);
   const hiddenHTML = (!q && hiddenList.length)
-    ? `<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#3E3E3C;margin:14px 0 2px;">hidden · tap to restore</div>` +
-      hiddenList.map(k=>`<div onclick="restoreBlock('${k}')" style="display:flex;align-items:center;gap:10px;padding:9px 14px;background:none;border:1px dashed #242422;border-radius:8px;cursor:pointer;">
-        <div style="flex:1;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.03em;color:#5A5A56;">${BLOCKLIB[k].n}</div>
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:#5A5A56;">↩</div>
+    ? `<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--disabled);margin:14px 0 2px;">hidden · tap to restore</div>` +
+      hiddenList.map(k=>`<div onclick="restoreBlock('${k}')" style="display:flex;align-items:center;gap:10px;padding:9px 14px;background:none;border:1px dashed var(--graphite);border-radius:8px;cursor:pointer;">
+        <div style="flex:1;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.03em;color:var(--disabled);">${BLOCKLIB[k].n}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--disabled);">↩</div>
       </div>`).join('')
     : '';
-  document.getElementById('blockPickerList').innerHTML = newBtn + (html || `<div style="padding:20px;text-align:center;font-family:'Barlow',sans-serif;font-size:13px;color:#7A7A76;">Nothing found for "${query}".</div>`) + hiddenHTML;
+  document.getElementById('blockPickerList').innerHTML = newBtn + (html || `<div style="padding:20px;text-align:center;font-family:'Barlow',sans-serif;font-size:13px;color:var(--dust);">Nothing found for "${query}".</div>`) + hiddenHTML;
 }
 function toggleBlockGroup(name) {
   if (!_openGroups) _openGroups = new Set();
@@ -1712,7 +1892,7 @@ function confirmNewExercise() {
   const why = (document.getElementById('neWhy').value || '').trim() || 'Own exercise.';
   const url = (document.getElementById('neLink').value || '').trim();
   const key = 'ux_' + Date.now().toString(36);
-  const block = { n: name, t, c: '#A3E635', rpe, why, fixed: false };
+  const block = { n: name, t, c: UX_COLOR, rpe, why, fixed: false };
   if (url) block.links = [{ label: linkLabel(url), url }];
   const store = loadCustomBlocks();
   store[key] = block;
@@ -1742,7 +1922,7 @@ function updateFavStar() {
     el('favStarBtn').style.display = locked ? 'flex' : 'none';
     const fav = isCurrentFav();
     el('favStarBtn').textContent = fav ? '★' : '☆';
-    el('favStarBtn').style.color = fav ? 'var(--acid)' : '#C8C8C4';
+    el('favStarBtn').style.color = fav ? 'var(--acid)' : 'var(--dust)';
   }
   if (el('shareBtn')) el('shareBtn').style.display = locked ? 'flex' : 'none';
   if (el('saveBigBtn')) el('saveBigBtn').style.display = locked ? 'none' : '';
@@ -1753,7 +1933,7 @@ function unlockEdit() {
   buildSlab();
 }
 function duplicateSession() {
-  if (customSession) customSession.name = customSession.name + ' · mijn variant';
+  if (customSession) customSession.name = chooseCopyTitle(customSession.name);
   sessionOwned = true;
   sessionLocked = false;
   if (customSession) customSession.intent = 'Your own take on a shared session. Adapt and lock it in.';
@@ -1766,15 +1946,18 @@ function toggleFavorite() {
   if (favs.some(f => f.name === s.name)) {
     favs = favs.filter(f => f.name !== s.name);
   } else {
-    favs.unshift({ name: s.name, keys: currentBlocks.map(b=>b._key), color: s.color || 'lime', rpe: s.rpe || '–', intent: s.intent || '', time: getT() });
+    const entry = { name: s.name, keys: currentBlocks.map(b=>b._key), color: s.color || 'lime', rpe: s.rpe || '–', intent: s.intent || '', time: getTFinite() };
+    if (activeSessionId === 'custom' && customSession && customSession.basedOn) entry.basedOn = customSession.basedOn;
+    favs.unshift(entry);
   }
   saveFavs(favs);
   buildRecent();
   updateFavStar();
+  if (typeof syncChooseStars === 'function') syncChooseStars();  // Choose-sterren meebewegen
 }
 function encodeSession() {
   const s = getSession(activeSessionId);
-  return encodePayload(s ? s.name : 'Session', currentBlocks.map(b=>b._key), getT(), s ? s.color : 'lime');
+  return encodePayload(s ? s.name : 'Session', currentBlocks.map(b=>b._key), getTFinite(), s ? s.color : 'lime');
 }
 function encodePayload(name, keys, time, color) {
   const payload = { n: name || 'Session', k: keys, t: time, c: color || 'lime' };
@@ -1801,7 +1984,7 @@ function shareText(sessName, time) {
   let who = '';
   try { who = localStorage.getItem('crimpify_name') || ''; } catch {}
   const label = who ? who + "\u2019s \u201C" + sessName + "\u201D" : "\u201C" + sessName + "\u201D";
-  return label + ' \u00B7 ' + (time || getT()) + ' min boulder session \u2192 tap the link to train it';
+  return label + ' \u00B7 ' + (time || getTFinite()) + ' min boulder session \u2192 tap the link to train it';
 }
 function doShare() {
   const url = location.origin + location.pathname + '#s=' + encodeSession();
@@ -1812,6 +1995,16 @@ function doShare() {
   } else {
     openShareDialog(url);
   }
+}
+// toast: één element, korte bevestiging, verdwijnt vanzelf
+let _toastTimer = null;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
 }
 function openShareDialog(url) {
   document.getElementById('shareLinkInput').value = url;
@@ -1837,7 +2030,7 @@ function importFromHash() {
     const store = loadCustomBlocks();
     Object.keys(p.x).forEach(k=>{
       const d = p.x[k];
-      const block = { n:d.n||'Exercise', t:d.t||10, c:'#A3E635', rpe:d.rpe||'–', why:d.why||'', fixed:false };
+      const block = { n:d.n||'Exercise', t:d.t||10, c: UX_COLOR, rpe:d.rpe||'–', why:d.why||'', fixed:false };
       if (d.links) block.links = d.links;
       BLOCKLIB[k] = block;
       store[k] = block;
@@ -1913,7 +2106,7 @@ function renderPreview() {
   const tape = blocks.map(b=>`<div class="ap-seg" style="width:${(b.t/total*100).toFixed(1)}%;background:${b.c};opacity:.8;"></div>`).join('');
   const rows = blocks.map(b=>`<div class="ap-row"><div class="ap-dot" style="background:${b.c};"></div><div class="ap-name" style="color:${b.c};opacity:.8;">${b.n}</div><div class="ap-t">${b.t}'</div></div>`).join('');
   document.getElementById('activePreview').innerHTML = `
-    <div class="ap-tape" style="background:#111;">${tape}</div>
+    <div class="ap-tape" style="background:var(--carbon);">${tape}</div>
     <div class="ap-body"><div class="ap-head"><div class="ap-title" style="color:${col.text};">${s.name}</div><div class="ap-meta">rpe ${s.rpe} · ${total}'</div></div><div class="ap-rows">${rows}</div></div>`;
   document.getElementById('footerSub').textContent = `${s.name.toLowerCase()} · ${total}'`;
 }
@@ -1970,9 +2163,9 @@ function tapeInfoHide() {
 
 // ── VIEW 2: SLAB ──
 function nameColor(c) {
-  // dim grijstinten (warm-up, stretch) zijn onleesbaar als tekst → naar leesbaar grijs
-  const dim = ['#3A3A38','#2A2A28','#2A2A2A'];
-  if (dim.includes((c||'').toUpperCase())) return '#C8C8C4';
+  // dim tinten (graphite/eigen blokken, legacy grijzen) zijn onleesbaar als tekst → naar dust
+  const dim = ['var(--graphite)','#3A3A38','#2A2A28','#2A2A2A'];
+  if (!c || dim.includes(String(c))) return 'var(--dust)';
   return c;
 }
 
@@ -1991,6 +2184,13 @@ function buildSlab() {
   document.getElementById('slabFooterMeta').innerHTML = `${(s.cat||'own').toLowerCase()}<br><b>${total} min</b>`;
   document.getElementById('slabIntent').textContent = s.intent || '';
 
+  // attributie op kopieën uit de catalogus; originelen en eigen sessies tonen niets
+  const bo = document.getElementById('slabBasedOn');
+  if (bo) {
+    if (s.basedOn) { bo.style.display = ''; bo.textContent = 'BASED ON ' + s.basedOn.title + ' by ' + s.basedOn.coach; }
+    else bo.style.display = 'none';
+  }
+
   // varieer alleen voor gegenereerde, niet-vastgelegde sessies
   const rerollBtn = document.querySelector('button[onclick="rerollSession(activeSessionId)"]');
   if (rerollBtn) rerollBtn.style.display = (isCustom || sessionLocked) ? 'none' : '';
@@ -2005,32 +2205,32 @@ function buildSlab() {
   // blocks + acties
   const blocksHTML = currentBlocks.map((b,i)=>{
     if (slabEditMode) {
-      return `<div class="slab-block slab-real" data-idx="${i}" style="background:${b.c}18;">
+      return `<div class="slab-block slab-real" data-idx="${i}" style="background:color-mix(in srgb, ${b.c} 9%, transparent);">
         <div class="slab-accent" style="background:${nameColor(b.c)};"></div>
         <div class="slab-drag-handle" ontouchstart="handleDragStart(event,this)" ontouchmove="slabPressMove(event)" ontouchend="slabPressEnd()" onmousedown="handleDragStart(event,this)" style="z-index:3;">≡</div>
-        <div class="slab-block-name" style="color:${nameColor(b.c)};">${b.n}</div>
-        <button onclick="removeBlock(${i})" class="edit-mini" style="color:#F87171;border-color:#F8717144;z-index:3;flex-shrink:0;">×</button>
+        <div class="slab-block-name" style="color:${nameColor(b.c)};">${b.n}${yoursBadge(b._key)}</div>
+        <button onclick="removeBlock(${i})" class="edit-mini" style="color:var(--danger);border-color:color-mix(in srgb, var(--danger) 27%, transparent);z-index:3;flex-shrink:0;">×</button>
       </div>`;
     }
     const dragAttrs = sessionLocked ? '' : `ontouchstart="slabPressStart(event,this)" ontouchmove="slabPressMove(event)" ontouchend="slabPressEnd()" onmousedown="slabPressStart(event,this)"`;
-    return `<div class="slab-block slab-real" data-idx="${i}" style="background:${b.c}18;" onclick="slabBlockTap(${i})" ${dragAttrs}>
+    return `<div class="slab-block slab-real" data-idx="${i}" style="background:color-mix(in srgb, ${b.c} 9%, transparent);" onclick="slabBlockTap(${i})" ${dragAttrs}>
       <div class="slab-accent" style="background:${nameColor(b.c)};"></div>
-      <div class="slab-block-name" style="color:${nameColor(b.c)};">${b.n}</div>
+      <div class="slab-block-name" style="color:${nameColor(b.c)};">${b.n}${yoursBadge(b._key)}</div>
       <div class="slab-ghost" style="color:${nameColor(b.c)};">${b.t}<span class="gu">'</span></div>
     </div>`;
   }).join('');
   const emptyHint = currentBlocks.length === 0
-    ? `<div style="padding:26px 20px;text-align:center;font-family:'Barlow',sans-serif;font-size:13px;color:#7A7A76;">Empty. Add your first block.</div>` : '';
+    ? `<div style="padding:26px 20px;text-align:center;font-family:'Barlow',sans-serif;font-size:13px;color:var(--dust);">Empty. Add your first block.</div>` : '';
   const addRow = `
-    <div class="slab-block" style="background:none;border:1px dashed #2E2E2C;min-height:54px;justify-content:center;" onclick="openBlockPicker()">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8A8A86;">+ add block</div>
+    <div class="slab-block" style="background:none;border:1px dashed var(--graphite);min-height:54px;justify-content:center;" onclick="openBlockPicker()">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dust);">+ add block</div>
     </div>
     <div class="slab-block" style="background:none;min-height:44px;justify-content:center;" onclick="toggleSlabEdit()">
-      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:${slabEditMode?'var(--acid)':'#6A6A66'};">${slabEditMode?'✓ done editing':'✎ edit order'}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:${slabEditMode?'var(--acid)':'var(--disabled)'};">${slabEditMode?'✓ done editing':'✎ edit'}</div>
     </div>`;
   const lockedRow = sessionLocked ? `
     <div class="slab-block" style="background:none;min-height:40px;justify-content:center;pointer-events:none;">
-      <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:#4A4A46;">${sessionOwned ? 'locked · ✎ to edit' : 'shared session · ⧉ for your own copy'}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--disabled);">${sessionOwned ? 'locked · ✎ to edit' : 'shared session · ⧉ for your own copy'}</div>
     </div>` : '';
   document.getElementById('slabBlocks').innerHTML = blocksHTML + emptyHint + (sessionLocked ? lockedRow : addRow);
 
@@ -2222,11 +2422,11 @@ function buildDetail(idx) {
       <div class="detail-card" style="margin-bottom:8px;">
         <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;">
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:${b.c};">${d.n}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);">${d.tag}${''}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--disabled);">${d.tag}${''}</div>
         </div>
-        <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);margin:2px 0;">setup</div>
+        <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--disabled);margin:2px 0;">setup</div>
         <p style="margin-bottom:6px;">${d.setup}</p>
-        <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);margin:2px 0;">uitvoering</div>
+        <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--disabled);margin:2px 0;">execution</div>
         <p style="margin-bottom:6px;">${d.do}</p>
         <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:${b.c};opacity:.6;margin:2px 0;">goal</div>
         <p style="color:${b.c};opacity:.75;">${d.goal}</p>
@@ -2258,23 +2458,23 @@ function buildDetail(idx) {
     };
     if (b._key === 'drillBlocks') {
       const picks = pickSpread(3);
-      info += `<div class="detail-section-lbl">3 drills · gespreid over categorieën</div>` + picks.map(drillCard).join('');
+      info += `<div class="detail-section-lbl">3 skills · spread across categories</div>` + picks.map(drillCard).join('');
     } else if (b._key === 'drillsOnly') {
       const picks = pickSpread(2);
-      info += `<div class="detail-section-lbl">2 drills · intelligent gekozen (${DRILLS.length} in bibliotheek)</div>` + picks.map(drillCard).join('');
+      info += `<div class="detail-section-lbl">2 skills · picked for you (${DRILLS.length} in the library)</div>` + picks.map(drillCard).join('');
     } else {
       // Warm-up / skill licht: 1 drill van de dag (Charlie's regel)
       const d = pool[seed % pool.length];
-      info += `<div class="detail-section-lbl">drill of the day — one pillar per session</div>` + drillCard(d);
+      info += `<div class="detail-section-lbl">skill of the day — one pillar per session</div>` + drillCard(d);
     }
   }
 
   // external links (e.g. Grip Gains)
   if (b.links) {
     info += `<div class="detail-section-lbl">protocol</div>` + b.links.map(l =>
-      `<a href="${l.url}" target="_blank" style="display:flex;align-items:center;justify-content:space-between;background:var(--s1);border:1px solid rgba(230,245,87,.25);border-radius:8px;padding:13px 14px;text-decoration:none;margin-bottom:8px;">
+      `<a href="${l.url}" target="_blank" style="display:flex;align-items:center;justify-content:space-between;background:var(--carbon);border:1px solid color-mix(in srgb, var(--acid) 25%, transparent);border-radius:8px;padding:13px 14px;text-decoration:none;margin-bottom:8px;">
         <span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--acid);">${l.label}</span>
-        <span style="color:var(--acid-d);font-size:14px;">↗</span>
+        <span style="color:color-mix(in srgb, var(--acid) 55%, transparent);font-size:14px;">↗</span>
       </a>`).join('');
   }
 
@@ -2298,17 +2498,17 @@ function buildDetail(idx) {
       <div class="next-block" onclick="toggleNextInfo()">
         <div class="next-dot" style="background:${next.c};"></div>
         <div class="next-name" style="color:${next.c};">${next.n}</div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--sub);margin-right:8px;">${next.t}'</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--disabled);margin-right:8px;">${next.t}'</div>
         <div class="next-arr" id="nextArr">▾</div>
       </div>
-      <div id="nextInfo" style="display:none;padding:11px 14px;margin-top:6px;background:var(--s1);border:1px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;line-height:1.55;color:#C8C8C4;">${nextWhy}</div>`;
+      <div id="nextInfo" style="display:none;padding:11px 14px;margin-top:6px;background:var(--carbon);border:1px solid var(--graphite);border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;line-height:1.55;color:var(--dust);">${nextWhy}</div>`;
   }
 
   // principle of the day
   const pIdx = (new Date().getDate() + idx) % PRINCIPLES.length;
   info += `<div class="detail-section-lbl">principle</div>
-    <div class="detail-card" style="border-color:rgba(230,245,87,.12);">
-      <p style="color:var(--acid-d);">${PRINCIPLES[pIdx]}</p>
+    <div class="detail-card" style="border-color:color-mix(in srgb, var(--acid) 12%, transparent);">
+      <p style="color:color-mix(in srgb, var(--acid) 55%, transparent);">${PRINCIPLES[pIdx]}</p>
     </div>`;
 
   document.getElementById('detailInfo').innerHTML = info;
@@ -2398,54 +2598,51 @@ function updateTimerDisplay() {
   if (timerSeconds >= 0) {
     const m = Math.floor(timerSeconds/60);
     const sec = timerSeconds % 60;
-    if (disp) { disp.textContent = `${m}:${sec.toString().padStart(2,'0')}`; disp.style.color = '#F5F5F2'; }
+    if (disp) { disp.textContent = `${m}:${sec.toString().padStart(2,'0')}`; disp.style.color = 'var(--chalk)'; }
     const circumference = 377;
     const progress = timerTotal > 0 ? timerSeconds / timerTotal : 1;
-    if (ring) { ring.style.strokeDashoffset = circumference * (1 - progress); ring.style.stroke = currentBlocks[currentBlockIdx]?.c || '#60A5FA'; }
+    if (ring) { ring.style.strokeDashoffset = circumference * (1 - progress); ring.style.stroke = currentBlocks[currentBlockIdx]?.c || 'var(--prepare)'; }
   } else {
     // overtijd: tel omhoog met + prefix, kleur amber/geel
     const over = -timerSeconds;
     const m = Math.floor(over/60);
     const sec = over % 60;
-    if (disp) { disp.textContent = `+${m}:${sec.toString().padStart(2,'0')}`; disp.style.color = '#FCD34D'; }
-    if (ring) { ring.style.strokeDashoffset = 0; ring.style.stroke = '#FCD34D'; }
+    if (disp) { disp.textContent = `+${m}:${sec.toString().padStart(2,'0')}`; disp.style.color = 'var(--dust)'; }
+    if (ring) { ring.style.strokeDashoffset = 0; ring.style.stroke = 'var(--dust)'; }
     if (lbl && timerRunning) lbl.textContent = 'over time · finish?';
   }
 }
 
-// ── TIME SCRUBBER ──
+// ── TIJD-CHIPS (compacte rij: slepen scrollt, tik kiest en klapt de rij dicht) ──
 const track = document.getElementById('timeTrack');
-let tDrag=false,tSX,tSS;
-track.addEventListener('mousedown',e=>{tDrag=true;tSX=e.clientX;tSS=track.scrollLeft;});
-document.addEventListener('mousemove',e=>{if(!tDrag)return;track.scrollLeft=tSS-(e.clientX-tSX);});
-document.addEventListener('mouseup',()=>{if(!tDrag)return;tDrag=false;snapTime();});
-track.addEventListener('touchstart',e=>{tSX=e.touches[0].clientX;tSS=track.scrollLeft;},{passive:true});
-track.addEventListener('touchmove',e=>{track.scrollLeft=tSS-(e.touches[0].clientX-tSX);},{passive:true});
-track.addEventListener('touchend',snapTime);
+let tDrag=false,tMoved=false,tSX,tSS;
+track.addEventListener('mousedown',e=>{tDrag=true;tMoved=false;tSX=e.clientX;tSS=track.scrollLeft;});
+document.addEventListener('mousemove',e=>{if(!tDrag)return;if(Math.abs(e.clientX-tSX)>4)tMoved=true;track.scrollLeft=tSS-(e.clientX-tSX);});
+document.addEventListener('mouseup',()=>{tDrag=false;});
+track.addEventListener('touchstart',e=>{tMoved=false;tSX=e.touches[0].clientX;},{passive:true});
+track.addEventListener('touchmove',e=>{if(Math.abs(e.touches[0].clientX-tSX)>4)tMoved=true;},{passive:true});
 
-function snapTime(){
-  const items=[...track.querySelectorAll('.time-item')];
-  const center=track.scrollLeft+track.offsetWidth/2;
-  let best=0,bd=Infinity;
-  items.forEach((item,i)=>{const d=Math.abs(item.offsetLeft+item.offsetWidth/2-center);if(d<bd){bd=d;best=i;}});
-  setTimeIdx(best);
-}
 function setTimeIdx(idx){
   activeTimeIdx=idx;
   [...track.querySelectorAll('.time-item')].forEach((item,i)=>item.classList.toggle('active',i===idx));
   const item=track.querySelectorAll('.time-item')[idx];
-  track.scrollTo({left:item.offsetLeft-track.offsetWidth/2+item.offsetWidth/2,behavior:'smooth'});
+  if(item) track.scrollTo({left:item.offsetLeft-track.offsetWidth/2+item.offsetWidth/2,behavior:'smooth'});
   const sum=document.getElementById('timeSummary');
-  if(sum) sum.textContent = timeValues[idx] + ' min';
+  if(sum) sum.textContent = timeLabel();
   buildCategories(); renderPreview();
+  renderTodaysPick();  // de pick loopt live mee met de tijdkeuze
+}
+function setTimePickerOpen(open){
+  const w=document.getElementById('timeTrackWrap');
+  w.style.display = open ? 'block' : 'none';
+  const chev=document.getElementById('timeChev');
+  if(chev) chev.textContent = open ? '▴' : '▾';
+  if(open){ const item=track.querySelectorAll('.time-item')[activeTimeIdx]; if(item) track.scrollTo({left:item.offsetLeft-track.offsetWidth/2+item.offsetWidth/2}); }
 }
 function toggleTimePicker(){
-  const w=document.getElementById('timeTrackWrap');
-  const open = w.style.display !== 'none';
-  w.style.display = open ? 'none' : 'block';
-  if(!open){ const item=track.querySelectorAll('.time-item')[activeTimeIdx]; if(item) track.scrollTo({left:item.offsetLeft-track.offsetWidth/2+item.offsetWidth/2}); }
+  setTimePickerOpen(document.getElementById('timeTrackWrap').style.display==='none');
 }
-[...track.querySelectorAll('.time-item')].forEach((item,i)=>item.addEventListener('click',()=>{ setTimeIdx(i); document.getElementById('timeTrackWrap').style.display='none'; }));
+[...track.querySelectorAll('.time-item')].forEach((item,i)=>item.addEventListener('click',()=>{ if(tMoved) return; setTimeIdx(i); setTimePickerOpen(false); }));
 
 // ── SEARCH ──
 const searchInput = document.getElementById('searchInput');
@@ -2457,7 +2654,7 @@ searchInput.addEventListener('input',()=>{
   if(!q){searchResults.classList.remove('visible');mainContent.classList.remove('hidden');return;}
   mainContent.classList.add('hidden');searchResults.classList.add('visible');
   const matches=sessions.filter(s=>s.name.toLowerCase().includes(q)||s.cat.toLowerCase().includes(q)||s.tags.some(t=>t.includes(q)));
-  if(!matches.length){searchResults.innerHTML=`<div style="font-family:'DM Mono',monospace;font-size:9px;color:#2A2A28;padding:12px 0;letter-spacing:.1em;">geen resultaten</div>`;return;}
+  if(!matches.length){searchResults.innerHTML=`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--disabled);padding:12px 0;letter-spacing:.1em;">geen resultaten</div>`;return;}
   searchResults.innerHTML=matches.map(s=>{
     const col=C[s.color];
     const blocks=getBlocks(s.id);
@@ -2477,36 +2674,46 @@ document.addEventListener('click',e=>{
 
 
 
-// ── begroeting: naam lokaal, geen account ──
+// ── begroeting: naam lokaal, geen account. Eén regel met rechts de tijd (context, geen formulier) ──
+function timeLabel() {
+  const v = timeValues[activeTimeIdx];
+  return isFinite(v) ? v + ' MIN' : '∞ NO LIMIT';
+}
 function renderGreeting() {
   const el = document.getElementById('greetEl');
   if (!el) return;
   let name = '';
   try { name = localStorage.getItem('crimpify_name') || ''; } catch {}
   el.innerHTML = '';
+  const line = document.createElement('div');
+  line.style.cssText = 'display:flex;align-items:baseline;justify-content:space-between;gap:10px;';
   const h = document.createElement('div');
-  h.style.cssText = "font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;color:#F5F5F2;letter-spacing:.01em;line-height:1.1;";
+  h.style.cssText = "font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:24px;color:var(--chalk);letter-spacing:.01em;line-height:1.1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;";
+  const timeBtn = document.createElement('div');
+  timeBtn.onclick = toggleTimePicker;
+  timeBtn.style.cssText = 'display:flex;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;';
+  timeBtn.innerHTML = `<span id="timeSummary" style="color:var(--acid);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.06em;">${timeLabel()}</span><span id="timeChev" style="font-size:11px;opacity:.5;color:var(--dust);">▾</span>`;
+  line.appendChild(h); line.appendChild(timeBtn);
+  el.appendChild(line);
   if (name) {
     h.textContent = 'Welcome back, ' + name;
-    el.appendChild(h);
   } else {
     h.textContent = 'Welcome to Crimpify';
-    el.appendChild(h);
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;gap:8px;margin-top:10px;';
     const inp = document.createElement('input');
     inp.type = 'text'; inp.placeholder = 'What should we call you?'; inp.maxLength = 24;
-    inp.style.cssText = "flex:1;min-width:0;padding:11px 13px;border-radius:10px;border:1px solid #2E2E2C;background:#0E0E0C;color:#F5F5F2;font-family:'Barlow',sans-serif;font-size:14px;outline:none;";
+    inp.style.cssText = "flex:1;min-width:0;padding:11px 13px;border-radius:10px;border:1px solid var(--graphite);background:var(--ink);color:var(--chalk);font-family:'Barlow',sans-serif;font-size:14px;outline:none;";
     const btn = document.createElement('button');
     btn.textContent = 'OK';
-    btn.style.cssText = "padding:11px 18px;border-radius:10px;border:none;background:var(--acid);color:#0A0A0A;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;cursor:pointer;";
+    btn.style.cssText = "padding:11px 18px;border-radius:10px;border:none;background:var(--acid);color:var(--acid-text);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;cursor:pointer;";
     btn.onclick = () => { const v = inp.value.trim(); if (!v) return; try { localStorage.setItem('crimpify_name', v); } catch {} renderGreeting(); };
     inp.addEventListener('keydown', e => { if (e.key === 'Enter') btn.onclick(); });
     row.appendChild(inp); row.appendChild(btn);
     el.appendChild(row);
     const hint = document.createElement('div');
     hint.textContent = 'stays on this device only · no account needed';
-    hint.style.cssText = "font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;color:#6A6A66;margin-top:7px;";
+    hint.style.cssText = "font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--disabled);margin-top:7px;";
     el.appendChild(hint);
   }
 }
@@ -2538,7 +2745,8 @@ function renderStreakLine() {
 // ── INIT ──
 ['maxHangs','nohangs','fourByFour','hehe','campus','lockoffs'].forEach(k=>{ if (BLOCKLIB[k]) BLOCKLIB[k].bm = true; });
 registerCustomBlocks();
-rebuildRecent(); renderSignalCal(); renderCoach(); buildRecent(); buildCategories(); renderPreview(); renderDates(); renderStreakLine(); renderGreeting();
+applyCategoryColors();
+rebuildRecent(); renderSignalCal(); renderTodaysPick(); renderContinue(); buildRecent(); buildCategories(); renderPreview(); renderDates(); renderStreakLine(); renderGreeting();
 importFromHash();  // gedeelde sessie via #s=… direct openen
 setTimeout(()=>setTimeIdx(activeTimeIdx),60);
 
@@ -2593,3 +2801,432 @@ if ('serviceWorker' in navigator) {
     });
   }).catch(()=>{ /* offline cache optioneel */ });
 }
+
+// ══════════════════════════════════════════════════════════════
+// MOCK — Choose-prototype (throwaway). Alles hieronder is nep:
+// verzonnen sessies, verzonnen coaches, verzonnen like-tellers.
+// Geen backend, geen opslag. Verwijderen na de test.
+// ══════════════════════════════════════════════════════════════
+// ── ZOEKEN IN CHOOSE: icoon klapt uit tot veld + filterchips; actief = verticale resultaten ──
+let chSearchOpen = false;
+let chQuery = '';
+let chFilters = { time:null, goal:null, gear:null, load:null, level:null };  // single-select, null = uit
+const CH_GOAL_SYS = { 'recovery':['recovery'], 'volume':['capacity','power endurance'], 'max power':['power','performance'], 'fingers':['strength'], 'technique':['skill'] };
+const CH_GEAR_MAP = { 'gym wall':['Gym wall'], 'board':['Kilterboard','Spray wall'], 'fingerboard':['Fingerboard'], 'weights':['Weights'], 'none':[] };
+const CH_FILTER_DEF = [
+  { key:'time',  label:'time',      opts:[{v:30,l:'≤30'},{v:45,l:'≤45'},{v:60,l:'≤60'},{v:75,l:'≤75'},{v:90,l:'90+'}] },
+  { key:'goal',  label:'goal',      opts:['recovery','volume','max power','fingers','technique'].map(v=>({v,l:v})) },
+  { key:'gear',  label:'equipment', opts:['gym wall','board','fingerboard','weights','none'].map(v=>({v,l:v})) },
+  { key:'load',  label:'load',      opts:[1,2,3,4].map(v=>({v,l:String(v)})) },
+  { key:'level', label:'level',     opts:['all','beginner','intermediate','advanced'].map(v=>({v,l:v})) },
+];
+function chSearchActive() {
+  return chQuery.trim() !== '' || chFilters.time != null || !!chFilters.goal || !!chFilters.gear || chFilters.load != null || !!chFilters.level;
+}
+function chMatch(s) {
+  const q = chQuery.trim().toLowerCase();
+  if (q && !(s.name + ' ' + s.coach + ' ' + s.goal + ' ' + s.gear.join(' ')).toLowerCase().includes(q)) return false;
+  const f = chFilters;
+  if (f.time != null) {
+    if (f.time === 90) { if (s.mins < 90) return false; }
+    else if (s.mins > f.time) return false;
+  }
+  if (f.goal && !CH_GOAL_SYS[f.goal].includes(s.sys)) return false;
+  if (f.gear) {
+    if (f.gear === 'none') { if (s.gear.length) return false; }
+    else if (!s.gear.some(g => CH_GEAR_MAP[f.gear].includes(g))) return false;
+  }
+  if (f.load != null && s.load !== f.load) return false;
+  if (f.level && f.level !== 'advanced') {
+    // "geschikt voor mij": beginner alleen all levels, intermediate ook intermediate+
+    const ok = f.level === 'beginner' ? ['all levels'] : ['all levels', 'intermediate+'];
+    if (!ok.includes(s.level)) return false;
+  }
+  return true;
+}
+function toggleChSearch() {
+  chSearchOpen = !chSearchOpen;
+  document.getElementById('chSearchWrap').style.display = chSearchOpen ? '' : 'none';
+  document.getElementById('chSearchToggle').classList.toggle('on', chSearchOpen);
+  if (chSearchOpen) document.getElementById('chSearchInput').focus();
+  else clearChSearch();  // dichtklappen = zoeken verlaten, planken terug
+}
+function clearChSearch() {
+  chQuery = '';
+  chFilters = { time:null, goal:null, gear:null, load:null, level:null };
+  const inp = document.getElementById('chSearchInput');
+  if (inp) inp.value = '';
+  updateChSearchUI();
+  renderChoose();
+}
+function setChFilter(key, val) {
+  if (key === 'level' && val === 'all') chFilters.level = null;  // "all" = geen filter
+  else chFilters[key] = (chFilters[key] === val) ? null : val;   // actieve chip nogmaals = deselect
+  updateChSearchUI();
+  renderChoose();
+}
+function updateChSearchUI() {
+  document.querySelectorAll('#chSearchWrap .ch-fchip').forEach(el => {
+    const key = el.dataset.fg;
+    const val = key === 'time' || key === 'load' ? (el.dataset.fv === '' ? null : +el.dataset.fv) : el.dataset.fv;
+    const on = key === 'level' && val === 'all' ? chFilters.level == null : chFilters[key] === val;
+    el.classList.toggle('on', on);
+  });
+  const anyChip = chFilters.time != null || !!chFilters.goal || !!chFilters.gear || chFilters.load != null || !!chFilters.level;
+  const clr = document.querySelector('#chSearchWrap .ch-clear');
+  if (clr) clr.style.display = anyChip ? '' : 'none';
+}
+function buildChSearch() {
+  const wrap = document.getElementById('chSearchWrap');
+  if (!wrap) return;
+  const groups = CH_FILTER_DEF.map(g => `
+    <div class="ch-fgroup">
+      <div class="ch-flabel">${g.label}</div>
+      <div class="ch-fchips">${g.opts.map(o =>
+        `<button class="ch-fchip" data-fg="${g.key}" data-fv="${o.v}" onclick="setChFilter('${g.key}', ${typeof o.v === 'number' ? o.v : `'${o.v}'`})">${o.l}</button>`).join('')}</div>
+    </div>`).join('');
+  wrap.innerHTML = `
+    <div class="search-wrap" style="padding-top:10px;">
+      <div class="search-box"><div class="search-icon">⌕</div>
+        <input class="search-input" id="chSearchInput" placeholder="Search Easy Thirty, Vincent or max power..." autocomplete="off">
+      </div>
+    </div>
+    ${groups}
+    <button class="ch-clear" style="display:none;" onclick="clearChSearch()">clear all ×</button>`;
+  document.getElementById('chSearchInput').addEventListener('input', function () {
+    chQuery = this.value;
+    renderChoose();
+  });
+  enableWheelScroll('#chSearchWrap .ch-fchips');
+}
+function chResultCard(i) {
+  const s = MOCK_CHOOSE[i];
+  return `<div class="ch-result" onclick="openChoosePreview(${i})">
+    ${chStarBtn(i)}
+    <div class="ch-print" style="height:44px;">${chBlueprint(s.keys)}</div>
+    <div class="ch-result-body">
+      <div class="ch-name">${s.name}</div>
+      <div class="ch-result-coach">by ${s.coach} <span>· ${COACH_ROLE[s.coach] || 'coach'}</span></div>
+      <div class="ch-line">${s.goal} · ${s.mins} min · ${s.gear.join(', ')}</div>
+      <div class="ch-foot"><span style="display:flex;align-items:center;gap:6px;">load ${chPhalanx(s.load, true)}</span><span>${s.done} done</span></div>
+    </div>
+  </div>`;
+}
+function renderChooseResults() {
+  const hits = MOCK_CHOOSE.map((s, i) => ({ s, i })).filter(x => chMatch(x.s)).sort((a, b) => b.s.done - a.s.done);
+  if (!hits.length) return `<div class="ch-empty">No sessions match<span>Try fewer filters or a different word.</span></div>`;
+  return `<div class="ch-results">
+    <div class="ch-shelf-sub" style="padding:14px 0 8px;">${hits.length} session${hits.length === 1 ? '' : 's'} found</div>
+    ${hits.map(x => chResultCard(x.i)).join('')}
+  </div>`;
+}
+
+// Datamodel volgt CLAUDE.md Choose-flow punt 5 (vastgelegd, backend later):
+// sys = energiesysteem (matcht sessie-cats voor For you), goal = primary_goal,
+// gear = equipment[], level = recommended_level, load = expected_load (1-4,
+// door de maker, voedt ACWR), done = completion_count (mock tot er een backend is).
+const MOCK_CHOOSE = [
+  // cat: 'featured' | 'new' | 'popular' | 'coach' (redactionele herkomst)
+  { cat:'featured', name:'Crimp Factory',  coach:'Mila Berg',     mins:75, color:'amber',  rpe:'8-9', done:214, load:4, sys:'strength', goal:'Max fingers', gear:['Fingerboard','Kilterboard'], level:'intermediate+', keys:['dynamic','maxHangs','board1','stretch'],
+    intent:'Max finger strength on small edges. Long rests, full effort.',
+    why:'Most climbers plateau because their fingers never see a truly maximal stimulus. Crimp Factory is built around one thing: small edges, long rests, full effort. You leave strong, not wrecked.' },
+  { cat:'featured', name:'Power Hour',     coach:'Teo Marchetti', mins:60, color:'red',    rpe:'8-9', done:187, load:4, sys:'power', goal:'Max power', gear:['Gym wall'], level:'all levels', keys:['dynamic','limitBlocks','dynos','stretch'],
+    intent:'Hard moves, big holds, full commitment.',
+    why:'Hard moves on big holds train your ability to pull fast. Attempts are short, rests are long, and quality beats volume all session.' },
+  { cat:'featured', name:'Base Camp',      coach:'Ana Kovač',     mins:90, color:'green',  rpe:'6',   done:156, load:2, sys:'capacity', goal:'Aerobic base', gear:['Gym wall','Kilterboard'], level:'all levels', keys:['warmup','volume','boardApply','stretchLong'],
+    intent:'Volume day. Stay smooth, stop before form breaks.',
+    why:'A wide aerobic base makes every other session land better. Base Camp keeps you moving at a volume you can finish smooth, and you stop before form breaks.' },
+  { cat:'new',      name:'Board Blitz',    coach:'Teo Marchetti', mins:60, color:'amber',  rpe:'8',   done:12,  load:3, sys:'power', goal:'Max power', gear:['Kilterboard'], level:'intermediate+', keys:['dynamic','campus','board1','stretch'],
+    intent:'Short and sharp board work.',
+    why:'Board work compresses power training into an hour: controlled attempts, full rests, skin watched. Short and sharp beats long and sloppy.' },
+  { cat:'new',      name:'Flow State',     coach:'Ines Fujimoto', mins:75, color:'purple', rpe:'5-6', done:8,   load:2, sys:'skill', goal:'Technique', gear:['Gym wall','Spray wall'], level:'all levels', keys:['warmup','drillBlocks','sprayLight','stretch'],
+    intent:'Movement quality over difficulty. Quiet feet, straight arms.',
+    why:'Movement quality over difficulty. You climb below your max so your attention can go where it matters: hips, feet and pace.' },
+  { cat:'new',      name:'Silent Feet',    coach:'Ines Fujimoto', mins:45, color:'purple', rpe:'4-5', done:19,  load:2, sys:'skill', goal:'Technique', gear:['Gym wall'], level:'all levels', keys:['dynamic','drillsOnly','skillLight','stretch'],
+    intent:'Technique session. Every foot placement counts.',
+    why:'Every foot placement counts. One session of deliberate feet changes how you climb for weeks after.' },
+  { cat:'popular',  name:'The Grinder',    coach:'Ana Kovač',     mins:90, color:'lime',   rpe:'7-8', done:342, load:3, sys:'power endurance', goal:'Power endurance', gear:['Gym wall'], level:'intermediate+', keys:['warmup','hehe','fourByFour','stretchLong'],
+    intent:'Power endurance. Pace yourself, the last set decides.',
+    why:'Pump tolerance is trainable. The Grinder builds it in sets: pace yourself early, because the last set decides.' },
+  { cat:'popular',  name:'Send Day',       coach:'Mila Berg',     mins:75, color:'red',    rpe:'9-10',done:298, load:4, sys:'performance', goal:'Performance', gear:['Gym wall'], level:'advanced', keys:['warmupFinger','project','stretch'],
+    intent:'Project attempts at full freshness. Rest long, try hard.',
+    why:'Project attempts at full freshness. The long rests feel slow and are the point: every try deserves your best power.' },
+  { cat:'popular',  name:'Easy Does It',   coach:'Jonas Steen',   mins:45, color:'blue',   rpe:'3-4', done:251, load:1, sys:'recovery', goal:'Recovery', gear:['Gym wall'], level:'all levels', keys:['mobilityOpen','easyClimb','hog','stretch'],
+    intent:'Recovery climbing. Leave the gym feeling better.',
+    why:'Recovery climbing keeps you moving without adding load. The goal is simple: leave the gym feeling better than you came in.' },
+  { cat:'coach',    name:'Finger School',  coach:'Mila Berg',     mins:60, color:'amber',  rpe:'8-9', done:96,  load:4, sys:'strength', goal:'Max fingers', gear:['Fingerboard'], level:'intermediate+', keys:['warmupFinger','maxHangs','activeCurls','stretch'],
+    intent:'Structured finger loading, from prep to max.',
+    why:'Structured finger loading from preparation to maximal work, in the order tendons like. No cold max hangs, ever.' },
+  { cat:'coach',    name:'Comp Simulator', coach:'Teo Marchetti', mins:90, color:'red',    rpe:'8-9', done:74,  load:4, sys:'performance', goal:'Performance', gear:['Gym wall'], level:'advanced', keys:['dynamic','compStyle','pyramide','stretchLong'],
+    intent:'Four-minute walls of effort, comp format.',
+    why:'Comp format: four-minute walls of effort with real decisions under fatigue. Train the format before you meet it.' },
+  { cat:'coach',    name:'The Reset',      coach:'Jonas Steen',   mins:45, color:'blue',   rpe:'2-3', done:63,  load:1, sys:'recovery', goal:'Recovery', gear:['Fingerboard'], level:'all levels', keys:['mobilityOpen','hog','nohangs','stretchLong'],
+    intent:'Tendon care and easy movement on a rest week.',
+    why:'Tendon care and easy movement for a rest week. The point of resting well is coming back stronger.' },
+  // echte gecureerde sessie: denkt in aantallen (count-blokken), niet in tijd
+  { cat:'coach',    name:'Easy Thirty',    coach:'Vincent',       mins:60, color:'green',  rpe:'4-5', done:57,  load:2, sys:'capacity', goal:'Easy volume', gear:['Gym wall'], level:'all levels', keys:['dynamic','easyTen','mediumTwenty'],
+    intent:'Thirty boulders, counted, not timed. Warm up and flow.',
+    why:'A session that thinks in boulders instead of minutes: ten easy ones to warm up, twenty medium ones as the main course. You tick them off as you climb, and quality decides whether a boulder counts.' }
+];
+const COACH_ROLE = { 'Mila Berg':'strength coach', 'Teo Marchetti':'power & comp coach', 'Ana Kovač':'endurance coach', 'Ines Fujimoto':'technique coach', 'Jonas Steen':'recovery coach', 'Vincent':'easy day coach' };
+function coachShort(name) { const p = name.split(' '); return p.length > 1 ? p[0] + ' ' + p[1][0] + '.' : name; }
+
+// vingerafdruk: de echte bloksequentie, breedte naar rato van basisduur, categoriekleuren
+function chBlueprint(keys) {
+  return keys.filter(k => BLOCKLIB[k]).map(k => {
+    const b = BLOCKLIB[k];
+    return `<div style="flex:${b.t};background:${b.c};" title="${b.n}"></div>`;
+  }).join('');
+}
+// phalanx = verwachte belasting (vier standen, door de maker); nooit rpe, nooit voortgang.
+// Altijd acid-gevuld / load-empty (tokens in CSS), nooit de sessiekleur.
+function chPhalanx(load, mini) {
+  const blocks = [1,2,3,4].map(n => `<i${n <= load ? ' class="on"' : ''}></i>`).join('');
+  return `<span class="phalanx${mini ? ' mini' : ''}">${blocks}</span>`;
+}
+// ster = opslaan, nooit sociaal: hergebruikt crimpify_favs (dedupe op naam, max 12)
+function isChooseSaved(name) { return loadFavs().some(f => f.name === name); }
+function chooseFavEntry(s) {
+  return { name: s.name, keys: s.keys.slice(), color: s.color || 'lime', rpe: s.rpe || '–', intent: s.intent || '', time: s.mins };
+}
+function toggleChooseSave(ev, i) {
+  if (ev) ev.stopPropagation();  // kaart-onclick opent de preview
+  const s = MOCK_CHOOSE[i];
+  if (!s) return;
+  let favs = loadFavs();
+  const was = favs.some(f => f.name === s.name);
+  favs = was ? favs.filter(f => f.name !== s.name) : [chooseFavEntry(s), ...favs];
+  saveFavs(favs);
+  buildRecent();
+  syncChooseStars();
+  updateFavStar();
+  if (!was) showToast('Saved on this device');
+}
+// in-place refresh van alle sterknoppen: geen re-render, dus railscroll en focus blijven staan
+function syncChooseStars() {
+  const set = new Set(loadFavs().map(f => f.name));
+  document.querySelectorAll('[data-chstar]').forEach(el => {
+    const s = MOCK_CHOOSE[+el.dataset.chstar];
+    if (!s) return;
+    const on = set.has(s.name);
+    el.classList.toggle('on', on);
+    el.textContent = el.dataset.label ? (on ? '★ Saved' : '☆ Save') : (on ? '★' : '☆');
+  });
+}
+function chStarBtn(i, label) {
+  const on = isChooseSaved(MOCK_CHOOSE[i].name);
+  if (label) return `<button class="pv-act${on ? ' on' : ''}" id="pvSaveBtn" data-chstar="${i}" data-label="1" onclick="toggleChooseSave(event, ${i})">${on ? '★ Saved' : '☆ Save'}</button>`;
+  return `<button class="ch-star${on ? ' on' : ''}" data-chstar="${i}" aria-label="save" onclick="toggleChooseSave(event, ${i})">${on ? '★' : '☆'}</button>`;
+}
+function chCard(i, noStar) {
+  const s = MOCK_CHOOSE[i];
+  const col = C[s.color] || C.lime;
+  return `<div class="ch-card" onclick="openChoosePreview(${i})">
+    ${noStar ? '' : chStarBtn(i)}
+    <div class="ch-print">${chBlueprint(s.keys)}</div>
+    <div class="ch-card-body">
+      <div class="ch-name">${s.name}</div>
+      <div class="ch-line">${s.goal} · ${s.mins} min</div>
+      <div class="ch-line">${s.gear[0]} · load ${chPhalanx(s.load, true)}</div>
+      <div class="ch-foot"><span>${coachShort(s.coach)}</span><span>${s.done} done</span></div>
+    </div>
+  </div>`;
+}
+function chShelf(shelf) {
+  if (!shelf || !shelf.idxs.length) return '';
+  return `<div class="ch-shelf-head"><div class="ch-shelf-title">${shelf.title}</div></div>
+    ${shelf.sub ? `<div class="ch-shelf-sub">${shelf.sub}</div>` : ''}
+    <div class="ch-shelf">${shelf.idxs.map(ix => chCard(ix)).join('')}</div>`;
+}
+
+// For you: client-side uit localStorage-historie (recente energiesystemen en signalen).
+// Geen historie → vriendelijke starterskeuze. Geen account, geen server (productprincipe 1).
+function computeForYou() {
+  const idxOf = name => MOCK_CHOOSE.findIndex(s => s.name === name);
+  const h = loadHistory();
+  if (!h.length) return { title:'For you', sub:'new here · good first sessions', idxs:[idxOf('Base Camp'), idxOf('Silent Feet'), idxOf('Easy Does It')] };
+  const needRest = h[0].sig === 'red' || (h[0].sig === 'orange' && h[1] && h[1].sig === 'orange');
+  if (needRest) {
+    return { title:'For you', sub:'your last signals ask for an easy day',
+      idxs: MOCK_CHOOSE.map((s, i) => ({ s, i })).filter(x => x.s.load <= 2).sort((a, b) => a.s.load - b.s.load || b.s.done - a.s.done).slice(0, 4).map(x => x.i) };
+  }
+  // roteer energiesystemen: wat je de laatste 7 dagen niet trainde komt eerst
+  const now = Date.now();
+  const recentCats = new Set(h.filter(e => now - e.ts < 7 * 86400000)
+    .map(e => { const s = getSession(e.id); return s ? s.cat.toLowerCase() : null; }).filter(Boolean));
+  const fresh = MOCK_CHOOSE.map((s, i) => ({ s, i })).filter(x => !recentCats.has(x.s.sys))
+    .sort((a, b) => b.s.done - a.s.done).slice(0, 4).map(x => x.i);
+  return { title:'For you', sub:'rotates with your recent training', idxs: fresh };
+}
+// tijd-plank: live uit de lokale tijd-slider; geen match → plank verbergen (echt, geen mock)
+function computeTimeShelf() {
+  const t = getT();
+  const all = MOCK_CHOOSE.map((s, i) => ({ s, i }));
+  if (!isFinite(t)) return { title:'Any length', sub:'no time limit set', idxs: all.sort((a, b) => b.s.mins - a.s.mins).map(x => x.i) };
+  return { title:`Under ${t} min`, sub:'fits the time you set', idxs: all.filter(x => x.s.mins <= t).sort((a, b) => b.s.done - a.s.done).map(x => x.i) };
+}
+// gecureerd: handmatig samengestelde lijst in afstemming met de Apex-gym, hardcoded tot er
+// een backend is; wordt dan berekend, het ontwerp blijft gelijk (CLAUDE.md Choose-flow punt 4)
+const APEX_PICKS = ['The Grinder', 'Send Day', 'Easy Does It', 'Board Blitz'];
+
+function renderChoose() {
+  const body = document.getElementById('chooseBody');
+  if (!body) return;
+  if (chSearchActive()) { body.innerHTML = renderChooseResults(); return; }  // zoeken vervangt de planken
+  const fi = 0;  // session of the week: redactionele keuze
+  const f = MOCK_CHOOSE[fi];
+  const fcol = C[f.color] || C.lime;
+  const hero = `
+    <div class="ch-kicker">session of the week</div>
+    <div class="ch-feat">
+      <div class="ch-feat-name">${f.name}</div>
+      <div class="ch-promise">${f.intent}</div>
+      <div class="ch-whybtn" onclick="toggleHeroWhy(this)">why it works →</div>
+      <div class="ch-why" id="heroWhy">${f.why}</div>
+      <div class="ch-byline">
+        <div class="ch-monogram" style="color:${fcol.text};">${f.coach.split(' ').map(w => w[0]).join('')}</div>
+        <div>
+          <div class="ch-byline-name">${f.coach}</div>
+          <div class="ch-byline-role">${COACH_ROLE[f.coach] || 'coach'} · ${f.done} done</div>
+        </div>
+      </div>
+      <div class="ch-tape">${chBlueprint(f.keys)}</div>
+      <div class="ch-feat-meta">
+        <span>${f.mins} min</span><span>${f.goal.toLowerCase()}</span><span>${f.done} done</span>
+        <span style="margin-left:auto;display:flex;align-items:center;gap:6px;">load ${chPhalanx(f.load)}</span>
+      </div>
+      <button class="ch-view-btn" onclick="openChoosePreview(${fi})">View session</button>
+    </div>`;
+  const newShelf = { title:'New', sub:'fresh from the coaches', idxs: MOCK_CHOOSE.map((s, i) => ({ s, i })).filter(x => x.s.cat === 'new').map(x => x.i) };
+  const apexShelf = { title:'Popular at Apex', sub:'curated with apex bouldergym', idxs: APEX_PICKS.map(n => MOCK_CHOOSE.findIndex(s => s.name === n)).filter(i => i >= 0) };
+  body.innerHTML = hero
+    + chShelf(computeForYou())
+    + chShelf(computeTimeShelf())
+    + chShelf(apexShelf)
+    + chShelf(newShelf)
+    + '<div style="height:16px;"></div>';
+  enableWheelScroll('#chooseBody .ch-shelf');
+}
+function toggleHeroWhy(btn) {
+  const el = document.getElementById('heroWhy');
+  const open = el.classList.toggle('open');
+  btn.textContent = open ? 'why it works ▴' : 'why it works →';
+}
+
+function openChoose() {
+  // catalogus opent altijd met de planken; zoekstaat van een vorig bezoek vervalt
+  chSearchOpen = false;
+  const wrap = document.getElementById('chSearchWrap');
+  if (wrap) wrap.style.display = 'none';
+  const tgl = document.getElementById('chSearchToggle');
+  if (tgl) tgl.classList.remove('on');
+  chQuery = '';
+  chFilters = { time:null, goal:null, gear:null, load:null, level:null };
+  const inp = document.getElementById('chSearchInput');
+  if (inp) inp.value = '';
+  updateChSearchUI();
+  renderChoose();  // elke keer vers: tijd-plank en For you zijn live
+  goTo('v-choose');
+}
+
+// ── PREVIEW-LAAG (kaart → preview → sessie; starten kan alleen hier, nooit uit de catalogus) ──
+let _previewIdx = null;
+function openChoosePreview(i) {
+  const s = MOCK_CHOOSE[i];
+  if (!s) return;
+  _previewIdx = i;
+  const col = C[s.color] || C.lime;
+  const blocks = s.keys.filter(k => BLOCKLIB[k]).map(k => {
+    const b = BLOCKLIB[k];
+    return `<div class="pv-block" style="border-left-color:${b.c};">
+      <div class="pv-block-name">${b.n}</div>
+      <div class="pv-block-t" style="color:${nameColor(b.c)};">${b.t} min</div>
+    </div>`;
+  }).join('');
+  document.getElementById('previewBody').innerHTML = `
+    <div class="ch-kicker">preview</div>
+    <div class="pv-name">${s.name}</div>
+    <div class="pv-meta">
+      <span>${s.mins} min</span><span>${s.goal.toLowerCase()}</span><span>${s.level}</span><span>${s.done} done</span>
+      <span style="display:flex;align-items:center;gap:6px;">load ${chPhalanx(s.load)}</span>
+    </div>
+    <div class="pv-section">
+      <div class="ch-byline" style="margin-top:12px;">
+        <div class="ch-monogram" style="color:${col.text};">${s.coach.split(' ').map(w => w[0]).join('')}</div>
+        <div>
+          <div class="ch-byline-name">${s.coach}</div>
+          <div class="ch-byline-role">${COACH_ROLE[s.coach] || 'coach'}</div>
+        </div>
+      </div>
+      <div class="pv-lbl">why this session</div>
+      <div class="pv-why">${s.why}</div>
+      <div class="pv-lbl">session structure · scales to your time when you start</div>
+      ${blocks}
+      <div class="pv-lbl">equipment</div>
+      <div class="pv-chips">${s.gear.map(g => `<div class="pv-chip">${g}</div>`).join('')}</div>
+      <div style="height:16px;"></div>
+    </div>`;
+  const sb = document.getElementById('pvSaveBtn');
+  if (sb) { sb.dataset.chstar = i; }
+  syncChooseStars();
+  const pv = document.getElementById('previewView');
+  pv.style.display = 'flex';
+  pv.querySelector('.scroll-body').scrollTop = 0;
+}
+function closeChoosePreview() { document.getElementById('previewView').style.display = 'none'; _previewIdx = null; }
+function startFromPreview() {
+  if (_previewIdx == null) return;
+  const i = _previewIdx;
+  closeChoosePreview();
+  openMockSession(i);  // bestaande sessie-flow: slab, timers, delen — onaangeroerd
+}
+// customize = lokale kopie met attributie; het origineel in de catalogus is read-only
+function chooseCopyTitle(base) {
+  let who = '';
+  try { who = localStorage.getItem('crimpify_name') || ''; } catch {}
+  return base + ' · ' + (who ? who + ' version' : 'your version');
+}
+function customizeFromChoose() {
+  if (_previewIdx == null) return;
+  const s = MOCK_CHOOSE[_previewIdx];
+  customSession = { id:'custom', cat:'own', name: chooseCopyTitle(s.name), desc:'', color: s.color, rpe: s.rpe, intent: s.intent, basedOn: { title: s.name, coach: s.coach } };
+  customKeys = s.keys.slice();
+  durationOverride['custom'] = {};  // verse kopie, geen stale slot-overrides
+  activeSessionId = 'custom';
+  sessionLocked = false;
+  sessionOwned = true;
+  closeChoosePreview();
+  buildSlab();
+  goTo('v-session');
+}
+
+function openMockSession(i) {
+  const s = MOCK_CHOOSE[i];
+  if (!s) return;
+  customSession = { id:'custom', cat:'choose', name:s.name, desc:'', color:s.color, rpe:s.rpe, intent:s.intent + ' · by ' + s.coach + ' (mock)' };
+  customKeys = s.keys.slice();
+  activeSessionId = 'custom';
+  sessionLocked = true;
+  sessionOwned = false;
+  // de gekozen tijd op de landing bepaalt het schema, ook voor Choose-sessies;
+  // de minuten op de kaart zijn browse-informatie, geen override
+  buildSlab();
+  goTo('v-session');
+}
+
+function openGenerate() {
+  goTo('v-generate');
+  setTimeIdx(activeTimeIdx);  // chip-status en samenvatting syncen nu de view zichtbaar is
+}
+
+// ── DISCOVER: etalage op de landing — de gecureerde Apex-plank met de
+// bestaande Choose-kaarten (tik → preview, nooit direct starten) ──
+function renderDiscover() {
+  const el = document.getElementById('discoverShelf');
+  if (!el) return;
+  // landing blijft sterloos (één sterk moment); opslaan kan in de Choose-view
+  el.innerHTML = APEX_PICKS.map(n => MOCK_CHOOSE.findIndex(s => s.name === n)).filter(i => i >= 0).map(ix => chCard(ix, true)).join('');
+}
+renderDiscover();
+enableWheelScroll('#discoverShelf');
+buildChSearch();

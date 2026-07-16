@@ -1,0 +1,40 @@
+---
+name: verify
+description: Crimpify end-to-end verifiëren — statische server + headless Edge via Playwright, geen build-stap.
+---
+
+# Crimpify verifiëren
+
+Statische PWA (index.html + app.js + style.css), geen build. Verificatie =
+de echte app driven in een headless browser en screenshots vastleggen.
+
+## Recept dat werkt
+
+1. Server: `Start-Process python -ArgumentList "-m","http.server","8317","--bind","127.0.0.1" -WorkingDirectory <repo> -WindowStyle Hidden`
+   Stoppen na afloop: PID via `Get-NetTCPConnection -LocalPort 8317 -State Listen`.
+2. Playwright zonder browser-download: `npm i playwright-core` in de scratchpad en
+   `chromium.launch({ channel: 'msedge', headless: true })` (Edge zit op elke
+   Windows 11-machine). Viewport 360×780 (mobile first) of 390×844.
+3. Verse context = verse localStorage. Naamvraag overslaan met
+   `page.addInitScript(() => localStorage.setItem('crimpify_name', 'Test'))`,
+   of de prompt invullen: `input[placeholder="What should we call you?"]` + knop `OK`.
+4. `page.on('pageerror')` en console-errors verzamelen; nul errors is de eis.
+
+## Flows die je meestal drivet
+
+- Landing → "Choose another →" → `#v-choose`; kaarten `.ch-card` openen de
+  preview (`#previewView`), "Start session" → `#v-session` (slab).
+- Slabblokken: `.slab-block:has-text("...")` tikken opent het blok
+  (checklist-blokken → `#v-check`).
+- Lock-in-dialog: `#saveFavDialog`, bevestigknop heet **"Lock in"** (niet "Save").
+- Exit-guard: `#confirmExit`, knoppen "Stay"/"Leave" — selecteer binnen
+  `#confirmExit` (losse `text=Leave` matcht ook verborgen catalogusteksten).
+
+## Gotcha's
+
+- Headless klikt zó snel dat de toast (1.8 s) nog in beeld staat op latere
+  screenshots; dat is timing, geen bug. Meet met `performance.now()` als je twijfelt.
+- De splash duurt ~2,3 s; wacht op een selector, niet op tijd.
+- Testronde uit CLAUDE.md Werkafspraken: splash + versienummer, naamvraag,
+  sessie genereren en starten, deel-link (`#s=`) in verse context, stoplicht
+  loggen. sw-cache en splashversie horen bij elke deploy gebumpt te zijn.
