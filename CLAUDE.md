@@ -188,6 +188,39 @@ De structurele oplossing voor navigatie is een vaste bottom-nav
 veldtest; de actieladder op de landing (START > BROWSE > BUILD) overbrugt tot
 dan. Nu bouwen zou voortijdig zijn.
 
+### Climb with intent (uitgesteld tot na de eerste veldtest)
+Intent-tracking op sessieniveau, nog niet bouwen. Gefundeerd op drie
+onderzoekslijnen:
+
+1. **Attentional focus** (Wulf, 15-jaars review): een EXTERNE focus (op het
+   effect van de beweging) verslaat een interne focus (op lichaamsdelen) voor
+   zowel prestatie als leren, over leeftijden en niveaus heen. Daarom worden
+   alle intents geformuleerd als externe effecten, nooit als
+   lichaamsinstructies: "no sound on the footholds", niet "focus on
+   footwork"; "push the hold away", niet "straighten your arms"; "touch the
+   hold where you aimed", niet "commit".
+2. **OPTIMAL-theorie** (Wulf & Lewthwaite): autonomie versnelt motorisch
+   leren. Intents worden altijd GEKOZEN door de klimmer uit een aangeboden
+   set, nooit toegewezen. Consistent met productprincipe 3 (autoregulatie).
+3. **Deliberate practice** (Ericsson): een goede intent beantwoordt "wat
+   houdt me tegen", gekoppeld aan een zwakte of doel, met feedback op de
+   uitvoeringskwaliteit.
+
+Ontwerp bij bouwen:
+- Vóór een sessie: optioneel 1-2 intents kiezen uit een kleine bibliotheek.
+- Tijdens: de gekozen intent blijft zichtbaar als rustig label.
+- Na afloop: één micro-reflectie naast het bestaande stoplicht: hield het
+  effect stand? Eén tik, geen huiswerk.
+- Intent-bibliotheek in vier categorieën: movement (silent feet, skeleton
+  hang), effort (true tries: visualise twice, climb as visualised), process
+  (no pulling on before a complete plan), head (falling is data).
+- Let op: het schema heeft al een `intent`-veld in favs/draft — dat is nu de
+  sessie-belofte-regel (één zin marketing-achtige omschrijving), niet dit
+  concept. Vóór het bouwen checken of hergebruik kan of dat het botst; een
+  naamconflict ligt voor de hand.
+- Geen score, geen streaks, geen voltooiingspercentages: bewustzijn, geen
+  gamification.
+
 ### Broadcast zonder backend
 `ANNOUNCEMENTS` is het kanaal om alle gebruikers tegelijk iets te vertellen:
 voeg een array-entry toe en deploy (GitHub Pages deployt vanaf main). Geen
