@@ -1921,13 +1921,16 @@ function renderBlockPicker(query) {
         const del = k.startsWith('ux_')
           ? `<div onclick="event.stopPropagation();deleteCustomBlock('${k}')" style="font-family:'DM Mono',monospace;font-size:13px;color:var(--danger);padding:6px 10px;margin-right:2px;">×</div>`
           : `<div onclick="event.stopPropagation();hideBlock('${k}')" style="font-family:'DM Mono',monospace;font-size:13px;color:var(--disabled);padding:6px 10px;margin-right:2px;">×</div>`;
+        const edit = k.startsWith('ux_')
+          ? `<div onclick="event.stopPropagation();openNewExercise('${k}')" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--dust);padding:5px 9px;border:1px solid var(--graphite);border-radius:5px;">✎</div>`
+          : '';
         return `<div onclick="pickBlock('${k}')" style="display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--carbon);border-radius:8px;border-left:3px solid ${b.c};cursor:pointer;">
           <div style="flex:1;">
             <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.03em;color:${nameColor(b.c)};">${b.n}${bm}${yoursBadge(k)}</div>
             <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--disabled);margin-top:2px;">rpe ${b.rpe || '–'} · base ${b.t}'</div>
           </div>
           <div onclick="event.stopPropagation();openBlockDetail('${k}')" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--dust);padding:5px 9px;border:1px solid var(--graphite);border-radius:5px;">i</div>
-          ${del}
+          ${edit}${del}
           <div style="font-family:'DM Mono',monospace;font-size:12px;color:${nameColor(b.c)};">+</div>
         </div>`;
       }).join('');
@@ -1977,7 +1980,9 @@ function loadCustomBlocks() { try { return JSON.parse(localStorage.getItem('crim
 function saveCustomBlocks(o) { try { localStorage.setItem('crimpify_custom_blocks', JSON.stringify(o)); } catch {} }
 function registerCustomBlocks() {
   const o = loadCustomBlocks();
-  Object.keys(o).forEach(k => { BLOCKLIB[k] = o[k]; });
+  // eigen oefeningen zijn altijd vast: de ingevoerde minuten zijn de duur,
+  // nooit een schaalbare basis (oude entries hebben nog fixed:false)
+  Object.keys(o).forEach(k => { o[k].fixed = true; BLOCKLIB[k] = o[k]; });
 }
 function linkLabel(url) {
   try {
@@ -1989,12 +1994,23 @@ function linkLabel(url) {
     return 'Bekijk bron';
   } catch { return 'Bekijk bron'; }
 }
-function openNewExercise() {
-  ['neName','neMin','neRpe','neWhy','neLink'].forEach(id => { document.getElementById(id).value = ''; });
-  document.getElementById('neMin').value = '10';
+let _editingBlockKey = null;   // ux_-key in bewerkmodus; null = nieuw
+function openNewExercise(editKey) {
+  _editingBlockKey = (editKey && BLOCKLIB[editKey]) ? editKey : null;
+  const b = _editingBlockKey ? BLOCKLIB[_editingBlockKey] : null;
+  document.getElementById('neName').value = b ? b.n : '';
+  document.getElementById('neMin').value = b ? b.t : '10';
+  document.getElementById('neRpe').value = (b && b.rpe !== '–') ? b.rpe : '';
+  document.getElementById('neWhy').value = b ? (b.why || '') : '';
+  document.getElementById('neLink').value = (b && b.links && b.links[0]) ? b.links[0].url : '';
+  document.getElementById('neTitle').textContent = b ? 'Edit exercise' : 'New exercise';
+  document.getElementById('neConfirmBtn').textContent = b ? 'Save' : 'Add';
   document.getElementById('newExerciseDialog').style.display = 'flex';
 }
-function closeNewExercise() { document.getElementById('newExerciseDialog').style.display = 'none'; }
+function closeNewExercise() {
+  _editingBlockKey = null;
+  document.getElementById('newExerciseDialog').style.display = 'none';
+}
 function confirmNewExercise() {
   const name = (document.getElementById('neName').value || '').trim();
   if (!name) { document.getElementById('neName').focus(); return; }
@@ -2002,14 +2018,21 @@ function confirmNewExercise() {
   const rpe = (document.getElementById('neRpe').value || '').trim() || '–';
   const why = (document.getElementById('neWhy').value || '').trim() || 'Own exercise.';
   const url = (document.getElementById('neLink').value || '').trim();
-  const key = 'ux_' + Date.now().toString(36);
-  const block = { n: name, t, c: UX_COLOR, rpe, why, fixed: false };
+  const editing = _editingBlockKey;
+  const key = editing || ('ux_' + Date.now().toString(36));
+  // fixed:true — de ingevoerde minuten zijn de duur, de tijd-fitter blijft eraf
+  const block = { n: name, t, c: UX_COLOR, rpe, why, fixed: true };
   if (url) block.links = [{ label: linkLabel(url), url }];
   const store = loadCustomBlocks();
   store[key] = block;
   saveCustomBlocks(store);
   BLOCKLIB[key] = block;
   closeNewExercise();
+  if (editing) {
+    renderBlockPicker(document.getElementById('blockSearch').value);
+    if (currentBlocks.some(b => b._key === key)) buildSlab();
+    return;
+  }
   // direct toevoegen aan de huidige sessie
   pickBlock(key);
 }
@@ -2141,7 +2164,7 @@ function importFromHash() {
     const store = loadCustomBlocks();
     Object.keys(p.x).forEach(k=>{
       const d = p.x[k];
-      const block = { n:d.n||'Exercise', t:d.t||10, c: UX_COLOR, rpe:d.rpe||'–', why:d.why||'', fixed:false };
+      const block = { n:d.n||'Exercise', t:d.t||10, c: UX_COLOR, rpe:d.rpe||'–', why:d.why||'', fixed:true };
       if (d.links) block.links = d.links;
       BLOCKLIB[k] = block;
       store[k] = block;
