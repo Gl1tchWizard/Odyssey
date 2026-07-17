@@ -2936,6 +2936,168 @@ function enableWheelScroll(sel){
 enableWheelScroll('#timeTrack');
 enableWheelScroll('#recentRow');
 
+// ── OVERSCROLL-BOUNCE: rubber-band op de horizontale planken ──
+// iOS heeft native rubber-band op inner scrollers (alle iOS-browsers zijn
+// WebKit): daar doen we niets, ook geen CSS-onderdrukking. Elders (Android,
+// Windows-touch) onderdrukt de klasse js-bounce het eigen browser-effect
+// (overscroll-behavior-x, zie style.css) en tekent deze module de veer zelf.
+// Transform-only, nooit layout; scrollLeft en scroll-snap blijven onaangeraakt.
+const BOUNCE = {
+  grab: 0.55,          // iOS-waarde: fractie van de vingerbeweging die rek wordt
+  stretchFrac: 0.30,   // asymptotische max rek als fractie van de rijbreedte
+  stiffness: 200,      // veerconstante (omega^2); ~14/s geeft ~0,35s terugkeer
+  dampingRatio: 1.0,   // 1 = kritisch gedempt: terug zonder naveer (iOS-gevoel)
+  flingVelMin: 0.45,   // px/ms: minimale aankomstsnelheid voor een fling-bounce
+  flingVelMax: 3,      // px/ms: cap op de impulssnelheid
+  flingAmpMax: 45,     // px: hard vangnet op de fling-amplitude
+  flingCooldownMs: 300,
+  flingTouchWindowMs: 2500  // fling-bounce alleen kort na echte touch (weert wheel)
+};
+const IS_IOS = /iP(hone|ad|od)/.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const BOUNCE_ON = !IS_IOS &&
+  (navigator.maxTouchPoints > 0 || 'ontouchstart' in window) &&
+  !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function enableEdgeBounce(sel) {
+  if (!BOUNCE_ON) return;
+  document.querySelectorAll(sel).forEach(el => {
+    if (el._bounce) return;
+    el._bounce = true;
+    el.classList.add('js-bounce');
+
+    let offset = 0;              // huidige rek in px (negatief = voorbij rechterrand)
+    let rawPull = 0;             // geaccumuleerde vingerafstand voorbij de rand
+    let engaged = 0;             // 0 = niet, 1 = linkerrand, -1 = rechterrand
+    let touchId = null;
+    let lastX = 0, lastY = 0;
+    let maxScroll = 0, maxStretch = 60;
+    let raf = null, vel = 0;     // veerstatus (vel in px/s)
+    let lastTouchEnd = 0, lastFling = 0;
+    const samples = [];          // {left,t} ringbuffer voor fling-snelheid
+
+    // iOS-rubberband: rek loopt asymptotisch naar maxStretch
+    const curve = p => (1 - 1 / ((p * BOUNCE.grab) / maxStretch + 1)) * maxStretch;
+    // inverse: bij veer-overname de rek terugvertalen naar vingerafstand
+    const invCurve = o => {
+      const f = Math.min(o / maxStretch, 0.999);
+      return (maxStretch / BOUNCE.grab) * (f / (1 - f));
+    };
+    const render = () => {
+      if (offset) {
+        el.style.willChange = 'transform';
+        el.style.transform = `translate3d(${offset.toFixed(2)}px,0,0)`;
+      } else {
+        el.style.transform = '';
+        el.style.willChange = '';
+      }
+    };
+    const stopSpring = () => { if (raf) { cancelAnimationFrame(raf); raf = null; } };
+    const spring = v0 => {
+      stopSpring();
+      vel = v0 || 0;
+      let prev = performance.now();
+      const omega = Math.sqrt(BOUNCE.stiffness);
+      const c = 2 * BOUNCE.dampingRatio * omega;
+      const step = now => {
+        raf = null;
+        if (!el.isConnected) { offset = 0; return; }   // plank weggerenderd
+        const dt = Math.min((now - prev) / 1000, 0.032);
+        prev = now;
+        vel += (-BOUNCE.stiffness * offset - c * vel) * dt;
+        offset += vel * dt;
+        // vangnet: fling-impuls nooit verder dan flingAmpMax naar buiten
+        if (Math.abs(offset) > BOUNCE.flingAmpMax && Math.sign(offset) === Math.sign(vel)) {
+          offset = Math.sign(offset) * BOUNCE.flingAmpMax; vel = 0;
+        }
+        if (Math.abs(offset) < 0.3 && Math.abs(vel) < 5) { offset = 0; render(); return; }
+        render();
+        raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+    };
+    const findTouch = e => {
+      for (const t of e.changedTouches) if (t.identifier === touchId) return t;
+      return null;
+    };
+
+    el.addEventListener('touchstart', e => {
+      if (touchId != null) return;   // tweede vinger negeren
+      const t = e.changedTouches[0];
+      touchId = t.identifier;
+      lastX = t.clientX; lastY = t.clientY;
+      maxScroll = el.scrollWidth - el.clientWidth;
+      maxStretch = Math.max(40, Math.round(el.clientWidth * BOUNCE.stretchFrac));
+      // lopende veer overpakken: de rek blijft onder de vinger staan
+      if (raf) { stopSpring(); engaged = Math.sign(offset) || 0; rawPull = invCurve(Math.abs(offset)); }
+    }, { passive: true });
+
+    el.addEventListener('touchmove', e => {
+      const t = findTouch(e);
+      if (!t) return;
+      const dx = t.clientX - lastX, dy = t.clientY - lastY;
+      lastX = t.clientX; lastY = t.clientY;
+      if (!engaged) {
+        if (maxScroll <= 2) return;                      // niet-scrollbare rij rekt niet
+        if (Math.abs(dy) > Math.abs(dx)) return;         // verticale intentie
+        // pas engagen als de rij hard tegen de rand zit en de vinger naar buiten trekt
+        if (el.scrollLeft <= 0 && dx > 0) engaged = 1;
+        else if (el.scrollLeft >= maxScroll - 1 && dx < 0) engaged = -1;
+        else return;
+        rawPull = 0;                                     // re-baseline op het randmoment
+        stopSpring();
+      }
+      rawPull += engaged * dx;
+      if (rawPull <= 0) {                                // terug naar binnen: native scroll hervat
+        engaged = 0; rawPull = 0; offset = 0; render();
+        return;
+      }
+      offset = engaged * curve(rawPull);
+      render();
+      // mid-gesture events zijn non-cancelable; de rek werkt daar ook zonder
+      if (e.cancelable) e.preventDefault();
+    }, { passive: false });
+
+    const endTouch = e => {
+      if (!findTouch(e)) return;
+      touchId = null;
+      lastTouchEnd = performance.now();
+      if (engaged) { engaged = 0; rawPull = 0; spring(0); }
+      // nooit preventDefault hier: zou de click-synthese van kaart-taps slopen
+    };
+    el.addEventListener('touchend', endTouch, { passive: true });
+    el.addEventListener('touchcancel', endTouch, { passive: true });
+
+    // fling-bounce: raakt een echte touch-fling de rand met snelheid, veer eruit en terug
+    el.addEventListener('scroll', () => {
+      const now = performance.now();
+      samples.push({ left: el.scrollLeft, t: now });
+      if (samples.length > 4) samples.shift();
+      if (touchId != null || engaged || raf) return;
+      if (now - lastTouchEnd > BOUNCE.flingTouchWindowMs) return;  // wheel/programmatic
+      if (now - lastFling < BOUNCE.flingCooldownMs) return;
+      const max = el.scrollWidth - el.clientWidth;
+      if (max <= 2) return;
+      const left = el.scrollLeft;
+      const edge = left <= 0 ? -1 : (left >= max - 1 ? 1 : 0);
+      if (!edge || samples.length < 3) return;
+      // snelheid uit de samples vóór de clamp (het laatste event is afgekapt)
+      const a = samples[samples.length - 3], b = samples[samples.length - 2];
+      const dt = b.t - a.t;
+      if (dt <= 0) return;
+      const v = (b.left - a.left) / dt;                  // px/ms, positief = naar rechts
+      if (edge === 1 && v >= BOUNCE.flingVelMin) {
+        lastFling = now;
+        spring(-Math.min(v, BOUNCE.flingVelMax) * 1000); // rechterrand: rek naar links
+      } else if (edge === -1 && v <= -BOUNCE.flingVelMin) {
+        lastFling = now;
+        spring(Math.min(-v, BOUNCE.flingVelMax) * 1000);
+      }
+    }, { passive: true });
+  });
+}
+enableEdgeBounce('#recentRow');
+
 // ── OPENING SCENE: shine → flash → wegvegen ──
 (function(){
   const splash = document.getElementById('splash');
@@ -3284,6 +3446,7 @@ function renderChoose() {
     + chShelf(newShelf)
     + '<div style="height:16px;"></div>';
   enableWheelScroll('#chooseBody .ch-shelf');
+  enableEdgeBounce('#chooseBody .ch-shelf');
 }
 function toggleHeroWhy(btn) {
   const el = document.getElementById('heroWhy');
@@ -3512,7 +3675,7 @@ function openBlockDetail(key) {
     <div style="height:16px;"></div>`;
   document.getElementById('bdTryBtn').onclick = () => tryBlockNow(key);
   document.getElementById('bdAddBtn').onclick = () => addBlockToSession(key);
-  if (inIdx.length) enableWheelScroll('#blockDetailBody .ch-shelf');
+  if (inIdx.length) { enableWheelScroll('#blockDetailBody .ch-shelf'); enableEdgeBounce('#blockDetailBody .ch-shelf'); }
   const bd = document.getElementById('blockDetail');
   bd.style.display = 'flex';
   bd.querySelector('.scroll-body').scrollTop = 0;
@@ -3564,5 +3727,6 @@ function dismissNews(id) {
 
 renderDiscover();
 enableWheelScroll('#discoverShelf');
+enableEdgeBounce('#discoverShelf');
 buildChSearch();
 renderNews();
