@@ -2876,12 +2876,46 @@ function renderStreakLine() {
   }
 }
 
+// ── LEVENSCYCLUS: flush bij achtergrond, herstel na tab-discard ──
+// Mobiel gooit achtergrond-tabs weg; terugkomen is dan een volledige reload
+// die anders altijd op de landing eindigt. Bij verbergen schrijven we draft
+// en actieve sessie weg plus een marker; init zet de gebruiker binnen
+// RESUME_WINDOW_MS terug waar die was. Daarbuiten dekken de Continue-kaart
+// (12 uur) en de draft-kaart de terugweg.
+const RESUME_WINDOW_MS = 30 * 60000;
+function saveResumeMarker() {
+  try {
+    const running = !!sessionStartTime && currentBlocks.length > 0;
+    const building = !running && activeView() === 'v-session' && activeSessionId === 'custom' && !!customKeys;
+    if (!running && !building) { localStorage.removeItem('crimpify_resume'); return; }
+    localStorage.setItem('crimpify_resume', JSON.stringify({ mode: running ? 'run' : 'build', ts: Date.now() }));
+  } catch {}
+}
+function flushState() {
+  saveDraft();
+  saveActive();
+  saveResumeMarker();
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushState(); });
+window.addEventListener('pagehide', flushState);
+
 // ── INIT ──
 ['maxHangs','nohangs','fourByFour','hehe','campus','lockoffs'].forEach(k=>{ if (BLOCKLIB[k]) BLOCKLIB[k].bm = true; });
 registerCustomBlocks();
 applyCategoryColors();
 rebuildRecent(); renderSignalCal(); renderTodaysPick(); renderContinue(); buildRecent(); buildCategories(); renderPreview(); renderDates(); renderStreakLine(); renderGreeting();
-importFromHash();  // gedeelde sessie via #s=… direct openen
+const importedShare = importFromHash();  // gedeelde sessie via #s=… direct openen
+// terugkeer na tab-discard of sw-reload: binnen het venster terug waar je was
+if (!importedShare) {
+  try {
+    const rm = JSON.parse(localStorage.getItem('crimpify_resume') || 'null');
+    localStorage.removeItem('crimpify_resume');
+    if (rm && Date.now() - rm.ts <= RESUME_WINDOW_MS) {
+      if (rm.mode === 'run' && loadActive()) resumeActive();
+      else if (rm.mode === 'build' && loadDraft()) openDraft();
+    }
+  } catch {}
+}
 setTimeout(()=>setTimeIdx(activeTimeIdx),60);
 
 // desktop: verticaal scrollwiel → horizontaal op de rijen
@@ -2927,8 +2961,10 @@ if ('serviceWorker' in navigator) {
       const sw = reg.installing;
       if (!sw) return;
       sw.addEventListener('statechange', () => {
-        // nieuwe versie geïnstalleerd terwijl er al een actief was → ververs
+        // nieuwe versie geïnstalleerd terwijl er al een actief was → ververs,
+        // maar nooit midden in een training of build; de volgende load pakt hem
         if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+          if (sessionStartTime || hasLiveProgress()) return;
           location.reload();
         }
       });
