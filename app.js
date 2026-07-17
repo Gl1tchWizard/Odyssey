@@ -2885,8 +2885,12 @@ function renderStreakLine() {
 const RESUME_WINDOW_MS = 30 * 60000;
 function saveResumeMarker() {
   try {
-    const running = !!sessionStartTime && currentBlocks.length > 0;
-    const building = !running && activeView() === 'v-session' && activeSessionId === 'custom' && !!customKeys;
+    // alleen een marker als de gebruiker ín de flow zit; wie op de landing
+    // staat (ook met een onafgemaakte sessie) hoort daar terug te komen
+    const v = activeView();
+    const inFlow = ['v-session','v-detail','v-guided','v-drills','v-drillfocus','v-check'].includes(v);
+    const running = inFlow && !!sessionStartTime && currentBlocks.length > 0;
+    const building = inFlow && !running && v === 'v-session' && activeSessionId === 'custom' && !!customKeys;
     if (!running && !building) { localStorage.removeItem('crimpify_resume'); return; }
     localStorage.setItem('crimpify_resume', JSON.stringify({ mode: running ? 'run' : 'build', ts: Date.now() }));
   } catch {}
