@@ -258,6 +258,50 @@ veldtest. Wat ontbreekt (inkorten/wisselen/trimmen midden in de sessie)
 wacht op veldtest-bewijs: slaan testers echt blokken over of breken ze
 sessies af, en waar?
 
+### Credibility and coach model (deferred, needs backend and real coaches)
+
+Vastgelegd ontwerp, nog niet bouwen. Twee assen en drie lagen, strikt
+gescheiden houden.
+
+**Twee badges (twee soorten autoriteit, nooit vermengen):**
+
+- **COACH VERIFIED = menselijke autoriteit.** Een vertrouwde, bekende coach
+  staat achter deze sessie. Juridische/verantwoordelijkheidsnotitie:
+  "verified" op een sessie zetten is een impliciete veiligheidsclaim. Daarom
+  start verified uitsluitend met EIGEN en BEKENDE coaches; nooit een stempel
+  die Crimpify op het werk van vreemden drukt. Aansprakelijkheid is de reden
+  om het in het begin smal te houden.
+- **SCIENCE APPROVED = bronautoriteit.** Het protocol is gefundeerd op
+  geciteerd onderzoek (bv. Baar-peeswerk, Emil no-hangs). Strikte regel:
+  alleen op sessies/blokken die echt naar een bestaande bron verwijzen,
+  nooit op "voelt wetenschappelijk". Een merkteken, geen stemming — anders
+  verliest het alle geloofwaardigheid.
+
+**Drie maker-lagen (maken is open, autoriteit wordt verdiend):**
+
+- **Maker:** iedereen kan een sessie bouwen en delen (open model, zoals een
+  playlist maken). Nieuwe klimmers inbegrepen.
+- **Verified coach:** een bekende, vertrouwde coach; diens sessies kunnen
+  Coach Verified dragen.
+- **Coach governance (toekomstvisie):** verified coaches bepalen samen de
+  kwaliteitsnorm, bv. wat Science Approved mag heten of het verifiëren van
+  elkaars sessies. Past bij de non-capture/digitale-soevereiniteitswaarden:
+  de gemeenschap bezit de kwaliteitsstandaard, niet een bedrijf. Een
+  governancevraag om MET echte coaches te beantwoorden, nooit te ontwerpen
+  voor coaches die nog niet bestaan.
+
+**Ranking / het meuk-probleem (los van verificatie):**
+
+- Groeit de user content, dan moeten goede sessies bovendrijven en zwakke
+  zinken. Dat vraagt een signaal: completions, saves, coach-verified — alles
+  backend, fase 2.
+- Coach Verified is later ook een rankingsignaal: verified eerst, dan op
+  completions, dan de rest.
+
+**Huidige staat (veldtest):** geen badges, geen ranking, geen accounts.
+Curatie met de hand: Govert is de enige verified coach, zijn eigen sessies
+zijn de vertrouwde set, Featured is handmatig gekozen.
+
 ### Broadcast zonder backend
 `ANNOUNCEMENTS` is het kanaal om alle gebruikers tegelijk iets te vertellen:
 voeg een array-entry toe en deploy (GitHub Pages deployt vanaf main). Geen
@@ -375,12 +419,15 @@ staan; de items hieronder verwijzen ernaar.
     het ontwerp blijft gelijk, alleen de bron verandert.
 14. **Sessie-datamodel + analytics-funnel.** Vastgelegd in de
     Choose-flow-sectie (punt 5); bouwen zodra er een backend is.
+15. **Credibility & coach model.** Coach Verified- en Science
+    Approved-badges, drie maker-lagen en ranking tegen het meuk-probleem;
+    ontwerp in de eigen sectie. Vraagt een backend én echte coaches.
 
 ### Ideeën (kans, geen verplichting)
 
-15. **Signatuur-motief.** Phalanx als voortgangsindicator, hexagon-C als
+16. **Signatuur-motief.** Phalanx als voortgangsindicator, hexagon-C als
     lege-staat- en kadermotief; merkherkenning uit vorm.
-16. **Shortcuts-rij.** Acht energiesystemen, horizontaal scrollend (uit de
+17. **Shortcuts-rij.** Acht energiesystemen, horizontaal scrollend (uit de
     concept-mocks; na de veldtest).
 
 Afgewezen uit de concept-mocks, niet opnieuw voorstellen: avatar,
