@@ -25,8 +25,8 @@ offline-capable PWA. Live op https://crimpify.com via GitHub Pages.
   (alle JavaScript) en `style.css` (alle CSS), geladen via gewone script- en
   link-tags. Daarnaast `manifest.json`, `sw.js`, iconen en `og.png`.
   Geen build-stap, geen dependencies.
-- **Service worker:** cachenaam is `crimpify-v29`. Bumpen bij elke deploy die
-  bestanden wijzigt (`crimpify-v30`, enz.), anders zien bezoekers de oude versie.
+- **Service worker:** cachenaam is `crimpify-v30`. Bumpen bij elke deploy die
+  bestanden wijzigt (`crimpify-v31`, enz.), anders zien bezoekers de oude versie.
 - **Analytics: GoatCounter** (FOSS, cookieloos, geen persoonsgegevens,
   aggregaat-only, geen accounts) — async snippet onderaan index.html, dashboard
   op https://crimpify.goatcounter.com. count.js telt localhost/privé-IP's
@@ -225,12 +225,20 @@ gelabelde knoppen; er is geen like. Blokken krijgen nooit een ster (dat zou
 een tweede verzameling naast opgeslagen sessies maken, eerder afgewezen);
 blok-acties zijn bekijken en toevoegen.
 
+Eén bewerkmodel: de duur van een blok verandert uitsluitend via het paneel
+(steppers binnen min/max). EDIT (✎) is er alleen voor herordenen (sleep) en
+verwijderen (×); ook met EDIT actief opent een tik op de rij gewoon het
+paneel. Skill-keuzeblokken (`pick:true`, zoals Skill choice) zijn een echte
+keuze: bij openen kiest de gebruiker uit de skill-bibliotheek ("What do you
+want to improve or struggle with?") of maakt een eigen oefening die de
+invulling van het blok wordt; zonder keuze start het blok niet.
+
 BACK gaat overal precies één stap terug: in-app navigatiestack plus één
 history-sentinel zodat ook systeem-back (Android-gebaar) in-app teruggaat.
 De #s=-deel-links blijven daarbuiten; een deel-link opnieuw openen in
 dezelfde tab werkt via de hashchange-listener. Kop = som: getoonde
 sessieminuten zijn altijd de som van de blokduren (`sessionMins`), nooit
-een statisch veld. In Browse staat de "By Govert"-plank boven alle andere
+een statisch veld. In Browse staat de "By Glitch"-plank boven alle andere
 planken: echte coach-sessies eerst, de mock-catalogus als filler eronder,
 zonder badges (verified wacht op de backend, zie backlog).
 
@@ -482,7 +490,7 @@ Engels/Nederlands-mix.
 
 - Eén wijziging per commit-onderwerp, sw-cache bumpen bij deploy.
 - Sober Engels in UI-copy, geen consultant-taal, geen em-dashes in teksten.
-- Versienummer op de splash (nu v0.35) bij elke release ophogen, samen met de sw-cache.
+- Versienummer op de splash (nu v0.36) bij elke release ophogen, samen met de sw-cache.
 - Test na elke wijziging: splash met zichtbaar logo, naamvraag en herladen,
   sessie genereren en starten, deel-link openen in incognito, stoplicht loggen
   en dot terugzien bij Mijn sessies.

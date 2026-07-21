@@ -41,7 +41,7 @@ playwright-core: `node <repo>\.claude\skills\verify\journeys.js`.
   (geen wees-overlay), geen TRY THIS NOW.
 - **B** Nieuws → blok-detail → ADD TO SESSION → builder → blok tikken →
   duur aanpassen → LOCK IN → START → speler.
-- **C** Choose → By Govert-plank (eerste plank) → preview → blok tikken
+- **C** Choose → By Glitch-plank (eerste plank) → preview → blok tikken
   (info, geen speler; alleen-lezen) → REMIX → eigen concept → blok tikken
   (bewerken) → LOCK IN → START. Plus: BACK vanaf de preview landt één stap
   terug, en kop-minuten == som van de blokduren.

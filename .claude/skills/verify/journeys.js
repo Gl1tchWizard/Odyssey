@@ -84,7 +84,7 @@ const inPlayer = v => ['v-detail','v-guided','v-drills','v-drillfocus','v-check'
   await C.page.evaluate(() => { openChoose ? openChoose() : goTo('v-choose'); });
   await sleep(300);
   const firstShelf = await C.page.evaluate(() => document.querySelector('#chooseBody .ch-shelf-head .ch-shelf-title').textContent);
-  assert(firstShelf === 'By Govert', `C By Govert is de eerste plank (${firstShelf})`);
+  assert(firstShelf === 'By Glitch', `C By Glitch is de eerste plank (${firstShelf})`);
   // hero-BACK-stap: preview open en dicht moet op v-choose landen, niet op de landing
   await C.page.click('.ch-view-btn');
   await sleep(200);

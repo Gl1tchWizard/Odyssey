@@ -200,6 +200,8 @@ body {
 .be-dur-range { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--disabled); margin-top:4px; }
 .be-rpe { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--dust); margin-top:10px; }
 .be-why { font-family:'Barlow',sans-serif; font-size:13px; color:var(--dust); line-height:1.55; margin-top:10px; }
+.be-link { display:inline-block; margin-top:10px; margin-right:14px; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--dust); text-decoration:none; border-bottom:1px solid var(--graphite); padding-bottom:2px; }
+.be-link:hover { color:var(--chalk); }
 .be-actions { display:flex; gap:10px; margin-top:16px; }
 .be-secondary { flex:1; padding:12px; border-radius:10px; border:1px solid var(--graphite); background:none; color:var(--dust); font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:14px; text-transform:uppercase; cursor:pointer; }
 .be-done { flex:1; padding:12px; border-radius:10px; border:none; background:var(--acid); color:var(--acid-text); font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:14px; text-transform:uppercase; cursor:pointer; }
