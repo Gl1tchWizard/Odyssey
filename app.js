@@ -343,6 +343,40 @@ const BLOCKLIB = {
   // ── activation protocols ──
   tensionAct: { n:'Tension activation', t:12, tMin:8, tMax:15, c:'var(--prepare)', rpe:'6', sets:3, rest:2,
     why:'Preload the nervous system before limit work. Heavy isometrics, short and fresh: heel-hook isometric pulls at 60/90/120 degrees, 1 rep per angle, far from failure.' },
+
+  // ── coach-sessieblokken (vier gecureerde sessies, juli 2026) ──
+  fiveWarmup: { n:'Warm-up + pick-ups', t:15, tMin:12, tMax:20, c:'var(--prepare)', rpe:'2-4', addedDate:'2026-07-21',
+    why:'Two minutes of jumping jacks, eight minutes of easy stretching, then five minutes of finger warm-up with progressive pick-ups. Stop at seventy five percent effort; this is preparation, not training.' },
+  wallRamp: { n:'Progressive wall warm-up', t:20, tMin:15, tMax:30, c:'var(--prepare)', rpe:'2-5', addedDate:'2026-07-21',
+    why:'Ten to twelve boulders building in difficulty. Start very easy, focus on smooth movement, and finish two to three grades below your max. Do not fatigue yourself.' },
+  fiveProblems: { n:'Five problems', t:50, tMin:40, tMax:70, c:'var(--volume)', rpe:'8-9', sets:5, rest:5, addedDate:'2026-07-21',
+    why:'Pick five hard boulders targeting different skills; avoid slab. Climb each three times within five minutes, then rest five minutes before the next. Comp climbers may add two problems. If you send all of them your estimate was too easy, you can do better. If you fail three or more sets it is too hard, tune it down next time. Aim for the sweet spot of suffering.' },
+  slabWork: { n:'Slab work', t:30, tMin:20, tMax:40, c:'var(--skill)', rpe:'5-6', addedDate:'2026-07-21',
+    why:'Work slab boulders and invent a couple of original moves. This is deliberate technique work under fatigue, not filler.' },
+  squatLat: { n:'Deep squat + lats', t:5, tMin:4, tMax:8, c:'var(--prepare)', rpe:'-', addedDate:'2026-07-21',
+    links:[{label:'Follow-along video', url:'https://www.youtube.com/watch?v=4K9VrVIX93w'}],
+    why:'Two times two minutes: deep squat and PVC lat stretch. Breathe out into each position.' },
+  skillChoice: { n:'Skill choice', t:15, tMin:10, tMax:25, c:'var(--skill)', rpe:'4-6', library:true, addedDate:'2026-07-21',
+    why:'What do you want to improve or struggle with? Pick a skill from the library and work it deliberately on boulders below your max. Your choice, not a preset.' },
+  fourShots: { n:'Four Shots', t:40, tMin:30, tMax:60, c:'var(--max-effort)', rpe:'8', addedDate:'2026-07-21',
+    links:[{label:'Watch the original drill', url:'https://youtu.be/K5NLcANk1X8'}],
+    why:'Climb hard with good technique, without letting quality collapse. Pick four to eight boulders you can probably send within one to four attempts: hard enough to truly challenge you, not so hard that you are only trying single moves. You are looking for the zone between limit bouldering and successful execution. Deliberately vary styles, holds and wall angles: compression, small crimps, big slopers, dynamic moves, tension, precise feet. A system board makes this easy to steer; regular set boulders work too. Rest long enough to climb powerfully again. Every attempt has a plan: look at your beta, choose one adjustment, execute it with conviction. Four attempts max, so learn fast instead of repeating the same try. Falling is fine, you gained new information: find what went wrong and change something small. A different foot, more tension, later deadpoint, pulling harder. The goal is not to never fall but to make every attempt better. Stop when power, explosiveness or movement quality clearly drops. This is not an exhaustion session. Setup: four to eight boulders, one to four attempts each, full recovery between attempts, lots of variety in holds, moves and angles, stop before quality fades. Based on the original Sub Limit Bouldering drill.' },
+  cleanRepeat: { n:'Clean repeat', t:5, tMin:5, tMax:10, c:'var(--skill)', rpe:'4', addedDate:'2026-07-21',
+    why:'Repeat one drill boulder once, clean and successful. Ending on a good execution consolidates the skill.' },
+  meditation: { n:'Two minute meditation', t:2, c:'var(--prepare)', rpe:'-', fixed:true, addedDate:'2026-07-21',
+    why:'Two minutes of quiet breathing. Eyes closed, shoulders down, let the session settle.' },
+  ownWarmup: { n:'Your warm-up', t:15, tMin:10, tMax:20, c:'var(--prepare)', rpe:'2-4', addedDate:'2026-07-21',
+    why:'Run your favourite warm-up routine. You know what your body needs; end warm and fresh.' },
+  easyDozen: { n:'12 easy boulders', t:40, tMin:30, tMax:50, c:'var(--volume)', rpe:'3-4', checklist:true, target:12, range:'12', grade:'easy', addedDate:'2026-07-21',
+    why:'Around twelve easy problems, counted as you go. Move well and do not fatigue yourself yet; the hard work comes later in this session.' },
+  terminator: { n:'Terminator mode', t:25, tMin:20, tMax:35, c:'var(--volume)', rpe:'7-8', sets:3, rest:3, addedDate:'2026-07-21',
+    why:'Gym circuit, three rounds, sub-maximal but deliberately fatiguing: weighted pull-ups, rows, a sideways hand-over-hand traverse between hangboards with feet supported, and lower rung hangs. Scale the load: if a pull-up with roughly ten extra kilos is near your max, start around half of that and adjust so the last reps of each round are hard but clean. Optional progression for experienced climbers: sideways campus between the hangboards. High impact, skip it if in doubt.' },
+  progDeadhangs: { n:'Progressive deadhangs', t:15, tMin:12, tMax:20, c:'var(--max-effort)', rpe:'7-8', addedDate:'2026-07-21',
+    why:'Start with active finger curls, then build towards the smallest edge you can hang for five seconds, around ninety percent effort. Full rest between hangs; stop while your fingers still feel sharp.' },
+  capacityMix: { n:'Capacity mix', t:50, tMin:40, tMax:70, c:'var(--volume)', rpe:'5-6', checklist:true, target:30, range:'25-35', addedDate:'2026-07-21',
+    why:'Twenty five to thirty five boulders at medium intensity, counted. Start with ten to fifteen board or spray wall problems, then move into the gym. All styles welcome: comp, slab, overhang. Most boulders should go in one or two attempts, otherwise they are too hard. Add one or two boulders each session; more than that risks injury.' },
+  yogaFlow: { n:'Yoga cool-down', t:15, tMin:10, tMax:20, c:'var(--prepare)', rpe:'-', addedDate:'2026-07-21',
+    why:'A calm yoga flow to close the session: hips, shoulders and long exhales. Follow a video you like.' },
 };
 
 // ══ SESSIONS = energy system containers ══
@@ -1931,14 +1965,14 @@ function ensureDraftMode() {
 // Indeling volgt de opbouw van een sessie én de energiesysteem-taxonomie:
 // warm-up → techniek → energiesysteem-werk (capaciteit / PE / max) → vingers → antagonist → herstel
 const BLOCK_GROUPS = [
-  { name:'Warm-up & activation',        keys:['dynamic','warmup','warmupFinger','gymWarmup','mobilityOpen','tensionAct','easyTen','noHangsEmil','tendonClimb','tendonFull'] },
-  { name:'Technique & skills',          keys:['drillsOnly','drillBlocks','drillLibrary','skillLight','slab','boardApply'] },
-  { name:'Capacity · aerobic volume', keys:['volume','boardVolume','easyClimb','sprayLight','mediumTwenty','frontBuild'] },
-  { name:'Power endurance',            keys:['peFlow','fourByFour','hehe','linked','compStyle'] },
-  { name:'Max strength & power',         keys:['limitBlocks','project','board1','campus','dynos','pyramide','frontGrowth','lockoffs','pullStrength'] },
-  { name:'Finger strength',               keys:['maxHangs','activeCurls'] },
+  { name:'Warm-up & activation',        keys:['dynamic','warmup','warmupFinger','gymWarmup','mobilityOpen','tensionAct','easyTen','noHangsEmil','tendonClimb','tendonFull','fiveWarmup','wallRamp','ownWarmup'] },
+  { name:'Technique & skills',          keys:['drillsOnly','drillBlocks','drillLibrary','skillLight','slab','boardApply','skillChoice','slabWork','cleanRepeat'] },
+  { name:'Capacity · aerobic volume', keys:['volume','boardVolume','easyClimb','sprayLight','mediumTwenty','frontBuild','easyDozen','capacityMix'] },
+  { name:'Power endurance',            keys:['peFlow','fourByFour','hehe','linked','compStyle','fiveProblems','terminator'] },
+  { name:'Max strength & power',         keys:['limitBlocks','project','board1','campus','dynos','pyramide','frontGrowth','lockoffs','pullStrength','fourShots'] },
+  { name:'Finger strength',               keys:['maxHangs','activeCurls','progDeadhangs'] },
   { name:'Antagonist, core & gym',     keys:['pushStrength','coreLegs','mini1','mini2','mini3'] },
-  { name:'Recovery & mobility',       keys:['stretch','stretchLong','hog','nohangs','frontMaint'] },
+  { name:'Recovery & mobility',       keys:['stretch','stretchLong','hog','nohangs','frontMaint','squatLat','meditation','yogaFlow'] },
 ];
 // ── KLEURGRAMMATICA ──
 // kleur = wat het traint (categorie), badge = waar het vandaan komt, tekst = hoe zwaar.
@@ -3220,7 +3254,7 @@ function chResultCard(i) {
       <div class="ch-name">${s.name}</div>
       <div class="ch-result-coach">by ${s.coach} <span>· ${COACH_ROLE[s.coach] || 'coach'}</span></div>
       <div class="ch-line">${s.goal} · ${s.mins} min · ${s.gear.join(', ')}</div>
-      <div class="ch-foot"><span style="display:flex;align-items:center;gap:6px;">load ${chPhalanx(s.load, true)}</span><span>${s.done} done</span></div>
+      <div class="ch-foot"><span style="display:flex;align-items:center;gap:6px;">load ${chPhalanx(s.load, true)}</span><span>${s.done ? s.done + ' done' : ''}</span></div>
     </div>
   </div>`;
 }
@@ -3282,9 +3316,23 @@ const MOCK_CHOOSE = [
   // huis-sessie op een gevestigd principe: intensiteit vooraan terwijl je fris bent (geen merkclaim)
   { cat:'coach',    name:'Fresh First',    coach:'Crimpify',      mins:60, color:'amber',  rpe:'8-9', done:88,  load:4, sys:'performance', goal:'Hardest first', gear:['Gym wall'], level:'intermediate+', keys:['frontGrowth','frontBuild','frontMaint'], addedDate:'2026-07-16',
     intent:'Hardest work first while you are fresh, easy volume last. Arrive warm.',
-    why:'Most climbers do it backwards: they warm up forever, then try hard when they are already tired. Fresh First flips it. The hardest material goes first, while your nervous system is sharp and your focus is full, because that is when you can actually move the needle. The middle third builds the boulders you are developing. Easy volume and simple movement come last, as the wind-down, not the opener. Arrive warm, spend your best energy on what matters, and finish smooth.' }
+    why:'Most climbers do it backwards: they warm up forever, then try hard when they are already tired. Fresh First flips it. The hardest material goes first, while your nervous system is sharp and your focus is full, because that is when you can actually move the needle. The middle third builds the boulders you are developing. Easy volume and simple movement come last, as the wind-down, not the opener. Arrive warm, spend your best energy on what matters, and finish smooth.' },
+  // vier gecureerde coach-sessies (Fundamentals, juli 2026); done:0 = eerlijk,
+  // de kaart verbergt de teller tot er echte completions zijn
+  { cat:'coach', name:'Five by Five', coach:'Govert', mins:120, color:'lime', rpe:'8-9', done:0, load:3, sys:'power endurance', goal:'Comp capacity', gear:['Gym wall'], level:'all levels', keys:['fiveWarmup','wallRamp','fiveProblems','slabWork','squatLat'], addedDate:'2026-07-21',
+    intent:'Five hard problems, three climbs each on the clock, then slab under fatigue.',
+    why:'Comp style capacity. Five hard problems targeting different skills, each climbed three times within five minutes with five minutes rest between problems, then deliberate slab work while tired. If you send everything your estimate was too easy; if you fail three or more sets, tune it down. Aim for the sweet spot of suffering.' },
+  { cat:'coach', name:'Four Shots', coach:'Govert', mins:120, color:'purple', rpe:'7-8', done:0, load:3, sys:'skill', goal:'Technique', gear:['Gym wall'], level:'all levels', keys:['dynamic','activeCurls','skillChoice','skillChoice','skillChoice','fourShots','cleanRepeat','meditation'], addedDate:'2026-07-21',
+    intent:'Three drills of your choice, then hard climbing with a plan.',
+    why:'Skill training is the most important part of climbing. This session includes public drills from Charlie "Paradigm" Schreiber: three skill blocks of your own choice, then Four Shots, hard boulders climbed with a plan and full recovery, closed with one clean repeat and two quiet minutes.' },
+  { cat:'coach', name:'Sarah Connor', coach:'Govert', mins:120, color:'green', rpe:'6-7', done:0, load:3, sys:'capacity', goal:'Capacity + strength', gear:['Gym wall','Fingerboard'], level:'all levels', keys:['ownWarmup','skillChoice','easyDozen','terminator','yogaFlow'], addedDate:'2026-07-21',
+    intent:'Easy mileage first, then Terminator mode in the gym.',
+    why:'Easy bouldering to build the base without tiring yourself, then a deliberately fatiguing gym circuit: weighted pull-ups, rows, traverses and hangs, three rounds. Cool down with a calm yoga flow. She will be back.' },
+  { cat:'coach', name:'Summer Capacity', coach:'Govert', mins:120, color:'green', rpe:'5-6', done:0, load:3, sys:'capacity', goal:'Volume', gear:['Gym wall','Kilterboard','Spray wall'], level:'all levels', keys:['ownWarmup','progDeadhangs','skillChoice','skillChoice','capacityMix','stretch'], addedDate:'2026-07-21',
+    intent:'Deadhangs while fresh, two skill blocks, then a big counted capacity set.',
+    why:'Progressive deadhangs while you are fresh, two skill blocks of your own choice, then twenty five to thirty five counted boulders across board, spray and gym. Most should go in one or two attempts. Add one or two boulders per session, no more.' }
 ];
-const COACH_ROLE = { 'Mila Berg':'strength coach', 'Teo Marchetti':'power & comp coach', 'Ana Kovač':'endurance coach', 'Ines Fujimoto':'technique coach', 'Jonas Steen':'recovery coach', 'Vincent':'easy day coach', 'Crimpify':'the house method' };
+const COACH_ROLE = { 'Mila Berg':'strength coach', 'Teo Marchetti':'power & comp coach', 'Ana Kovač':'endurance coach', 'Ines Fujimoto':'technique coach', 'Jonas Steen':'recovery coach', 'Vincent':'easy day coach', 'Crimpify':'the house method', 'Govert':'head coach' };
 function coachShort(name) { const p = name.split(' '); return p.length > 1 ? p[0] + ' ' + p[1][0] + '.' : name; }
 
 // vingerafdruk: de echte bloksequentie, breedte naar rato van basisduur, categoriekleuren
@@ -3344,7 +3392,7 @@ function chCard(i, noStar) {
       <div class="ch-name">${s.name}</div>
       <div class="ch-line">${s.goal} · ${s.mins} min</div>
       <div class="ch-line">${s.gear[0]} · load ${chPhalanx(s.load, true)}</div>
-      <div class="ch-foot"><span>${coachShort(s.coach)}</span><span>${s.done} done</span></div>
+      <div class="ch-foot"><span>${coachShort(s.coach)}</span><span>${s.done ? s.done + ' done' : ''}</span></div>
     </div>
   </div>`;
 }
@@ -3403,12 +3451,12 @@ function renderChoose() {
         <div class="ch-monogram" style="color:${fcol.text};">${f.coach.split(' ').map(w => w[0]).join('')}</div>
         <div>
           <div class="ch-byline-name">${f.coach}</div>
-          <div class="ch-byline-role">${COACH_ROLE[f.coach] || 'coach'} · ${f.done} done</div>
+          <div class="ch-byline-role">${COACH_ROLE[f.coach] || 'coach'}${f.done ? ' · ' + f.done + ' done' : ''}</div>
         </div>
       </div>
       <div class="ch-tape">${chBlueprint(f.keys)}</div>
       <div class="ch-feat-meta">
-        <span>${f.mins} min</span><span>${f.goal.toLowerCase()}</span><span>${f.done} done</span>
+        <span>${f.mins} min</span><span>${f.goal.toLowerCase()}</span>${f.done ? `<span>${f.done} done</span>` : ''}
         <span style="margin-left:auto;display:flex;align-items:center;gap:6px;">load ${chPhalanx(f.load)}</span>
       </div>
       <button class="ch-view-btn" onclick="openChoosePreview(${fi})">View session</button>
@@ -3463,7 +3511,7 @@ function openChoosePreview(i) {
     <div class="ch-kicker">preview</div>
     <div class="pv-name">${s.name}</div>
     <div class="pv-meta">
-      <span>${s.mins} min</span><span>${s.goal.toLowerCase()}</span><span>${s.level}</span><span>${s.done} done</span>
+      <span>${s.mins} min</span><span>${s.goal.toLowerCase()}</span><span>${s.level}</span>${s.done ? `<span>${s.done} done</span>` : ''}
       <span style="display:flex;align-items:center;gap:6px;">load ${chPhalanx(s.load)}</span>
     </div>
     <div class="pv-section">
