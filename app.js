@@ -314,8 +314,9 @@ const BLOCKLIB = {
   nohangs: { n:'No hangs + stretch', t:8, tMin:5, tMax:12, c:'var(--prepare)', rpe:'-', sets:2, rest:1,
     why:'No hangs 2×30 sec half crimp. Then a short stretch: shoulders and forearms.' },
   // ── minimal dose micro blocks (minimum effective dose; López/Lattice research on short frequent finger training) ──
-  activeCurls: { n:'Active finger curls', t:12, c:'var(--max-effort)', rpe:'8-9', sets:'4-6', rest:2, fixed:true,
-    why:'Power pulls on an edge or fingerboard: no dead hanging but actively driving force as if curling the edge toward you. Isometric holds of 7-10 sec at 80-90% of your max, stop 1-2 counts before failure, 2-3 min full rest, 4-6 sets. Active curling recruits more with less total tendon load.' },
+  // korte neurale primer voor het klimmen, geen krachtblok (C4HP / Tyler Nelson)
+  activeCurls: { n:'Active Finger Curl Primer', t:6, tMin:5, tMax:8, c:'var(--prepare)', rpe:'build to max',
+    why:'Build through three smooth pulls per hand, then perform two maximal 5 second recruitment curls. Keep your feet down and actively curl against the immovable edge. Build force gradually, never jerk into it. One arm at a time, feet on the floor. Three building pulls per hand: 3 seconds each at roughly 40, 60 and 80 percent intention, alternating left and right, 15 to 30 seconds between pulls. Then two maximal recruitment curls per hand: aim for 5 seconds, 7 seconds is the cap, not the goal. Build force calmly for 1 to 2 seconds, then curl as hard as you can against the immovable edge. Give each hand about 90 seconds before its next turn. Then move on to progressive climbing or the main block. Technique: pick a comfortable edge you can pull hard on without the grip deforming. Start with light tension and actively close the fingers, as if rolling the edge into your palm. Shoulder and elbow stay stable: no pull up, no lat pull. The edge does not move and your feet stay down. Half crimp is the default. Stop or scale back on pain or sharp sensations, a grip that pops open, compensation from back, shoulder or elbow, clearly less force on the second maximal curl, or cold fingers that are not ready for maximal intention. High recruitment with very little total time under tension. All levels, scalable. Based on the C4HP protocol by Tyler Nelson. The broader principle of progressive finger recruitment is also used by Eva López; this specific variant comes from C4HP. Supported coach protocol, not a directly validated climbing protocol.' },
   mdFinger: { n:'Finger prep', t:5, c:'var(--prepare)', rpe:'3-5', fixed:true,
     why:'Progressive loading on the edge: 3-4 short, increasingly heavy hangs with full rest. Bring the tendons up to tension before the maximal work — never max hang cold.' },
   mdMaxHangs: { n:'Micro max hangs', t:12, c:'var(--max-effort)', rpe:'8-9', sets:5, rest:2, fixed:true,
@@ -560,6 +561,8 @@ function clampToBounds(b, minutes) {
   const bd = blockBounds(b);
   return Math.min(bd.max, Math.max(bd.min, minutes));
 }
+// intensiteitslabel: numeriek = "rpe 8-9", tekstueel ("build to max") staat op zichzelf
+function rpeLabel(r) { return /^\d/.test(r || '') ? 'rpe ' + r : (r || ''); }
 
 // BUILDER (Design / self-assembled): de som is leidend. De blokken bepalen de
 // sessieduur; de landing-tijdinstelling geldt hier niet en er wordt nooit
@@ -2044,12 +2047,12 @@ function ensureDraftMode() {
 // Indeling volgt de opbouw van een sessie én de energiesysteem-taxonomie:
 // warm-up → techniek → energiesysteem-werk (capaciteit / PE / max) → vingers → antagonist → herstel
 const BLOCK_GROUPS = [
-  { name:'Warm-up & activation',        keys:['dynamic','warmup','warmupFinger','gymWarmup','mobilityOpen','tensionAct','easyTen','noHangsEmil','tendonClimb','tendonFull','fiveWarmup','wallRamp','ownWarmup'] },
+  { name:'Warm-up & activation',        keys:['dynamic','warmup','warmupFinger','gymWarmup','mobilityOpen','tensionAct','easyTen','noHangsEmil','tendonClimb','tendonFull','fiveWarmup','wallRamp','ownWarmup','activeCurls'] },
   { name:'Technique & skills',          keys:['drillsOnly','drillBlocks','drillLibrary','skillLight','slab','boardApply','skillChoice','slabWork','cleanRepeat'] },
   { name:'Capacity · aerobic volume', keys:['volume','boardVolume','easyClimb','sprayLight','mediumTwenty','frontBuild','easyDozen','capacityMix'] },
   { name:'Power endurance',            keys:['peFlow','fourByFour','hehe','linked','compStyle','fiveProblems','terminator'] },
   { name:'Max strength & power',         keys:['limitBlocks','project','board1','campus','dynos','pyramide','frontGrowth','lockoffs','pullStrength','fourShots'] },
-  { name:'Finger strength',               keys:['maxHangs','activeCurls','progDeadhangs'] },
+  { name:'Finger strength',               keys:['maxHangs','progDeadhangs'] },
   { name:'Antagonist, core & gym',     keys:['pushStrength','coreLegs','mini1','mini2','mini3'] },
   { name:'Recovery & mobility',       keys:['stretch','stretchLong','hog','nohangs','frontMaint','squatLat','meditation','yogaFlow'] },
 ];
@@ -2139,7 +2142,7 @@ function renderBlockPicker(query) {
         return `<div onclick="pickBlock('${k}')" style="display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--carbon);border-radius:8px;border-left:3px solid ${b.c};cursor:pointer;">
           <div style="flex:1;">
             <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.03em;color:${nameColor(b.c)};">${b.n}${bm}${yoursBadge(k)}</div>
-            <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--disabled);margin-top:2px;">rpe ${b.rpe || '–'} · base ${b.t}'</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--disabled);margin-top:2px;">${rpeLabel(b.rpe) || 'rpe –'} · base ${b.t}'</div>
           </div>
           <div onclick="event.stopPropagation();openBlockDetail('${k}')" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--dust);padding:5px 9px;border:1px solid var(--graphite);border-radius:5px;">i</div>
           ${edit}${del}
@@ -2699,7 +2702,7 @@ function renderBlockEdit() {
     <div class="be-kicker" style="color:${col};">${grp}</div>
     <div class="be-name">${b.n}</div>
     ${durRow}
-    ${hasRpe ? `<div class="be-rpe">rpe ${b.rpe}</div>` : ''}
+    ${hasRpe ? `<div class="be-rpe">${rpeLabel(b.rpe)}</div>` : ''}
     <div class="be-why">${b.why || ''}</div>
     ${links}
     ${hint ? `<div class="be-hint">${hint}</div>` : ''}
@@ -2858,7 +2861,7 @@ function buildDetail(idx) {
   document.getElementById('detailBlockNum').textContent = `${idx+1} / ${currentBlocks.length}`;
   document.getElementById('detailName').textContent = b.n;
   document.getElementById('detailName').style.color = b.c;
-  document.getElementById('detailCat').textContent = (b.rpe && b.rpe !== '-' && b.rpe !== '–') ? `rpe ${b.rpe}` : 'no intensity set';
+  document.getElementById('detailCat').textContent = (b.rpe && b.rpe !== '-' && b.rpe !== '–') ? rpeLabel(b.rpe) : 'no intensity set';
   document.getElementById('detailCat').style.color = b.c;
 
   // timer — volledige reset bij openen blok
