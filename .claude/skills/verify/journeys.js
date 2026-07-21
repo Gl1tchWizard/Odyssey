@@ -83,8 +83,14 @@ const inPlayer = v => ['v-detail','v-guided','v-drills','v-drillfocus','v-check'
   const C = await newCtx(browser);
   await C.page.evaluate(() => { openChoose ? openChoose() : goTo('v-choose'); });
   await sleep(300);
-  const firstShelf = await C.page.evaluate(() => document.querySelector('#chooseBody .ch-shelf-head .ch-shelf-title').textContent);
-  assert(firstShelf === 'By Glitch', `C By Glitch is de eerste plank (${firstShelf})`);
+  const placement = await C.page.evaluate(() => {
+    const titles = [...document.querySelectorAll('#chooseBody .ch-shelf-title')].map(e => e.textContent);
+    const apex = APEX_PICKS.includes('Five by Five');
+    const sarah = MOCK_CHOOSE.find(s => s.name === 'Sarah Connor');
+    return { titles, apex, sarahNew: sarah && sarah.cat === 'new' };
+  });
+  assert(!placement.titles.includes('By Glitch') && placement.apex && placement.sarahNew,
+    `C coach-sessies in de gecureerde planken, geen eigen plank (${placement.titles.join(' · ')})`);
   // hero-BACK-stap: preview open en dicht moet op v-choose landen, niet op de landing
   await C.page.click('.ch-view-btn');
   await sleep(200);

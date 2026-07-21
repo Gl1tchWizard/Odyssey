@@ -3480,7 +3480,7 @@ function renderChooseResults() {
 // door de maker, voedt ACWR), done = completion_count (mock tot er een backend is).
 const MOCK_CHOOSE = [
   // cat: 'featured' | 'new' | 'popular' | 'coach' (redactionele herkomst)
-  { cat:'featured', name:'Crimp Factory',  coach:'Mila Berg',     mins:75, color:'amber',  rpe:'8-9', done:214, load:4, sys:'strength', goal:'Max fingers', gear:['Fingerboard','Kilterboard'], level:'intermediate+', keys:['dynamic','maxHangs','board1','stretch'],
+  { cat:'featured', name:'Crimp Factory',  coach:'Jaap dJ',     mins:75, color:'amber',  rpe:'8-9', done:214, load:4, sys:'strength', goal:'Max fingers', gear:['Fingerboard','Kilterboard'], level:'intermediate+', keys:['dynamic','maxHangs','board1','stretch'],
     intent:'Max finger strength on small edges. Long rests, full effort.',
     why:'Most climbers plateau because their fingers never see a truly maximal stimulus. Crimp Factory is built around one thing: small edges, long rests, full effort. You leave strong, not wrecked.' },
   { cat:'featured', name:'Power Hour',     coach:'Teo Marchetti', mins:60, color:'red',    rpe:'8-9', done:187, load:4, sys:'power', goal:'Max power', gear:['Gym wall'], level:'all levels', keys:['dynamic','limitBlocks','dynos','stretch'],
@@ -3526,16 +3526,16 @@ const MOCK_CHOOSE = [
     why:'Most climbers do it backwards: they warm up forever, then try hard when they are already tired. Fresh First flips it. The hardest material goes first, while your nervous system is sharp and your focus is full, because that is when you can actually move the needle. The middle third builds the boulders you are developing. Easy volume and simple movement come last, as the wind-down, not the opener. Arrive warm, spend your best energy on what matters, and finish smooth.' },
   // vier gecureerde coach-sessies (Fundamentals, juli 2026); done:0 = eerlijk,
   // de kaart verbergt de teller tot er echte completions zijn
-  { cat:'coach', name:'Five by Five', coach:'Glitch', mins:120, color:'lime', rpe:'8-9', done:0, load:3, sys:'power endurance', goal:'Comp capacity', gear:['Gym wall'], level:'all levels', keys:['fiveWarmup','wallRamp','fiveProblems','slabWork','squatLat'], addedDate:'2026-07-21',
+  { cat:'coach', name:'Five by Five', coach:'Guru', mins:120, color:'lime', rpe:'8-9', done:0, load:3, sys:'power endurance', goal:'Comp capacity', gear:['Gym wall'], level:'all levels', keys:['fiveWarmup','wallRamp','fiveProblems','slabWork','squatLat'], addedDate:'2026-07-21',
     intent:'Five hard problems, three climbs each on the clock, then slab under fatigue.',
     why:'Comp style capacity. Five hard problems targeting different skills, each climbed three times within five minutes with five minutes rest between problems, then deliberate slab work while tired. If you send everything your estimate was too easy; if you fail three or more sets, tune it down. Aim for the sweet spot of suffering.' },
   { cat:'coach', name:'Four Shots', coach:'Glitch', mins:120, color:'purple', rpe:'7-8', done:0, load:3, sys:'skill', goal:'Technique', gear:['Gym wall'], level:'all levels', keys:['dynamic','activeCurls','skillChoice','skillChoice','skillChoice','fourShots','cleanRepeat','meditation'], addedDate:'2026-07-21',
     intent:'Three drills of your choice, then hard climbing with a plan.',
     why:'Skill training is the most important part of climbing. This session includes public drills from Charlie "Paradigm" Schreiber: three skill blocks of your own choice, then Four Shots, hard boulders climbed with a plan and full recovery, closed with one clean repeat and two quiet minutes.' },
-  { cat:'coach', name:'Sarah Connor', coach:'Glitch', mins:120, color:'green', rpe:'6-7', done:0, load:3, sys:'capacity', goal:'Capacity + strength', gear:['Gym wall','Fingerboard'], level:'all levels', keys:['ownWarmup','skillChoice','easyDozen','terminator','yogaFlow'], addedDate:'2026-07-21',
+  { cat:'new', name:'Sarah Connor', coach:'Sarah', mins:120, color:'green', rpe:'6-7', done:0, load:3, sys:'capacity', goal:'Capacity + strength', gear:['Gym wall','Fingerboard'], level:'all levels', keys:['ownWarmup','skillChoice','easyDozen','terminator','yogaFlow'], addedDate:'2026-07-21',
     intent:'Easy mileage first, then Terminator mode in the gym.',
     why:'Easy bouldering to build the base without tiring yourself, then a deliberately fatiguing gym circuit: weighted pull-ups, rows, traverses and hangs, three rounds. Cool down with a calm yoga flow. She will be back.' },
-  { cat:'coach', name:'Summer Capacity', coach:'Glitch', mins:120, color:'green', rpe:'5-6', done:0, load:3, sys:'capacity', goal:'Volume', gear:['Gym wall','Kilterboard','Spray wall'], level:'all levels', keys:['ownWarmup','progDeadhangs','skillChoice','skillChoice','capacityMix','stretch'], addedDate:'2026-07-21',
+  { cat:'coach', name:'Summer Capacity', coach:'Magnus W', mins:120, color:'green', rpe:'5-6', done:0, load:3, sys:'capacity', goal:'Volume', gear:['Gym wall','Kilterboard','Spray wall'], level:'all levels', keys:['ownWarmup','progDeadhangs','skillChoice','skillChoice','capacityMix','stretch'], addedDate:'2026-07-21',
     intent:'Deadhangs while fresh, two skill blocks, then a big counted capacity set.',
     why:'Progressive deadhangs while you are fresh, two skill blocks of your own choice, then twenty five to thirty five counted boulders across board, spray and gym. Most should go in one or two attempts. Add one or two boulders per session, no more.' }
 ];
@@ -3545,7 +3545,7 @@ function sessionMins(s) {
   const sum = (s.keys || []).reduce((t, k) => t + (BLOCKLIB[k] ? BLOCKLIB[k].t : 0), 0);
   return sum || s.mins || 0;
 }
-const COACH_ROLE = { 'Mila Berg':'strength coach', 'Teo Marchetti':'power & comp coach', 'Ana Kovač':'endurance coach', 'Ines Fujimoto':'technique coach', 'Jonas Steen':'recovery coach', 'Vincent':'easy day coach', 'Crimpify':'the house method', 'Glitch':'head coach' };
+const COACH_ROLE = { 'Mila Berg':'strength coach', 'Teo Marchetti':'power & comp coach', 'Ana Kovač':'endurance coach', 'Ines Fujimoto':'technique coach', 'Jonas Steen':'recovery coach', 'Vincent':'easy day coach', 'Crimpify':'the house method', 'Glitch':'head coach', 'Guru':'comp coach', 'Sarah':'conditioning coach', 'Magnus W':'capacity coach', 'Jaap dJ':'finger strength coach' };
 function coachShort(name) { const p = name.split(' '); return p.length > 1 ? p[0] + ' ' + p[1][0] + '.' : name; }
 
 // vingerafdruk: de echte bloksequentie, breedte naar rato van basisduur, categoriekleuren
@@ -3644,7 +3644,7 @@ function computeTimeShelf() {
 }
 // gecureerd: handmatig samengestelde lijst in afstemming met de Apex-gym, hardcoded tot er
 // een backend is; wordt dan berekend, het ontwerp blijft gelijk (CLAUDE.md Choose-flow punt 4)
-const APEX_PICKS = ['The Grinder', 'Send Day', 'Easy Does It', 'Board Blitz'];
+const APEX_PICKS = ['Five by Five', 'The Grinder', 'Send Day', 'Easy Does It', 'Board Blitz'];
 
 function renderChoose() {
   const body = document.getElementById('chooseBody');
@@ -3674,13 +3674,12 @@ function renderChoose() {
       </div>
       <button class="ch-view-btn" onclick="openChoosePreview(${fi})">View session</button>
     </div>`;
+  // coach-sessies verdeeld over de gecureerde planken (Apex, New); For you en
+  // de tijdplank rekenen zelf en worden nooit handmatig gevuld. De eigen
+  // coach-plank boven de hero is teruggedraaid: die brak de landing-hiërarchie.
   const newShelf = { title:'New', sub:'fresh from the coaches', idxs: MOCK_CHOOSE.map((s, i) => ({ s, i })).filter(x => x.s.cat === 'new').map(x => x.i) };
   const apexShelf = { title:'Popular at Apex', sub:'curated with apex bouldergym', idxs: APEX_PICKS.map(n => MOCK_CHOOSE.findIndex(s => s.name === n)).filter(i => i >= 0) };
-  // echte coach-sessies bovenaan, voor alle andere planken; de mock-catalogus
-  // blijft als filler eronder. Geen badges (backlog); de plaatsing doet het werk.
-  const govShelf = { title:'By Glitch', sub:'real sessions from your coach', idxs: MOCK_CHOOSE.map((s, i) => ({ s, i })).filter(x => x.s.coach === 'Glitch').map(x => x.i) };
-  body.innerHTML = chShelf(govShelf)
-    + hero
+  body.innerHTML = hero
     + chShelf(computeForYou())
     + chShelf(computeTimeShelf())
     + chShelf(apexShelf)

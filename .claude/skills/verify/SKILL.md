@@ -41,10 +41,11 @@ playwright-core: `node <repo>\.claude\skills\verify\journeys.js`.
   (geen wees-overlay), geen TRY THIS NOW.
 - **B** Nieuws → blok-detail → ADD TO SESSION → builder → blok tikken →
   duur aanpassen → LOCK IN → START → speler.
-- **C** Choose → By Glitch-plank (eerste plank) → preview → blok tikken
-  (info, geen speler; alleen-lezen) → REMIX → eigen concept → blok tikken
-  (bewerken) → LOCK IN → START. Plus: BACK vanaf de preview landt één stap
-  terug, en kop-minuten == som van de blokduren.
+- **C** Choose → gecureerde plank (coach-sessies verdeeld: Five by Five in
+  Popular at Apex, Sarah Connor in New; geen eigen coach-plank) → preview →
+  blok tikken (info, geen speler; alleen-lezen) → REMIX → eigen concept →
+  blok tikken (bewerken) → LOCK IN → START. Plus: BACK vanaf de preview
+  landt één stap terug, en kop-minuten == som van de blokduren.
 - **D** Gedeelde link openen → gelockte slab → blok tikken (alleen-lezen,
   remix-hint) → START → systeem-back (één stap terug in-app) → dezelfde
   link opnieuw openen in dezelfde tab (hashchange-import) werkt.
