@@ -25,8 +25,8 @@ offline-capable PWA. Live op https://crimpify.com via GitHub Pages.
   (alle JavaScript) en `style.css` (alle CSS), geladen via gewone script- en
   link-tags. Daarnaast `manifest.json`, `sw.js`, iconen en `og.png`.
   Geen build-stap, geen dependencies.
-- **Service worker:** cachenaam is `crimpify-v31`. Bumpen bij elke deploy die
-  bestanden wijzigt (`crimpify-v32`, enz.), anders zien bezoekers de oude versie.
+- **Service worker:** cachenaam is `crimpify-v32`. Bumpen bij elke deploy die
+  bestanden wijzigt (`crimpify-v33`, enz.), anders zien bezoekers de oude versie.
 - **Analytics: GoatCounter** (FOSS, cookieloos, geen persoonsgegevens,
   aggregaat-only, geen accounts) — async snippet onderaan index.html, dashboard
   op https://crimpify.goatcounter.com. count.js telt localhost/privé-IP's
@@ -228,10 +228,14 @@ blok-acties zijn bekijken en toevoegen.
 Eén bewerkmodel: de duur van een blok verandert uitsluitend via het paneel
 (steppers binnen min/max). EDIT (✎) is er alleen voor herordenen (sleep) en
 verwijderen (×); ook met EDIT actief opent een tik op de rij gewoon het
-paneel. Skill-keuzeblokken (`pick:true`, zoals Skill choice) zijn een echte
-keuze: bij openen kiest de gebruiker uit de skill-bibliotheek ("What do you
-want to improve or struggle with?") of maakt een eigen oefening die de
-invulling van het blok wordt; zonder keuze start het blok niet.
+paneel. Skill-keuzeblokken (`pick:true`, zoals Skill choice) zijn standaard
+voorgevuld met een concrete drill uit de bibliotheek (per dag roterend,
+verschillend per blok binnen dezelfde sessie), zodat de sessie altijd meteen
+startbaar is. Wisselen kan op twee plekken met dezelfde functie: in het
+blok-paneel vóór lock-in en start ("Change skill": kiezen uit de bibliotheek
+met de vraag "What do you want to improve or struggle with?", of een eigen
+oefening aanmaken die de invulling van het blok wordt) en in de speler
+(switch). De keuze is per sessie-instantie, niet persistent.
 
 BACK gaat overal precies één stap terug: in-app navigatiestack plus één
 history-sentinel zodat ook systeem-back (Android-gebaar) in-app teruggaat.
@@ -461,25 +465,37 @@ staan; de items hieronder verwijzen ernaar.
 10. **In-session flexibility, uitbreiding.** Inkorten/lichter/trimmen midden
     in de sessie; wacht op veldtest-bewijs (slaan testers blokken over of
     breken ze sessies af, en waar?). Principe in de eigen sectie.
+11. **Set-based blokstructuur (uitgesteld, groter denkwerk).** Probleem:
+    circuitblokken zoals Terminator Mode hebben nu één timer voor 25 min,
+    terwijl je in de praktijk per oefening wilt sturen: reps afvinken,
+    getimede rust, hangtijden. Nodig: een blok kan een reeks oefeningen
+    bevatten in plaats van één tijdvak, met per oefening type (reps of
+    tijd), aantal reps of werkduur, rust erna en aantal sets; in de speler
+    reps afvinken, automatisch lopende rusttimers en aftellende hangtijden
+    (referentie: de oude Beastmaker-app). De blokduur wordt dan een
+    afgeleide schatting, niet de sturende waarde. Raakt het duurmodel
+    (base/min/max), de fitter en de speler-UI. Blokken die dit nodig
+    hebben: Terminator Mode, de hangboard-protocollen, No Hangs en de
+    tendon-protocollen. Uitgesteld tot na de veldtest.
 
 ### Wacht op een backend
 
-11. **Echte completions.** "N done" is nu mock; een completion telt pas bij
+12. **Echte completions.** "N done" is nu mock; een completion telt pas bij
     een afgemaakte sessie. Geen nieuwe nepgetallen tot die tijd.
-12. **Remix-tellers.** Een remix telt pas wanneer de kopie wordt opgeslagen.
-13. **Berekende planken.** Popular at Apex e.a. van curatie naar berekening;
+13. **Remix-tellers.** Een remix telt pas wanneer de kopie wordt opgeslagen.
+14. **Berekende planken.** Popular at Apex e.a. van curatie naar berekening;
     het ontwerp blijft gelijk, alleen de bron verandert.
-14. **Sessie-datamodel + analytics-funnel.** Vastgelegd in de
+15. **Sessie-datamodel + analytics-funnel.** Vastgelegd in de
     Choose-flow-sectie (punt 5); bouwen zodra er een backend is.
-15. **Credibility & coach model.** Coach Verified- en Science
+16. **Credibility & coach model.** Coach Verified- en Science
     Approved-badges, drie maker-lagen en ranking tegen het meuk-probleem;
     ontwerp in de eigen sectie. Vraagt een backend én echte coaches.
 
 ### Ideeën (kans, geen verplichting)
 
-16. **Signatuur-motief.** Phalanx als voortgangsindicator, hexagon-C als
+17. **Signatuur-motief.** Phalanx als voortgangsindicator, hexagon-C als
     lege-staat- en kadermotief; merkherkenning uit vorm.
-17. **Shortcuts-rij.** Acht energiesystemen, horizontaal scrollend (uit de
+18. **Shortcuts-rij.** Acht energiesystemen, horizontaal scrollend (uit de
     concept-mocks; na de veldtest).
 
 Afgewezen uit de concept-mocks, niet opnieuw voorstellen: avatar,
@@ -490,7 +506,7 @@ Engels/Nederlands-mix.
 
 - Eén wijziging per commit-onderwerp, sw-cache bumpen bij deploy.
 - Sober Engels in UI-copy, geen consultant-taal, geen em-dashes in teksten.
-- Versienummer op de splash (nu v0.37) bij elke release ophogen, samen met de sw-cache.
+- Versienummer op de splash (nu v0.38) bij elke release ophogen, samen met de sw-cache.
 - Test na elke wijziging: splash met zichtbaar logo, naamvraag en herladen,
   sessie genereren en starten, deel-link openen in incognito, stoplicht loggen
   en dot terugzien bij Mijn sessies.

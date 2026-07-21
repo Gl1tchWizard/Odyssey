@@ -358,7 +358,7 @@ const BLOCKLIB = {
     links:[{label:'Follow-along video', url:'https://www.youtube.com/watch?v=4K9VrVIX93w'}],
     why:'Two times two minutes: deep squat and PVC lat stretch. Breathe out into each position.' },
   skillChoice: { n:'Skill choice', t:10, tMin:10, tMax:25, c:'var(--skill)', rpe:'4-6', pick:true, addedDate:'2026-07-21',
-    why:'What do you want to improve or struggle with? Pick a skill from the library, or make your own exercise, and work it deliberately on boulders below your max. Your choice, not a preset; the block does not start without one.' },
+    why:'A concrete skill drill, prefilled from the library so the session is always ready to start. Not the one you need today? Change it: pick from the library (what do you want to improve or struggle with?) or make your own exercise. Work it deliberately on boulders below your max.' },
   fourShots: { n:'Four Shots', t:40, tMin:30, tMax:60, c:'var(--max-effort)', rpe:'8', addedDate:'2026-07-21',
     links:[{label:'Watch the original drill', url:'https://youtu.be/K5NLcANk1X8'}],
     why:'Climb hard with good technique, without letting quality collapse. Pick four to eight boulders you can probably send within one to four attempts: hard enough to truly challenge you, not so hard that you are only trying single moves. You are looking for the zone between limit bouldering and successful execution. Deliberately vary styles, holds and wall angles: compression, small crimps, big slopers, dynamic moves, tension, precise feet. A system board makes this easy to steer; regular set boulders work too. Rest long enough to climb powerfully again. Every attempt has a plan: look at your beta, choose one adjustment, execute it with conviction. Four attempts max, so learn fast instead of repeating the same try. Falling is fine, you gained new information: find what went wrong and change something small. A different foot, more tension, later deadpoint, pulling harder. The goal is not to never fall but to make every attempt better. Stop when power, explosiveness or movement quality clearly drops. This is not an exhaustion session. Setup: four to eight boulders, one to four attempts each, full recovery between attempts, lots of variety in holds, moves and angles, stop before quality fades. Based on the original Sub Limit Bouldering drill by Charlie Schreiber.' },
@@ -564,17 +564,37 @@ function clampToBounds(b, minutes) {
 // intensiteitslabel: numeriek = "rpe 8-9", tekstueel ("build to max") staat op zichzelf
 function rpeLabel(r) { return /^\d/.test(r || '') ? 'rpe ' + r : (r || ''); }
 
+// skill-keuzeblokken (pick:true) zijn standaard voorgevuld met een concrete
+// drill: per dag roterend en verschillend per blok binnen dezelfde sessie,
+// dus de sessie is altijd meteen startbaar. Wisselen kan in het blok-paneel
+// (voor start) en in de speler (dfSwitch).
+const skillOverride = {};   // { sessionId: { slotIdx: drillNaam } }
+function drillByName(n) { return DRILLS.find(d => d.n === n) || null; }
+function assignSkillDrills(blocks, id) {
+  const lib = DRILLS.filter(d => d.cat !== 'meta');
+  if (!lib.length) return blocks;
+  const daySeed = new Date().getDate() + new Date().getMonth()*31;
+  let k = 0;
+  blocks.forEach(b => {
+    if (!b.pick) return;
+    const ov = skillOverride[id] && skillOverride[id][b._slot];
+    b._drill = (ov && drillByName(ov)) || lib[(daySeed + k) % lib.length];
+    k++;
+  });
+  return blocks;
+}
+
 // BUILDER (Design / self-assembled): de som is leidend. De blokken bepalen de
 // sessieduur; de landing-tijdinstelling geldt hier niet en er wordt nooit
 // proportioneel geknepen. Aanpassen doet de gebruiker per blok (steppers).
 function composeFromKeys(keys) {
   _fitInfo['custom'] = null;   // geen budget, dus nooit een conflict
-  return keys.filter(k=>BLOCKLIB[k]).map((key, i) => {
+  return assignSkillDrills(keys.filter(k=>BLOCKLIB[k]).map((key, i) => {
     const b = {...BLOCKLIB[key], _key:key, _slot:i, _alts:1};
     const ov = durationOverride['custom'] && durationOverride['custom'][i];
     if (ov != null) b.t = clampToBounds(b, ov);
     return b;
-  });
+  }), 'custom');
 }
 
 // GENERATE: tijd is leidend. Water-filling binnen [tMin, tMax]; past het niet
@@ -619,7 +639,7 @@ function fitToBudget(base, id) {
       }
     }
   }
-  return items.map(x => ({...x.b, t: x.t}));
+  return assignSkillDrills(items.map(x => ({...x.b, t: x.t})), id);
 }
 
 function getBlocks(id) {
@@ -831,26 +851,6 @@ const QUOTES = [
   { q: "Recovery Starts Now.", gym: true }, { q: "Built, Not Bought.", gym: true },
   { q: "Small Gains. Big Results.", gym: true }, { q: "Consistency Wins.", gym: true },
   { q: "You Did the Work.", gym: true }, { q: "Mission Complete.", gym: true },
-  // Stoïcijns / Minimalistisch
-  { q: "Discipline > Motivation." }, { q: "Done Is Powerful." }, { q: "Keep Showing Up." },
-  { q: "No Zero Days." }, { q: "Earn Tomorrow." }, { q: "Progress Compounds." },
-  { q: "Another Brick in the Wall." }, { q: "One Percent Better." }, { q: "The Work Is the Reward." },
-  { q: "Return Tomorrow." },
-  // Harder / Badass
-  { q: "Pain Paid." }, { q: "Earned." }, { q: "Built Different." }, { q: "No Excuses." },
-  { q: "Another One Down." }, { q: "Outworked Yesterday." }, { q: "The Mountain Doesn't Care." },
-  { q: "Stay Dangerous." }, { q: "Built by Reps." }, { q: "Never Finished." },
-  { q: "Vincent gives you strength" }, { q: "You're Almost there" },
-  // Met een knipoog
-  { q: "Go Eat Some Protein." }, { q: "Hydrate, You Goblin." }, { q: "Your Forearms Hate You." },
-  { q: "Your Couch Can Wait." }, { q: "Gravity Lost Again." }, { q: "Fingerprints Not Found." },
-  { q: "Achievement: Didn't Skip Leg Day." }, { q: "You May Now Complain." },
-  { q: "Please Return Tomorrow." }, { q: "Congratulations. You're Sore Tomorrow." },
-  // Soulslike / Fantasy
-  { q: "Bonfire Lit." }, { q: "Praise the Send." }, { q: "Strength +1" }, { q: "Vitality Increased." },
-  { q: "You Grew Stronger." }, { q: "Forge Complete." }, { q: "Steel Tempered." },
-  { q: "The Hero Returns." }, { q: "Your Legend Continues." }, { q: "The Journey Never Ends." },
-  { q: "Guru is impressed" },
 ];
 
 function fmtMin(sec){
@@ -1059,7 +1059,7 @@ function openBlock(idx) {
   if (b && b.guided && b.items) {
     startGuided(idx);
   } else if (b && b.pick) {
-    startSkillChoice(idx);
+    playAssignedSkill(idx);   // voorgevuld: direct spelen, wisselen kan altijd
   } else if (b && b.library) {
     startDrillLibrary(idx);
   } else if (b && b.checklist) {
@@ -1276,13 +1276,26 @@ function startSkillChoice(blockIdx) {
   renderDrillPlayer();
   goTo('v-drills');
 }
-function chooseApply(libIdx) {
-  const b = currentBlocks[_chooseBlockIdx];
+// de toegewezen drill spelen in de focused player, op de blokduur
+function playAssignedSkill(idx) {
+  const b = currentBlocks[idx];
   drillMode = 'session';
-  dfDrills = [dpDrills[libIdx]];
+  dfDrills = [(b && b._drill) || DRILLS[0]];
   dfTotal = Math.max(3, b ? b.t : 10) * 60;
   loadDf(0);
   goTo('v-drillfocus');
+}
+function chooseApply(libIdx) {
+  const b = currentBlocks[_chooseBlockIdx];
+  drillMode = 'session';
+  if (b) {
+    if (!skillOverride[activeSessionId]) skillOverride[activeSessionId] = {};
+    skillOverride[activeSessionId][b._slot] = dpDrills[libIdx].n;
+  }
+  buildSlab();
+  // in een lopende sessie meteen spelen; voor start terug naar de slab
+  if (sessionStartTime) { playAssignedSkill(_chooseBlockIdx); return; }
+  goTo('v-session');
 }
 function chooseOwnExercise() { _chooseOwnPending = true; openNewExercise(); }
 
@@ -2263,7 +2276,8 @@ function confirmNewExercise() {
     customKeys[slot] = key;
     drillMode = 'session';
     buildSlab();
-    openBlock(_chooseBlockIdx);
+    // speler alleen in een lopende sessie; voor start terug naar de slab
+    if (sessionStartTime) openBlock(_chooseBlockIdx); else goTo('v-session');
     return;
   }
   // direct toevoegen aan de huidige sessie
@@ -2593,7 +2607,7 @@ function buildSlab() {
       return `<div class="slab-block slab-real" data-idx="${i}" style="background:color-mix(in srgb, ${b.c} 9%, transparent);" onclick="slabBlockTap(${i})">
         <div class="slab-accent" style="background:${nameColor(b.c)};"></div>
         <div class="slab-drag-handle" onclick="event.stopPropagation()" ontouchstart="handleDragStart(event,this)" ontouchmove="slabPressMove(event)" ontouchend="slabPressEnd()" onmousedown="handleDragStart(event,this)" style="z-index:3;">≡</div>
-        <div class="slab-block-name" style="color:${nameColor(b.c)};">${b.n}${yoursBadge(b._key)}</div>
+        <div class="slab-block-name" style="color:${nameColor(b.c)};">${b.pick && b._drill ? b._drill.n : b.n}${yoursBadge(b._key)}</div>
         <button onclick="event.stopPropagation();removeBlock(${i})" class="edit-mini" style="color:var(--danger);border-color:color-mix(in srgb, var(--danger) 27%, transparent);z-index:3;flex-shrink:0;">×</button>
       </div>`;
     }
@@ -2602,7 +2616,7 @@ function buildSlab() {
     // staat als ghost op de rij, de steppers zitten in het paneel
     return `<div class="slab-block slab-real" data-idx="${i}" style="background:color-mix(in srgb, ${b.c} 9%, transparent);" onclick="slabBlockTap(${i})" ${dragAttrs}>
       <div class="slab-accent" style="background:${nameColor(b.c)};"></div>
-      <div class="slab-block-name" style="color:${nameColor(b.c)};">${b.n}${yoursBadge(b._key)}</div>
+      <div class="slab-block-name" style="color:${nameColor(b.c)};">${b.pick && b._drill ? b._drill.n : b.n}${yoursBadge(b._key)}</div>
       <div class="slab-ghost" style="color:${nameColor(b.c)};">${b.t}<span class="gu">'</span></div>
     </div>`;
   }).join('');
@@ -2670,6 +2684,8 @@ function renderBlockEdit() {
   const grp = blockGroupName(b._key);
   const col = CAT_COLOR[grp] || b.c;
   const editable = slabCtx && !sessionLocked && sessionOwned;
+  // skill-keuzeblok: het paneel toont de toegewezen drill en laat wisselen (voor start)
+  const drill = (slabCtx && b.pick && b._drill) ? b._drill : null;
   const durRow = (editable && bd.min !== bd.max)
     ? `<div class="be-dur">
         <button class="step-btn" onclick="beAdjust(-5)" aria-label="shorter">&minus;</button>
@@ -2698,12 +2714,19 @@ function renderBlockEdit() {
   }
   // bronvermelding en links horen bij de info, ook in dit paneel
   const links = (b.links || []).map(l => `<a class="be-link" href="${l.url}" target="_blank" rel="noopener">${l.label} →</a>`).join('');
+  // wisselen voor start: dezelfde functie als in de speler, maar dan vooraf
+  if (drill && !sessionStartTime) {
+    actions = `<button class="be-secondary" onclick="closeBlockEdit();startSkillChoice(${_editBlockIdx})">⇄ Change skill</button>` + actions;
+  }
+  const whyHTML = drill
+    ? `<div class="be-why"><b style="color:var(--chalk);font-weight:600;">Setup.</b> ${drill.setup} <b style="color:var(--chalk);font-weight:600;">Execution.</b> ${drill.do} <b style="color:var(--chalk);font-weight:600;">Goal.</b> ${drill.goal}</div>`
+    : `<div class="be-why">${b.why || ''}</div>`;
   document.getElementById('blockEditBody').innerHTML = `
-    <div class="be-kicker" style="color:${col};">${grp}</div>
-    <div class="be-name">${b.n}</div>
+    <div class="be-kicker" style="color:${col};">${grp}${drill ? ' · skill choice' : ''}</div>
+    <div class="be-name">${drill ? drill.n : b.n}</div>
     ${durRow}
     ${hasRpe ? `<div class="be-rpe">${rpeLabel(b.rpe)}</div>` : ''}
-    <div class="be-why">${b.why || ''}</div>
+    ${whyHTML}
     ${links}
     ${hint ? `<div class="be-hint">${hint}</div>` : ''}
     <div class="be-actions">${actions}</div>`;
