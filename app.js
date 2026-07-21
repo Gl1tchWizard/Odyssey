@@ -594,7 +594,13 @@ function getBlocks(id) {
   const base = s.slots.map((slot, i) => {
     let key;
     if (Array.isArray(slot)) {
-      key = slot[(daySeed + offset + i) % slot.length];
+      // materiaal-voorkeur uit de vraagflow: filter alternatieven weg die
+      // materiaal vragen dat er niet is; volledig gefilterd slot → equivalent
+      // zonder dat materiaal (GEAR_FALLBACK); laatste redmiddel = origineel
+      let pool = slot.filter(genAllowedKey);
+      if (!pool.length) pool = [...new Set(slot.map(k => GEAR_FALLBACK[k] || k))].filter(genAllowedKey);
+      if (!pool.length) pool = slot;
+      key = pool[(daySeed + offset + i) % pool.length];
     } else {
       key = slot;
     }
@@ -1750,16 +1756,28 @@ function adaptCoachToTime(pick) {
 
 // ── TODAY'S PICK: het primaire moment op de landing. De coach/ACWR-logica
 // (coachSuggest + adaptCoachToTime) blijft ongewijzigd; alleen de vorm is nieuw. ──
+// materiaal-sleutellijsten: gedeeld door deriveGear en de generate-vraagflow
+const FING_KEYS = ['maxHangs','nohangs','activeCurls','mdFinger','mdMaxHangs','mdNoHangs','hog'];
+const BOARD_KEYS = ['board1','boardVolume','boardApply','campus'];
+const GYM_KEYS = ['gymWarmup','pullStrength','pushStrength','coreLegs','mini1','mini2','mini3'];
+// materiaal-voorkeur van de generate-vraagflow; default alles beschikbaar,
+// dus zonder vraagflow verandert er niets aan de rotatie
+let genGear = { board: true, fingerboard: true };
+function genAllowedKey(k) {
+  if (!genGear.board && BOARD_KEYS.includes(k)) return false;
+  if (!genGear.fingerboard && FING_KEYS.includes(k)) return false;
+  return true;
+}
+// materiaal-loze equivalenten voor slots waarin ALLE alternatieven hetzelfde
+// materiaal vragen (bv. Power: boardApply|board1 zonder board → limit op de wand)
+const GEAR_FALLBACK = { board1:'limitBlocks', boardApply:'limitBlocks', boardVolume:'volume', campus:'dynos', maxHangs:'lockoffs', nohangs:'lockoffs', activeCurls:'lockoffs' };
 function deriveGear(blocks) {
   // materiaal van het kernblok (grootste), niet van een kleine afsluiter
-  const FING = ['maxHangs','nohangs','activeCurls','mdFinger','mdMaxHangs','mdNoHangs','hog'];
-  const BOARD = ['board1','boardVolume','boardApply','campus'];
-  const GYM = ['gymWarmup','pullStrength','pushStrength','coreLegs','mini1','mini2','mini3'];
   const core = blocks.slice().sort((a, b) => b.t - a.t)[0];
   const k = core ? core._key : '';
-  if (FING.includes(k)) return 'Fingerboard';
-  if (BOARD.includes(k)) return 'Board';
-  if (GYM.includes(k)) return 'Gym';
+  if (FING_KEYS.includes(k)) return 'Fingerboard';
+  if (BOARD_KEYS.includes(k)) return 'Board';
+  if (GYM_KEYS.includes(k)) return 'Gym';
   return 'Gym wall';
 }
 // verwachte belasting van een gegenereerde sessie: intensiteitsfactor → vier standen
@@ -3515,6 +3533,112 @@ function openMockSession(i) {
 function openGenerate() {
   goTo('v-generate');
   setTimeIdx(activeTimeIdx);  // chip-status en samenvatting syncen nu de view zichtbaar is
+  genReset();
+}
+
+// ── GENERATE-VRAAGFLOW: kort gesprek (max drie vragen), dan een voorstel ──
+// 1 doel (of vrije tekst) → 2 tijd → 3 materiaal (alleen als het het voorstel
+// echt verandert) → voorstel met fingerprint en reden. De bestaande
+// generatorsecties blijven eronder staan voor wie zelf wil kiezen.
+let genStep = 'goal';
+let genGoal = null;
+let _genPick = null;
+function genReset() {
+  genStep = 'goal'; genGoal = null; _genPick = null;
+  genGear = { board: true, fingerboard: true };
+  renderGenFlow();
+}
+function genPickGoal(id) { genGoal = id; genStep = 'time'; renderGenFlow(); }
+function genFreeText() {
+  const q = (document.getElementById('genFreeInput').value || '').toLowerCase().trim();
+  if (!q) return;
+  const words = q.split(/\s+/);
+  let best = null, bestScore = 0;
+  sessions.forEach(s => {
+    const hay = ((s.tags || []).join(' ') + ' ' + s.name + ' ' + s.desc + ' ' + s.cat).toLowerCase();
+    const score = words.reduce((n, w) => n + (hay.includes(w) ? 1 : 0), 0);
+    if (score > bestScore) { best = s; bestScore = score; }
+  });
+  if (best) genPickGoal(best.id);
+  else showToast('No match. Pick a goal below.');
+}
+function genPickTime(idx) {
+  setTimeIdx(idx);   // Generate is tijd-leidend: dit is het budget
+  genStep = genGearQuestions().length ? 'gear' : 'proposal';
+  renderGenFlow();
+}
+// materiaalvraag alleen als het gekozen doel keuzeslots heeft waarin de
+// beschikbaarheid het voorstel echt verandert
+function genGearQuestions() {
+  const s = sessions.find(x => x.id === genGoal);
+  if (!s) return [];
+  const qs = [];
+  const mixed = (slot, keys) => Array.isArray(slot) && slot.some(k => keys.includes(k)) && slot.some(k => !keys.includes(k));
+  if (s.slots.some(slot => mixed(slot, BOARD_KEYS))) qs.push('board');
+  if (s.slots.some(slot => mixed(slot, FING_KEYS))) qs.push('fingerboard');
+  return qs;
+}
+function genSetGear(kind, val) { genGear[kind] = val; renderGenFlow(); }
+function genShowProposal() { genStep = 'proposal'; renderGenFlow(); }
+function genStart() {
+  if (!_genPick) return;
+  selectSession(_genPick);
+  goToSession();   // opent de slab, nooit blind starten
+}
+function renderGenFlow() {
+  const el = document.getElementById('genFlow');
+  if (!el) return;
+  let html = '';
+  const back = (step, label) => `<button class="gen-ghost" onclick="genStep='${step}';renderGenFlow()">← ${label}</button>`;
+  if (genStep === 'goal') {
+    html = `<div class="gen-q">What do you want to train?</div>
+      <div class="gen-opts">${sessions.map(s =>
+        `<button class="gen-opt" onclick="genPickGoal('${s.id}')">${s.cat}<small>${s.desc.split('\n')[0].toLowerCase()}</small></button>`).join('')}
+      </div>
+      <div class="gen-free">
+        <input id="genFreeInput" type="text" placeholder="or describe what you want" onkeydown="if(event.key==='Enter')genFreeText()">
+        <button onclick="genFreeText()">→</button>
+      </div>`;
+  } else if (genStep === 'time') {
+    html = `<div class="gen-q">How much time do you have?</div>
+      <div class="gen-opts">${timeValues.map((v, i) =>
+        `<button class="gen-opt${i === activeTimeIdx ? ' sel' : ''}" onclick="genPickTime(${i})">${isFinite(v) ? v + "'" : '∞'}</button>`).join('')}
+      </div>${back('goal', 'change goal')}`;
+  } else if (genStep === 'gear') {
+    const qs = genGearQuestions();
+    const row = kind => {
+      const label = kind === 'board' ? 'Board (Kilter, spray)' : 'Fingerboard';
+      return `<div class="gen-gear-row"><div class="gen-gear-label">${label}</div>
+        <button class="gen-opt${genGear[kind] ? ' sel' : ''}" onclick="genSetGear('${kind}', true)">yes</button>
+        <button class="gen-opt${!genGear[kind] ? ' sel' : ''}" onclick="genSetGear('${kind}', false)">no</button></div>`;
+    };
+    html = `<div class="gen-q">What do you have today?</div>
+      <div class="gen-opts" style="flex-direction:column;align-items:stretch;">${qs.map(row).join('')}</div>
+      <div style="padding:10px 20px 0;"><button class="start-btn" style="width:100%;" onclick="genShowProposal()">Show my session →</button></div>
+      ${back('time', 'change time')}`;
+  } else {
+    const pick = adaptCoachToTime({ id: genGoal, time: isFinite(getT()) ? getT() : 60, reason: '' });
+    _genPick = pick.id;
+    const s = sessions.find(x => x.id === pick.id);
+    const blocks = getBlocks(pick.id);
+    const total = blocks.reduce((sum, b) => sum + b.t, 0);
+    const fit = _fitInfo[pick.id];
+    const band = blocks.map(b => `<div style="flex:${b.t};background:${b.c};"></div>`).join('');
+    const reason = ((s && s.intent ? s.intent.split('.')[0] + '.' : '') + (pick.reason || '')).trim();
+    const warn = (fit && fit.conflict)
+      ? `<div class="fit-warning" style="margin-top:10px;">This combination needs at least ${fit.need} min. Extend the session or remove a block.</div>` : '';
+    html = `<div class="gen-q">Today's proposal</div>
+      <div class="gen-prop">
+        <div class="gen-prop-title">${s ? s.name : ''}</div>
+        <div class="gen-band">${band}</div>
+        <div class="gen-meta">${total}' · rpe ${s ? s.rpe : ''} · ${deriveGear(blocks).toLowerCase()}</div>
+        <div class="gen-reason">${reason}</div>
+        ${warn}
+        <button class="start-btn" style="width:100%;margin-top:12px;" onclick="genStart()">Start session</button>
+      </div>
+      ${back('goal', 'change answers')}`;
+  }
+  el.innerHTML = html + `<div class="slabel" style="padding-top:18px;">or pick yourself</div>`;
 }
 
 // ── DISCOVER: etalage op de landing — de gecureerde Apex-plank met de
