@@ -667,7 +667,37 @@ function adjustBlock(id, slotIdx, currentT, delta) {
 function getSession(id) { if (id === 'custom') return customSession; return sessions.find(x=>x.id===id); }
 
 // ── NAVIGATION ──
+// Navigatiestack: BACK gaat overal precies één stap terug. In-app stack plus
+// één sentinel-history-entry (zie onderaan): systeem-back triggert popstate →
+// goBack(), zonder per-stap pushState en dus zonder botsing met #s=-deel-links.
+const _navStack = [];
+let _navSuppress = false;
+function goBack() {
+  // overlays eerst, bovenste laag sluit; de DOM is de waarheid (geen desync)
+  const overlays = [
+    ['blockEditDialog', closeBlockEdit],
+    ['newExerciseDialog', closeNewExercise],
+    ['saveFavDialog', closeSaveFav],
+    ['shareDialog', closeShareDialog],
+    ['previewView', closeChoosePreview],
+    ['blockDetail', closeBlockDetail],
+    ['blockPicker', closeBlockPicker],
+  ];
+  for (const [id, close] of overlays) {
+    const el = document.getElementById(id);
+    if (el && el.style.display === 'flex') { close(); return; }
+  }
+  const prev = _navStack.pop();
+  _navSuppress = true;
+  goTo(prev && prev.view ? prev.view : 'v-browse');
+  _navSuppress = false;
+}
 function goTo(viewId) {
+  const cur = document.querySelector('.view.active');
+  if (!_navSuppress && cur && cur.id !== viewId) {
+    _navStack.push({ view: cur.id });
+    if (_navStack.length > 20) _navStack.shift();
+  }
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById(viewId).classList.add('active');
   if (viewId === 'v-browse' && typeof renderContinue === 'function') renderContinue();
@@ -2543,51 +2573,84 @@ let _dragging = false, _dragEl = null, _pressY = 0, _justDragged = false;
 
 function slabBlockTap(i) {
   if (_justDragged) { _justDragged = false; return; }
-  // voor LOCK IN: tik opent het bewerkpaneel (duur, rpe, instructie);
-  // de speler opent pas na lock-in en start
-  if (!sessionLocked) { openBlockEdit(i); return; }
-  openBlock(i);
+  // interactiemodel: tik = altijd blok-info; de speler opent alleen via START.
+  // Enige vastgelegde uitzondering: in een lopende sessie is de tik
+  // navigatie/overslaan binnen de run (in-session flexibiliteit).
+  if (sessionStartTime) { openBlock(i); return; }
+  openBlockEdit(i);
 }
 
-// ── BLOK-BEWERKPANEEL (builder, voor lock-in) ──
-let _editBlockIdx = null;
+// ── BLOK-INFO/BEWERKPANEEL: past zich aan de context aan ──
+// eigen bewerkbaar concept → steppers + verwijderen; gelockt eigen → hint ✎;
+// gecureerd/gedeeld → alleen-lezen + remix; preview-rij (key) → alleen-lezen
+let _editBlockIdx = null;   // slab-context (index in currentBlocks)
+let _editBlockKey = null;   // key-context (preview-rijen)
 function openBlockEdit(i) {
-  _editBlockIdx = i;
+  _editBlockIdx = i; _editBlockKey = null;
   renderBlockEdit();
   document.getElementById('blockEditDialog').style.display = 'flex';
 }
-function closeBlockEdit() { _editBlockIdx = null; document.getElementById('blockEditDialog').style.display = 'none'; }
+function openBlockInfo(key) {
+  _editBlockKey = key; _editBlockIdx = null;
+  renderBlockEdit();
+  document.getElementById('blockEditDialog').style.display = 'flex';
+}
+function closeBlockEdit() { _editBlockIdx = null; _editBlockKey = null; document.getElementById('blockEditDialog').style.display = 'none'; }
 function renderBlockEdit() {
-  const b = currentBlocks[_editBlockIdx];
+  const slabCtx = _editBlockIdx != null;
+  const b = slabCtx
+    ? currentBlocks[_editBlockIdx]
+    : (BLOCKLIB[_editBlockKey] ? { ...BLOCKLIB[_editBlockKey], _key: _editBlockKey } : null);
   if (!b) { closeBlockEdit(); return; }
   const bd = blockBounds(b);
   const grp = blockGroupName(b._key);
   const col = CAT_COLOR[grp] || b.c;
-  const durRow = bd.min === bd.max
-    ? `<div class="be-dur"><div class="be-dur-val">${b.t}<span>'</span></div></div>
-       <div class="be-dur-range">fixed duration</div>`
-    : `<div class="be-dur">
+  const editable = slabCtx && !sessionLocked && sessionOwned;
+  const durRow = (editable && bd.min !== bd.max)
+    ? `<div class="be-dur">
         <button class="step-btn" onclick="beAdjust(-5)" aria-label="shorter">&minus;</button>
         <div class="be-dur-val">${b.t}<span>'</span></div>
         <button class="step-btn" onclick="beAdjust(5)" aria-label="longer">+</button>
        </div>
-       <div class="be-dur-range">${bd.min} to ${bd.max} min</div>`;
+       <div class="be-dur-range">${bd.min} to ${bd.max} min</div>`
+    : `<div class="be-dur"><div class="be-dur-val">${b.t}<span>'</span></div></div>
+       <div class="be-dur-range">${bd.min === bd.max ? 'fixed duration' : bd.min + ' to ' + bd.max + ' min'}</div>`;
   const hasRpe = b.rpe && b.rpe !== '-' && b.rpe !== '–';
-  const editBtn = (b._key && b._key.startsWith('ux_'))
-    ? `<button class="be-secondary" onclick="closeBlockEdit();openNewExercise('${b._key}')">✎ Edit exercise</button>` : '';
+  // context-hint en acties
+  let hint = '', actions = '';
+  if (editable) {
+    const editBtn = (b._key && b._key.startsWith('ux_'))
+      ? `<button class="be-secondary" onclick="closeBlockEdit();openNewExercise('${b._key}')">✎ Edit</button>` : '';
+    actions = `${editBtn}<button class="be-secondary" style="color:var(--danger);border-color:color-mix(in srgb, var(--danger) 27%, transparent);" onclick="beRemove()">Remove</button><button class="be-done" onclick="closeBlockEdit()">Done</button>`;
+  } else if (slabCtx && sessionOwned) {
+    hint = 'Locked session. Unlock with the ✎ edit row below to change blocks.';
+    actions = `<button class="be-done" onclick="closeBlockEdit()">Done</button>`;
+  } else if (slabCtx) {
+    hint = 'Curated session, read only. Remix it to make your own editable copy.';
+    actions = `<button class="be-secondary" onclick="closeBlockEdit();duplicateSession()">⧉ Remix</button><button class="be-done" onclick="closeBlockEdit()">Done</button>`;
+  } else {
+    hint = 'Read only. Remix the session to make an editable copy.';
+    actions = `<button class="be-secondary" onclick="closeBlockEdit();closeChoosePreview();customizeFromChoose()">⧉ Remix</button><button class="be-done" onclick="closeBlockEdit()">Done</button>`;
+  }
   document.getElementById('blockEditBody').innerHTML = `
     <div class="be-kicker" style="color:${col};">${grp}</div>
     <div class="be-name">${b.n}</div>
     ${durRow}
     ${hasRpe ? `<div class="be-rpe">rpe ${b.rpe}</div>` : ''}
     <div class="be-why">${b.why || ''}</div>
-    <div class="be-actions">${editBtn}<button class="be-done" onclick="closeBlockEdit()">Done</button></div>`;
+    ${hint ? `<div class="be-hint">${hint}</div>` : ''}
+    <div class="be-actions">${actions}</div>`;
 }
 function beAdjust(delta) {
   const b = currentBlocks[_editBlockIdx];
   if (!b) return;
   adjustBlock(activeSessionId, _editBlockIdx, b.t, delta);  // klemt op [tMin, tMax], herbouwt slab en preview
   renderBlockEdit();
+}
+function beRemove() {
+  const i = _editBlockIdx;
+  closeBlockEdit();
+  if (i != null) removeBlock(i);
 }
 function slabPressStart(ev, el) {
   clearTimeout(_pressTimer);
@@ -3166,6 +3229,22 @@ window.addEventListener('beforeunload', e => {
   }
 });
 
+// ── SYSTEEM-BACK: sentinel-entry, popstate gaat in-app één stap terug ──
+// Eén pushState (zonder hash) direct na init; de deel-link-import heeft de
+// #s=-hash dan al gelezen en gestript, dus history en hash botsen nooit.
+try { history.pushState({ crimpify: 'nav' }, '', location.pathname); } catch {}
+window.addEventListener('popstate', () => {
+  try { history.pushState({ crimpify: 'nav' }, '', location.pathname); } catch {}
+  // tijdens een lopend blok eerst de exit-guard, net als de in-app back
+  if (typeof hasLiveProgress === 'function' && hasLiveProgress()) { guardedExit(() => goBack()); return; }
+  goBack();
+});
+// deel-link opnieuw geopend in dezelfde tab: na de eerdere replaceState is dat
+// een hashchange (geen page-load), dus alsnog importeren
+window.addEventListener('hashchange', () => {
+  if (location.hash.startsWith('#s=')) importFromHash();
+});
+
 // ── PWA: register external service worker (auto-updating) ──
 if ('serviceWorker' in navigator) {
   // controllerchange is hét signaal dat een nieuwe sw de controle pakt
@@ -3212,8 +3291,8 @@ function chMatch(s) {
   if (q && !(s.name + ' ' + s.coach + ' ' + s.goal + ' ' + s.gear.join(' ')).toLowerCase().includes(q)) return false;
   const f = chFilters;
   if (f.time != null) {
-    if (f.time === 90) { if (s.mins < 90) return false; }
-    else if (s.mins > f.time) return false;
+    if (f.time === 90) { if (sessionMins(s) < 90) return false; }
+    else if (sessionMins(s) > f.time) return false;
   }
   if (f.goal && !CH_GOAL_SYS[f.goal].includes(s.sys)) return false;
   if (f.gear) {
@@ -3291,7 +3370,7 @@ function chResultCard(i) {
     <div class="ch-result-body">
       <div class="ch-name">${s.name}</div>
       <div class="ch-result-coach">by ${s.coach} <span>· ${COACH_ROLE[s.coach] || 'coach'}</span></div>
-      <div class="ch-line">${s.goal} · ${s.mins} min · ${s.gear.join(', ')}</div>
+      <div class="ch-line">${s.goal} · ${sessionMins(s)} min · ${s.gear.join(', ')}</div>
       <div class="ch-foot"><span style="display:flex;align-items:center;gap:6px;">load ${chPhalanx(s.load, true)}</span><span>${s.done ? s.done + ' done' : ''}</span></div>
     </div>
   </div>`;
@@ -3370,6 +3449,12 @@ const MOCK_CHOOSE = [
     intent:'Deadhangs while fresh, two skill blocks, then a big counted capacity set.',
     why:'Progressive deadhangs while you are fresh, two skill blocks of your own choice, then twenty five to thirty five counted boulders across board, spray and gym. Most should go in one or two attempts. Add one or two boulders per session, no more.' }
 ];
+// kop = som: getoonde en gefilterde minuten zijn altijd de som van de
+// blok-basisduren van de sessie; het statische mins-veld is alleen fallback
+function sessionMins(s) {
+  const sum = (s.keys || []).reduce((t, k) => t + (BLOCKLIB[k] ? BLOCKLIB[k].t : 0), 0);
+  return sum || s.mins || 0;
+}
 const COACH_ROLE = { 'Mila Berg':'strength coach', 'Teo Marchetti':'power & comp coach', 'Ana Kovač':'endurance coach', 'Ines Fujimoto':'technique coach', 'Jonas Steen':'recovery coach', 'Vincent':'easy day coach', 'Crimpify':'the house method', 'Govert':'head coach' };
 function coachShort(name) { const p = name.split(' '); return p.length > 1 ? p[0] + ' ' + p[1][0] + '.' : name; }
 
@@ -3389,7 +3474,7 @@ function chPhalanx(load, mini) {
 // ster = opslaan, nooit sociaal: hergebruikt crimpify_favs (dedupe op naam, max 12)
 function isChooseSaved(name) { return loadFavs().some(f => f.name === name); }
 function chooseFavEntry(s) {
-  return { name: s.name, keys: s.keys.slice(), color: s.color || 'lime', rpe: s.rpe || '–', intent: s.intent || '', time: s.mins };
+  return { name: s.name, keys: s.keys.slice(), color: s.color || 'lime', rpe: s.rpe || '–', intent: s.intent || '', time: sessionMins(s) };
 }
 function toggleChooseSave(ev, i) {
   if (ev) ev.stopPropagation();  // kaart-onclick opent de preview
@@ -3428,7 +3513,7 @@ function chCard(i, noStar) {
     <div class="ch-print">${chBlueprint(s.keys)}</div>
     <div class="ch-card-body">
       <div class="ch-name">${s.name}</div>
-      <div class="ch-line">${s.goal} · ${s.mins} min</div>
+      <div class="ch-line">${s.goal} · ${sessionMins(s)} min</div>
       <div class="ch-line">${s.gear[0]} · load ${chPhalanx(s.load, true)}</div>
       <div class="ch-foot"><span>${coachShort(s.coach)}</span><span>${s.done ? s.done + ' done' : ''}</span></div>
     </div>
@@ -3464,8 +3549,8 @@ function computeForYou() {
 function computeTimeShelf() {
   const t = getT();
   const all = MOCK_CHOOSE.map((s, i) => ({ s, i }));
-  if (!isFinite(t)) return { title:'Any length', sub:'no time limit set', idxs: all.sort((a, b) => b.s.mins - a.s.mins).map(x => x.i) };
-  return { title:`Under ${t} min`, sub:'fits the time you set', idxs: all.filter(x => x.s.mins <= t).sort((a, b) => b.s.done - a.s.done).map(x => x.i) };
+  if (!isFinite(t)) return { title:'Any length', sub:'no time limit set', idxs: all.sort((a, b) => sessionMins(b.s) - sessionMins(a.s)).map(x => x.i) };
+  return { title:`Under ${t} min`, sub:'fits the time you set', idxs: all.filter(x => sessionMins(x.s) <= t).sort((a, b) => b.s.done - a.s.done).map(x => x.i) };
 }
 // gecureerd: handmatig samengestelde lijst in afstemming met de Apex-gym, hardcoded tot er
 // een backend is; wordt dan berekend, het ontwerp blijft gelijk (CLAUDE.md Choose-flow punt 4)
@@ -3494,14 +3579,18 @@ function renderChoose() {
       </div>
       <div class="ch-tape">${chBlueprint(f.keys)}</div>
       <div class="ch-feat-meta">
-        <span>${f.mins} min</span><span>${f.goal.toLowerCase()}</span>${f.done ? `<span>${f.done} done</span>` : ''}
+        <span>${sessionMins(f)} min</span><span>${f.goal.toLowerCase()}</span>${f.done ? `<span>${f.done} done</span>` : ''}
         <span style="margin-left:auto;display:flex;align-items:center;gap:6px;">load ${chPhalanx(f.load)}</span>
       </div>
       <button class="ch-view-btn" onclick="openChoosePreview(${fi})">View session</button>
     </div>`;
   const newShelf = { title:'New', sub:'fresh from the coaches', idxs: MOCK_CHOOSE.map((s, i) => ({ s, i })).filter(x => x.s.cat === 'new').map(x => x.i) };
   const apexShelf = { title:'Popular at Apex', sub:'curated with apex bouldergym', idxs: APEX_PICKS.map(n => MOCK_CHOOSE.findIndex(s => s.name === n)).filter(i => i >= 0) };
-  body.innerHTML = hero
+  // echte coach-sessies bovenaan, voor alle andere planken; de mock-catalogus
+  // blijft als filler eronder. Geen badges (backlog); de plaatsing doet het werk.
+  const govShelf = { title:'By Govert', sub:'real sessions from your coach', idxs: MOCK_CHOOSE.map((s, i) => ({ s, i })).filter(x => x.s.coach === 'Govert').map(x => x.i) };
+  body.innerHTML = chShelf(govShelf)
+    + hero
     + chShelf(computeForYou())
     + chShelf(computeTimeShelf())
     + chShelf(apexShelf)
@@ -3536,11 +3625,15 @@ let _previewIdx = null;
 function openChoosePreview(i) {
   const s = MOCK_CHOOSE[i];
   if (!s) return;
+  // navigatie: een openstaand blok-detail (appears-in-route) sluit hier,
+  // anders blijft dat overlay als wees boven de sessie hangen
+  closeBlockDetail();
   _previewIdx = i;
   const col = C[s.color] || C.lime;
+  // interactiemodel: preview-rijen zijn tikbaar → alleen-lezen blok-info
   const blocks = s.keys.filter(k => BLOCKLIB[k]).map(k => {
     const b = BLOCKLIB[k];
-    return `<div class="pv-block" style="border-left-color:${b.c};">
+    return `<div class="pv-block" style="border-left-color:${b.c};cursor:pointer;" onclick="openBlockInfo('${k}')">
       <div class="pv-block-name">${b.n}</div>
       <div class="pv-block-t" style="color:${nameColor(b.c)};">${b.t} min</div>
     </div>`;
@@ -3549,7 +3642,7 @@ function openChoosePreview(i) {
     <div class="ch-kicker">preview</div>
     <div class="pv-name">${s.name}</div>
     <div class="pv-meta">
-      <span>${s.mins} min</span><span>${s.goal.toLowerCase()}</span><span>${s.level}</span>${s.done ? `<span>${s.done} done</span>` : ''}
+      <span>${sessionMins(s)} min</span><span>${s.goal.toLowerCase()}</span><span>${s.level}</span>${s.done ? `<span>${s.done} done</span>` : ''}
       <span style="display:flex;align-items:center;gap:6px;">load ${chPhalanx(s.load)}</span>
     </div>
     <div class="pv-section">
@@ -3587,6 +3680,18 @@ function chooseCopyTitle(base) {
   let who = '';
   try { who = localStorage.getItem('crimpify_name') || ''; } catch {}
   return base + ' · ' + (who ? who + ' version' : 'your version');
+}
+// SHARE op de preview: deelt de gecureerde sessie via het bestaande linkmechanisme
+function sharePreviewSession() {
+  if (_previewIdx == null) return;
+  const s = MOCK_CHOOSE[_previewIdx];
+  const keys = s.keys.filter(k => BLOCKLIB[k]);
+  const url = location.origin + location.pathname + '#s=' + encodePayload(s.name, keys, sessionMins(s), s.color, keys.map(k => BLOCKLIB[k].t));
+  if (navigator.share) {
+    navigator.share({ title: 'Crimpify: ' + s.name, text: shareText(s.name, sessionMins(s)), url }).catch(() => openShareDialog(url));
+  } else {
+    openShareDialog(url);
+  }
 }
 function customizeFromChoose() {
   if (_previewIdx == null) return;
@@ -3840,7 +3945,6 @@ function openBlockDetail(key) {
     </div>
     ${inIdx.length ? `<div class="ch-shelf">${inIdx.map(i => chCard(i, true)).join('')}</div>` : ''}
     <div style="height:16px;"></div>`;
-  document.getElementById('bdTryBtn').onclick = () => tryBlockNow(key);
   document.getElementById('bdAddBtn').onclick = () => addBlockToSession(key);
   if (inIdx.length) enableWheelScroll('#blockDetailBody .ch-shelf');
   const bd = document.getElementById('blockDetail');
@@ -3848,22 +3952,8 @@ function openBlockDetail(key) {
   bd.querySelector('.scroll-body').scrollTop = 0;
 }
 function closeBlockDetail() { document.getElementById('blockDetail').style.display = 'none'; }
-// TRY THIS NOW: minimale wrapper-sessie (korte warm-up + dit blok), slab klaar om te starten
-function tryBlockNow(key) {
-  const b = BLOCKLIB[key];
-  if (!b) return;
-  customSession = { id:'custom', cat:'own', name:b.n, desc:'', color:blockColorName(key), rpe:b.rpe || '–',
-    intent:'A minimal session around this block. Warm up, do the work, done.' };
-  customKeys = key === 'dynamic' ? ['dynamic'] : ['dynamic', key];
-  durationOverride['custom'] = {};
-  activeSessionId = 'custom';
-  sessionOwned = true;
-  sessionLocked = true;  // klaar om te starten; ✎ ontgrendelt voor aanpassen
-  closeBlockDetail();
-  closeBlockPicker();
-  buildSlab();
-  goTo('v-session');
-}
+// TRY THIS NOW is vervallen (productbeslissing juli 2026): de wrapper-sessie
+// was onzinnig; ADD TO SESSION is de primaire actie, context loopt via APPEARS IN.
 // ADD TO SESSION: bestaande draft + blok, of verse draft met dit blok; landt zichtbaar in de builder
 function addBlockToSession(key) {
   const d = loadDraft();
