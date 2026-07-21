@@ -40,7 +40,7 @@
   <div id="splashInner">
     <svg id="splashMark"><use href="#cf-mark"/></svg>
     <svg id="splashWord"><use href="#cf-word"/></svg>
-    <div id="splashBy">by Glitch Labs · v0.31</div>
+    <div id="splashBy">by Glitch Labs · v0.32</div>
     <div id="splashBeta">still working out the beta</div>
   </div>
   <div id="splashFlash"></div>
@@ -187,6 +187,7 @@
     <div class="topbar"><button class="back-btn" onclick="goTo('v-build')">← back</button><div class="logo" onclick="goTo('v-browse')" style="cursor:pointer;"><svg class="logo-mark"><use href="#cf-mark"/></svg><svg class="logo-word"><use href="#cf-word"/></svg></div></div>
     <div class="scroll-body">
       <div class="main-content">
+        <div id="genFlow"></div>
         <div onclick="selectSession('minidose');goToSession();" style="margin:4px 20px 10px;padding:10px 14px;border:1px solid var(--graphite);border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;">
           <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dust);">short on time? <b style="color:var(--dust);font-weight:500;">minimal dose · ~20 min</b></div>
           <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--dust);">›</div>
