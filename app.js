@@ -177,7 +177,7 @@ const BLOCKLIB = {
     ] },
   warmup: { n:'Progressive warm-up + skills', t:30, tMin:15, tMax:45, c:'var(--prepare)', rpe:'2-5', drills:true,
     why:'Boulder ladder that gets progressively harder: 4, 4, 5a, 5b, 5c, 6a, 6a, 6b up to 6c. From 6a rest 3 min. The goal is not sending boulders but getting properly warm. Vary wall angle and style. Aim for 10-20 boulders, 1-2 per grade. Add the skill of the day (below) — one pillar per session.' },
-  warmupFinger: { n:'Warm-up + fingers', t:35, tMin:20, tMax:45, c:'var(--prepare)', rpe:'2-5', drills:true,
+  warmupFinger: { n:'Warm-up + fingers', t:35, tMin:15, tMax:45, c:'var(--prepare)', rpe:'2-5', drills:true,
     why:'Progressive warm-up (boulder ladder 4 → 6c) plus specific finger prep: easy hangs, lifting pin building up, at least 15 min of tendon preparation. For heavy finger work this is non-negotiable.' },
   mobilityOpen: { n:'Dynamic stretching + tendon glides', t:20, tMin:10, tMax:25, c:'var(--prepare)', rpe:'-',
     why:'Jumping jacks 30, seals 20, split jumps 20, trunk twists 20, leg swings 20+20, arm/elbow/shoulder circles. Tendon glides on top.' },
@@ -228,9 +228,9 @@ const BLOCKLIB = {
     ] },
 
   // ── capacity cores ──
-  volume: { n:'Volume boulders', t:40, tMin:30, tMax:60, c:'var(--volume)', rpe:'6', sets:30, rest:3, checklist:true, target:30, range:'25-35',
+  volume: { n:'Volume boulders', t:40, tMin:20, tMax:60, c:'var(--volume)', rpe:'6', sets:30, rest:3, checklist:true, target:30, range:'25-35',
     why:'25-35 boulders around 6a/6b. 3 min rest from 6a, timer on. Drop a grade when quality fades (first 5c, then 5b). Stop at technical failure, not muscular failure.' },
-  linked: { n:'Linked boulders', t:40, tMin:30, tMax:55, c:'var(--volume)', rpe:'6-7', sets:8, rest:4,
+  linked: { n:'Linked boulders', t:40, tMin:25, tMax:60, c:'var(--volume)', rpe:'6-7', sets:8, rest:4,
     why:'Link two boulders together (climb down or step straight through). Grades around 5c-6a per boulder so the link stays doable. 3-4 min rest between links. 6-10 links total.' },
   boardVolume: { n:'Kilterboard volume', t:40, tMin:30, tMax:60, c:'var(--volume)', rpe:'6-7', sets:18, rest:3,
     why:'15-20 boulders below your board max (6a-6b on the board). 3 min rest, timer on. Watch your skin — stop at flappers or move to the gym wall. Repeat boulders that could flow better.' },
@@ -244,7 +244,7 @@ const BLOCKLIB = {
     why:'Twenty boulders around your comfortable flash level. Rest as needed, keep the quality high and do not count boulders that fall apart. Twenty good ones beat twenty-five sloppy ones.' },
 
   // ── power endurance cores ──
-  hehe: { n:'HEHE sets', t:42, tMin:30, tMax:60, c:'var(--volume)', rpe:'7-8', sets:4, rest:8,
+  hehe: { n:'HEHE sets', t:42, tMin:30, tMax:70, c:'var(--volume)', rpe:'7-8', sets:4, rest:8,
     why:'Set = hard boulder (doable but not flashable, ~6b/6c) → straight into a very easy one → straight into a hard one again → finish easy. 3-6 sets, 5-10 min rest between sets. First 2-3 sets just short of failure. Progression: more sets first, only then harder.' },
   fourByFour: { n:'4×4 circuits', t:42, tMin:30, tMax:50, c:'var(--volume)', rpe:'7-8', sets:4, rest:4,
     why:'Pick 4 boulders 2-3 grades below max (~5c-6a), different styles, slightly overhanging, no rest positions. Climb all 4 back to back without rest, then rest 4 min. 4 rounds. Too easy if you never come close to falling; too hard if you already fail in round 2.' },
@@ -252,13 +252,13 @@ const BLOCKLIB = {
     why:'Power endurance by feel. Climb blocks of 2-4 boulders back to back with short rests. Alternate hard and easy. 30-45 min of near-continuous movement with building pump. Stop when technique falls apart.' },
 
   // ── power cores ──
-  board1: { n:'Board Session 1', t:45, tMin:45, tMax:75, c:'var(--max-effort)', rpe:'8', sets:6, rest:4,
+  board1: { n:'Board Session 1', t:75, tMin:45, tMax:180, c:'var(--max-effort)', rpe:'8', sets:6, rest:4,
     why:'4-8 boulders at your limit. Different styles, grips and wall angles. Pick boulders you can climb within 4 tries: first try = too easy, hopeless after 4 tries = too hard. Weekly progression: wk1 4, wk2 5, wk3 6, wk4 7 boulders. 3+ min rest.' },
-  limitBlocks: { n:'Limit boulder blocks', t:42, tMin:30, tMax:60, c:'var(--max-effort)', rpe:'9', sets:3, rest:8,
+  limitBlocks: { n:'Limit boulder blocks', t:60, tMin:30, tMax:120, c:'var(--max-effort)', rpe:'9', sets:3, rest:8,
     why:'2-3 limit blocks of 2-4 moves. Rest 2 min per move (4-move block = 8 min rest). Max effort, fast movement, form under tension. Do not repeat moves to polish beta — this is testing your limit. Power drops = stop.' },
   campus: { n:'Campus boarding', t:22, tMin:15, tMax:30, c:'var(--max-effort)', rpe:'8', sets:5, rest:3,
     why:'~20 total impacts. Ladders 1-2-3 or 1-3-5. Use rungs you control easily and hit fast. Focus on speed and precision, not distance. Avoid failure and slow grinding reps.' },
-  dynos: { n:'Dynos', t:20, tMin:15, tMax:30, c:'var(--max-effort)', rpe:'8', sets:4, rest:2,
+  dynos: { n:'Dynos', t:25, tMin:15, tMax:40, c:'var(--max-effort)', rpe:'8', sets:4, rest:2,
     why:'3-4 dynos on flat walls, no overhang. 3 reps per dyno. Vary direction and foot positions. Drive from the feet, accuracy first. 2+ min rest per full attempt.' },
   maxHangs: { n:'Max hangs', t:28, tMin:20, tMax:40, c:'var(--max-effort)', rpe:'8-9', sets:4, rest:4,
     why:'3-5 sets of 3-5 sec @ 90-95% of max hang load. Half crimp unless it hurts. Edge 10-30mm. Pull into the edge, shoulder engaged. 3-5 min rest between reps. Fingers not perfect? Skip — no exceptions.' },
@@ -268,7 +268,7 @@ const BLOCKLIB = {
     why:'Pick 6 physically demanding boulders (ones you normally just barely send). Per boulder: climb it 3x within 5 min, then rest 5 min, then the next. Ideally you make it three times, on your last legs. Three easy sends = go harder next time. Failing on the third is fine, as long as it does not happen on every boulder.' },
   pyramide: { n:'Pyramid', t:50, tMin:40, tMax:75, c:'var(--max-effort)', rpe:'7-9', sets:8, rest:3,
     why:'8 progressively harder boulders, weaknesses included (e.g. dynamic if that is your weakness): 6a, 6a, 6b, 6a dyn, 6c, 6c dyn, 7a, 7a+. Three tries per boulder, ~3 min rest between tries. Failure only in the top grades — otherwise adjust the difficulty.' },
-  project: { n:'Project attempts', t:48, tMin:40, tMax:90, c:'var(--max-effort)', rpe:'9-10', sets:8, rest:6,
+  project: { n:'Project attempts', t:75, tMin:40, tMax:120, c:'var(--max-effort)', rpe:'9-10', sets:8, rest:6,
     why:'Max 8-10 attempts. Full recovery between tries (5-8 min — feels long, is needed). Between attempts: evaluate beta, filming helps. Power drops = done for today.' },
 
   // ── recovery cores ──
@@ -295,9 +295,9 @@ const BLOCKLIB = {
     why:'2×10 sec at 90 and 120 degrees. Stop 2 sec before failure. Wide grip.' },
   gymWarmup: { n:'Gym warm-up', t:10, tMin:8, tMax:15, c:'var(--prepare)', rpe:'2-3',
     why:'Get up to temperature calmly: 5 min cardio (rowing, bike or jump rope) plus shoulder mobility, band pull-aparts and a few light warm-up sets for the first exercise. Prepare tendons and joints for load.' },
-  pullStrength: { n:'Pull strength', t:18, tMin:15, tMax:30, c:'var(--max-effort)', rpe:'7-8', sets:4, rest:3,
+  pullStrength: { n:'Pull strength', t:25, tMin:15, tMax:35, c:'var(--max-effort)', rpe:'7-8', sets:4, rest:3,
     why:'Weighted pull-ups or rows as the main lift. 3-5 sets of 3-6 reps with a controlled eccentric. Full rest between sets — this is strength, not conditioning.' },
-  pushStrength: { n:'Push strength', t:15, tMin:12, tMax:25, c:'var(--prepare)', rpe:'7-8', sets:4, rest:3,
+  pushStrength: { n:'Push strength', t:20, tMin:12, tMax:30, c:'var(--prepare)', rpe:'7-8', sets:4, rest:3,
     why:'Bench press or overhead press. 3-4 sets of 6-10 reps. Keep 1-2 reps in reserve (RIR), bar speed high. Antagonist balance for your shoulders after all the pulling in climbing.' },
   coreLegs: { n:'Core & legs', t:12, tMin:10, tMax:20, c:'var(--prepare)', rpe:'6-7', sets:3, rest:2,
     why:'Single-leg Romanian deadlift, Bulgarian split squats and anti-rotation core (TRX body saws or pallof press). 3 sets, 8-10 reps. Stability and strength for your lower body — often neglected in climbers.' },
@@ -333,7 +333,7 @@ const BLOCKLIB = {
     why:'First third, while your nervous system is fresh. Your hardest material: limit boulders, a project, committing dynos, complex coordination. This is the point of the session. Long rests, real effort, and you walk away before the quality drops.' },
   frontBuild: { n:'Working boulders', t:20, tMin:10, tMax:40, c:'var(--volume)', rpe:'6-7',
     why:'Middle third. Material you are developing: not comfortable, not impossible. Boulders you can nearly do. This is where skills consolidate. Keep the quality high and rest enough to try hard.' },
-  frontMaint: { n:'Easy wind-down', t:20, tMin:10, tMax:40, c:'var(--prepare)', rpe:'3-4',
+  frontMaint: { n:'Easy wind-down', t:20, tMin:10, tMax:20, c:'var(--prepare)', rpe:'3-4',
     why:'Final third. Easy volume, simple movement, familiar problems. Warm-up-style climbing belongs here, at the end, not the start. Move smooth and leave feeling good.' },
   stretch: { n:'Stretch', t:10, tMin:5, tMax:15, c:'var(--prepare)', rpe:'-',
     why:'Pancake progression (Aidan Roberts: Leaning → Rocking), shoulder flexion, T-spine and lats. 2 min per position. Breathe out.' },
