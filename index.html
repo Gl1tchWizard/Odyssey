@@ -40,7 +40,7 @@
   <div id="splashInner">
     <svg id="splashMark"><use href="#cf-mark"/></svg>
     <svg id="splashWord"><use href="#cf-word"/></svg>
-    <div id="splashBy">by Glitch Labs · v0.33</div>
+    <div id="splashBy">by Glitch Labs · v0.34</div>
     <div id="splashBeta">still working out the beta</div>
   </div>
   <div id="splashFlash"></div>
@@ -498,6 +498,11 @@
         <button id="neConfirmBtn" onclick="confirmNewExercise()" style="flex:1;padding:12px;border-radius:10px;border:none;background:var(--acid);color:var(--acid-text);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;cursor:pointer;">Add</button>
       </div>
     </div>
+  </div>
+
+  <!-- ══ BLOK-BEWERKPANEEL (builder, voor lock-in) ══ -->
+  <div id="blockEditDialog" style="display:none;position:absolute;inset:0;z-index:58;background:color-mix(in srgb, var(--ink) 92%, transparent);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:24px;" onclick="if(event.target===this)closeBlockEdit()">
+    <div id="blockEditBody" style="background:var(--carbon);border:1px solid var(--graphite);border-radius:16px;padding:22px;width:100%;max-width:320px;max-height:85%;overflow-y:auto;"></div>
   </div>
 
   <!-- ══ SHARE DIALOG ══ -->

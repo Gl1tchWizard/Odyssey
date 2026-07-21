@@ -232,7 +232,7 @@ const BLOCKLIB = {
     why:'25-35 boulders around 6a/6b. 3 min rest from 6a, timer on. Drop a grade when quality fades (first 5c, then 5b). Stop at technical failure, not muscular failure.' },
   linked: { n:'Linked boulders', t:40, tMin:25, tMax:60, c:'var(--volume)', rpe:'6-7', sets:8, rest:4,
     why:'Link two boulders together (climb down or step straight through). Grades around 5c-6a per boulder so the link stays doable. 3-4 min rest between links. 6-10 links total.' },
-  boardVolume: { n:'Kilterboard volume', t:40, tMin:30, tMax:60, c:'var(--volume)', rpe:'6-7', sets:18, rest:3,
+  boardVolume: { n:'Kilterboard volume', t:75, tMin:45, tMax:180, c:'var(--volume)', rpe:'6-7', sets:18, rest:3,
     why:'15-20 boulders below your board max (6a-6b on the board). 3 min rest, timer on. Watch your skin — stop at flappers or move to the gym wall. Repeat boulders that could flow better.' },
 
   // ── count-blokken: denken in aantal boulders op een niveau, niet in tijd.
@@ -509,7 +509,7 @@ const variantOffset = {};
 const durationOverride = {};
 
 const timeValues = [30,45,60,75,90,105,120,150,Infinity];  // Infinity = geen tijdslimiet (MOCK-prototype)
-let activeTimeIdx = 2;
+let activeTimeIdx = 6;   // default 120 min: realistisch voor een hal-sessie; lichte sessies stoppen bij hun cap
 let activeSessionId = 'capacity';
 let currentBlocks = [];
 let currentBlockIdx = 0;
@@ -1850,7 +1850,7 @@ function renderTodaysPick() {
     <div class="pick-body">
       <div class="pick-kicker">recommended today</div>
       <div class="pick-name">${s.name}</div>
-      <div class="pick-meta"><span>${s.desc.split('\n')[0].toLowerCase()}</span><span>${isFinite(t) ? t : total} min</span><span>${deriveGear(blocks)}</span><span class="pick-load">load ${chPhalanx(loadDots(pick.id), true)}</span></div>
+      <div class="pick-meta"><span>${s.desc.split('\n')[0].toLowerCase()}</span><span>${total} min</span><span>${deriveGear(blocks)}</span><span class="pick-load">load ${chPhalanx(loadDots(pick.id), true)}</span></div>
       <div class="pick-reason">${reason}</div>
       <button class="pick-why-btn" onclick="togglePickWhy(this)">${_pickWhyOpen ? 'why this? ▴' : 'why this? →'}</button>
       <div class="pick-why${_pickWhyOpen ? ' open' : ''}" id="pickWhy">${_pickWhyOpen ? coachDetail(pick) : ''}</div>
@@ -2504,19 +2504,12 @@ function buildSlab() {
       </div>`;
     }
     const dragAttrs = sessionLocked ? '' : `ontouchstart="slabPressStart(event,this)" ontouchmove="slabPressMove(event)" ontouchend="slabPressEnd()" onmousedown="slabPressStart(event,this)"`;
-    // builder: duur per blok direct instelbaar binnen het duurmodel (min/max)
-    const bd = blockBounds(b);
-    const dur = (isCustom && !sessionLocked && bd.min !== bd.max)
-      ? `<div class="slab-stepper" onclick="event.stopPropagation()">
-          <button class="step-btn" onclick="adjustBlock('custom',${i},${b.t},-5)" aria-label="shorter">&minus;</button>
-          <div class="slab-ghost" style="color:${nameColor(b.c)};">${b.t}<span class="gu">'</span></div>
-          <button class="step-btn" onclick="adjustBlock('custom',${i},${b.t},5)" aria-label="longer">+</button>
-        </div>`
-      : `<div class="slab-ghost" style="color:${nameColor(b.c)};">${b.t}<span class="gu">'</span></div>`;
+    // voor lock-in opent de tik het bewerkpaneel (slabBlockTap); de duur
+    // staat als ghost op de rij, de steppers zitten in het paneel
     return `<div class="slab-block slab-real" data-idx="${i}" style="background:color-mix(in srgb, ${b.c} 9%, transparent);" onclick="slabBlockTap(${i})" ${dragAttrs}>
       <div class="slab-accent" style="background:${nameColor(b.c)};"></div>
       <div class="slab-block-name" style="color:${nameColor(b.c)};">${b.n}${yoursBadge(b._key)}</div>
-      ${dur}
+      <div class="slab-ghost" style="color:${nameColor(b.c)};">${b.t}<span class="gu">'</span></div>
     </div>`;
   }).join('');
   const emptyHint = currentBlocks.length === 0
@@ -2550,7 +2543,51 @@ let _dragging = false, _dragEl = null, _pressY = 0, _justDragged = false;
 
 function slabBlockTap(i) {
   if (_justDragged) { _justDragged = false; return; }
+  // voor LOCK IN: tik opent het bewerkpaneel (duur, rpe, instructie);
+  // de speler opent pas na lock-in en start
+  if (!sessionLocked) { openBlockEdit(i); return; }
   openBlock(i);
+}
+
+// ── BLOK-BEWERKPANEEL (builder, voor lock-in) ──
+let _editBlockIdx = null;
+function openBlockEdit(i) {
+  _editBlockIdx = i;
+  renderBlockEdit();
+  document.getElementById('blockEditDialog').style.display = 'flex';
+}
+function closeBlockEdit() { _editBlockIdx = null; document.getElementById('blockEditDialog').style.display = 'none'; }
+function renderBlockEdit() {
+  const b = currentBlocks[_editBlockIdx];
+  if (!b) { closeBlockEdit(); return; }
+  const bd = blockBounds(b);
+  const grp = blockGroupName(b._key);
+  const col = CAT_COLOR[grp] || b.c;
+  const durRow = bd.min === bd.max
+    ? `<div class="be-dur"><div class="be-dur-val">${b.t}<span>'</span></div></div>
+       <div class="be-dur-range">fixed duration</div>`
+    : `<div class="be-dur">
+        <button class="step-btn" onclick="beAdjust(-5)" aria-label="shorter">&minus;</button>
+        <div class="be-dur-val">${b.t}<span>'</span></div>
+        <button class="step-btn" onclick="beAdjust(5)" aria-label="longer">+</button>
+       </div>
+       <div class="be-dur-range">${bd.min} to ${bd.max} min</div>`;
+  const hasRpe = b.rpe && b.rpe !== '-' && b.rpe !== '–';
+  const editBtn = (b._key && b._key.startsWith('ux_'))
+    ? `<button class="be-secondary" onclick="closeBlockEdit();openNewExercise('${b._key}')">✎ Edit exercise</button>` : '';
+  document.getElementById('blockEditBody').innerHTML = `
+    <div class="be-kicker" style="color:${col};">${grp}</div>
+    <div class="be-name">${b.n}</div>
+    ${durRow}
+    ${hasRpe ? `<div class="be-rpe">rpe ${b.rpe}</div>` : ''}
+    <div class="be-why">${b.why || ''}</div>
+    <div class="be-actions">${editBtn}<button class="be-done" onclick="closeBlockEdit()">Done</button></div>`;
+}
+function beAdjust(delta) {
+  const b = currentBlocks[_editBlockIdx];
+  if (!b) return;
+  adjustBlock(activeSessionId, _editBlockIdx, b.t, delta);  // klemt op [tMin, tMax], herbouwt slab en preview
+  renderBlockEdit();
 }
 function slabPressStart(ev, el) {
   clearTimeout(_pressTimer);
