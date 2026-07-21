@@ -3546,7 +3546,11 @@ function sessionMins(s) {
   return sum || s.mins || 0;
 }
 const COACH_ROLE = { 'Mila Berg':'strength coach', 'Teo Marchetti':'power & comp coach', 'Ana Kovač':'endurance coach', 'Ines Fujimoto':'technique coach', 'Jonas Steen':'recovery coach', 'Vincent':'easy day coach', 'Crimpify':'the house method', 'Glitch':'head coach', 'Guru':'comp coach', 'Sarah':'conditioning coach', 'Magnus W':'capacity coach', 'Jaap dJ':'finger strength coach' };
-function coachShort(name) { const p = name.split(' '); return p.length > 1 ? p[0] + ' ' + p[1][0] + '.' : name; }
+function coachShort(name) {
+  if (name.length <= 12) return name;   // kort genoeg voor de kaartvoet: voluit (Jaap dJ, Magnus W, Mila Berg)
+  const p = name.split(' ');
+  return p.length > 1 ? p[0] + ' ' + p[1][0] + '.' : name;
+}
 
 // vingerafdruk: de echte bloksequentie, breedte naar rato van basisduur, categoriekleuren
 function chBlueprint(keys) {
