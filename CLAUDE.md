@@ -25,14 +25,40 @@ offline-capable PWA. Live op https://crimpify.com via GitHub Pages.
   (alle JavaScript) en `style.css` (alle CSS), geladen via gewone script- en
   link-tags. Daarnaast `manifest.json`, `sw.js`, iconen en `og.png`.
   Geen build-stap, geen dependencies.
-- **Service worker:** cachenaam is `crimpify-v33`. Bumpen bij elke deploy die
-  bestanden wijzigt (`crimpify-v34`, enz.), anders zien bezoekers de oude versie.
+- **Service worker:** cachenaam is `crimpify-v36`. Bumpen bij elke deploy die
+  bestanden wijzigt (`crimpify-v37`, enz.), anders zien bezoekers de oude versie.
 - **Analytics: GoatCounter** (FOSS, cookieloos, geen persoonsgegevens,
   aggregaat-only, geen accounts) — async snippet onderaan index.html, dashboard
   op https://crimpify.goatcounter.com. count.js telt localhost/privé-IP's
   standaard niet mee, dus lokaal testen blijft schoon. Consistent met
   productprincipe 1: we tellen bezoeken, nooit individuen. Geen andere
-  analytics of tracking toevoegen.
+  analytics of tracking toevoegen. Naast paginabezoeken sturen we een vaste
+  set aggregaat-events (`trackEvent()` in app.js, no-op als count.js
+  ontbreekt) die de hele deel-trechter dekken; de vraag die ze moeten
+  beantwoorden is: hoeveel ontvangers starten een sessie en delen daarna
+  zelf iets. Events: `share_created` (link gemaakt), `share_opened-<naam>`
+  (link geopend, met sessienaam: welke sessies reizen), `session_previewed`
+  (preview geopend), `session_started`, `session_completed` (gelogd met
+  stoplicht), `result_shared` (gedeeld vanaf het resultaat) en
+  `install_prompt_shown` / `install_accepted` (werkt het
+  installatiemoment). Sessienamen zijn content, geen persoonsgegevens;
+  geen nieuwe events toevoegen zonder dit lijstje bij te werken.
+- **Share-landing en PWA-uitnodiging (groeivliegwiel, juli 2026):** de
+  afzendernaam en (indien bekend) de maker reizen additief mee in de
+  deel-link (velden `f` en `m`; de naam staat al lokaal, geen backend).
+  De ontvanger ziet "[naam] sent you [sessie]" (zonder naam de neutrale
+  banner), duur, materiaal, fingerprint en de acties START/REMIX/SAVE,
+  plus klein: works without an account, progress stays on this device.
+  Nooit een naamvraag, splash-onboarding of installatieprompt bij
+  binnenkomst. De naamvraag valt op momenten dat een naam waarde heeft:
+  bij het delen (nameSheet, met Skip) en na de eerste afgeronde sessie
+  (begroeting op de landing). Na de eerste gelogde sessie, in deze
+  volgorde: resultaat, delen/bewaren als primaire acties, en pas daarna
+  een subtiele install-regel in de samenvatting (Android/Chrome via
+  `beforeinstallprompt`, iOS via deelknop-instructies, anders niet tonen;
+  één keer, keuze in `crimpify_install_prompt`, onderbreekt het
+  deelmoment nooit). Daarnaast een passieve, altijd vindbare regel
+  onderaan de landing die het install-sheet opent.
 - **Tijdmodel (juli 2026):** elk blok heeft `t` (basis) plus optioneel
   `tMin`/`tMax`. In de builder (Design/self-assembled) is de som van de
   blokduren leidend; de tijd-slider geldt daar niet en er wordt nooit
@@ -59,6 +85,7 @@ offline-capable PWA. Live op https://crimpify.com via GitHub Pages.
 | `crimpify_name` | voornaam voor de begroeting |
 | `crimpify_active` | onafgemaakte training voor de Continue-kaart: `{keys, name, color, sessionId, idx, spent, ts}`; verloopt na 12 uur |
 | `crimpify_seen_news` | array met weggetikte news-ids; een weggetikt item komt niet terug |
+| `crimpify_install_prompt` | `'shown'` of `'accepted'`; de installatie-uitnodiging verschijnt daarna nooit meer |
 
 `basedOn` is optioneel en additief: `{title, coach}` op kopieën uit de
 catalogus; oude entries zonder basedOn blijven geldig. `d` (favs, dichte
@@ -509,10 +536,11 @@ Engels/Nederlands-mix.
 
 - Eén wijziging per commit-onderwerp, sw-cache bumpen bij deploy.
 - Sober Engels in UI-copy, geen consultant-taal, geen em-dashes in teksten.
-- Versienummer op de splash (nu v0.39) bij elke release ophogen, samen met de sw-cache.
-- Test na elke wijziging: splash met zichtbaar logo, naamvraag en herladen,
-  sessie genereren en starten, deel-link openen in incognito, stoplicht loggen
-  en dot terugzien bij Mijn sessies.
+- Versienummer op de splash (nu v0.42) bij elke release ophogen, samen met de sw-cache.
+- Test na elke wijziging: splash met zichtbaar logo, sessie genereren en
+  starten, deel-link openen in incognito, stoplicht loggen en dot terugzien
+  bij Mijn sessies, naamvraag (verschijnt pas na de eerste gelogde sessie)
+  en herladen.
 
 ## Werkregels voor Claude Code
 

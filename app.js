@@ -468,6 +468,10 @@ function logSessionDone(id, variant, time, sig, snap) {
   if (snap) { e.keys = snap.keys; e.name = snap.name; e.color = snap.color; e.blocks = snap.blocks; }
   h.unshift(e);
   saveHistory(h);
+  if (sig) trackEvent('session_completed');
+  // piekmoment: eerste gelogde sessie → eenmalige installatie-uitnodiging,
+  // maar pas nadat de samenvatting gesloten is (anders ligt hij eronder)
+  if (sig && h.length === 1) _installOfferPending = true;
   if (typeof clearActive === 'function') clearActive();
   rebuildRecent();
   renderSignalCal();
@@ -700,6 +704,8 @@ function goBack() {
   const overlays = [
     ['blockEditDialog', closeBlockEdit],
     ['newExerciseDialog', closeNewExercise],
+    ['nameSheet', closeNameSheet],
+    ['installSheet', closeInstallSheet],
     ['saveFavDialog', closeSaveFav],
     ['shareDialog', closeShareDialog],
     ['previewView', closeChoosePreview],
@@ -917,6 +923,10 @@ function showSessionSummary() {
   // stoplicht-UI terugzetten naar beginstand
   document.getElementById('signalAsk').style.display = '';
   document.getElementById('signalAdvice').style.display = 'none';
+  const si = document.getElementById('summaryInstall');
+  if (si) si.style.display = 'none';
+  const sb = document.getElementById('summarySaveBtn');
+  if (sb) sb.textContent = isCurrentFav() ? '★ Saved' : '☆ Save';
 }
 
 // ── STOPLICHT (sessie-autoregulatie, één tik) ──
@@ -928,6 +938,8 @@ const SIGNAL_ADVICE = {
 };
 function signalTap(sig) {
   if (_pendingLog) { logSessionDone(_pendingLog.id, _pendingLog.variant, _pendingLog.time, sig, _pendingLog.snap); _pendingLog = null; }
+  // pas na resultaat en deel/bewaar-acties: subtiele install-regel (1x)
+  if (_installOfferPending) { _installOfferPending = false; revealSummaryInstall(); }
   const a = SIGNAL_ADVICE[sig];
   document.getElementById('signalAsk').style.display = 'none';
   const box = document.getElementById('signalAdvice');
@@ -944,16 +956,31 @@ function signalSkip() {
 
 function shareSummary() {
   if (!currentBlocks || !currentBlocks.length) return;
-  const s = getSession(activeSessionId);
-  const url = location.origin + location.pathname + '#s=' + encodeSession();
-  const name = s ? s.name : 'Session';
-  if (navigator.share) { navigator.share({ title: 'Crimpify: ' + name, text: shareText(name), url }).catch(()=>{ openShareDialog(url); }); }
-  else { openShareDialog(url); }
+  // resultaat delen: het moment waarop een naam waarde heeft
+  askNameThen(() => {
+    const s = getSession(activeSessionId);
+    const url = location.origin + location.pathname + '#s=' + encodeSession();
+    const name = s ? s.name : 'Session';
+    trackEvent('result_shared');
+    if (navigator.share) { navigator.share({ title: 'Crimpify: ' + name, text: shareText(name), url }).catch(()=>{ openShareDialog(url); }); }
+    else { openShareDialog(url); }
+  });
+}
+function summarySave() {
+  toggleFavorite();
+  const btn = document.getElementById('summarySaveBtn');
+  if (btn) {
+    const on = isCurrentFav();
+    btn.textContent = on ? '★ Saved' : '☆ Save';
+    if (on) showToast('Saved on this device');
+  }
 }
 function closeSummary() {
   // vangnet: als er nog een ongelogde sessie hangt, log zonder signaal
   if (_pendingLog) { logSessionDone(_pendingLog.id, _pendingLog.variant, _pendingLog.time, null, _pendingLog.snap); _pendingLog = null; }
   document.getElementById('sessionSummary').style.display = 'none';
+  const si = document.getElementById('summaryInstall');
+  if (si) si.style.display = 'none';
   sessionLog = {};
   sessionStartTime = null;
   clearActive();
@@ -1029,6 +1056,7 @@ function startSession() {
   currentBlockIdx = 0;
   sessionLog = {};
   sessionStartTime = Date.now();
+  trackEvent('session_started');
   openBlock(0);
 }
 
@@ -2296,16 +2324,18 @@ function isCurrentFav() {
 function updateFavStar() {
   const locked = sessionLocked;
   const el = id => document.getElementById(id);
-  // bewerken alleen op eigen sessies; kopie alleen op ontvangen sessies
-  if (el('editBtn')) el('editBtn').style.display = (locked && sessionOwned) ? 'flex' : 'none';
-  if (el('dupBtn')) el('dupBtn').style.display = (locked && !sessionOwned) ? 'flex' : 'none';
+  // actieladder (pv-actions, zelfde stijl als de preview) alleen op gelockte
+  // sessies; bewerken alleen op eigen sessies, remix alleen op ontvangen
+  if (el('slabActions')) el('slabActions').style.display = locked ? 'flex' : 'none';
+  if (el('editBtn')) el('editBtn').style.display = (locked && sessionOwned) ? '' : 'none';
+  if (el('dupBtn')) el('dupBtn').style.display = (locked && !sessionOwned) ? '' : 'none';
   if (el('favStarBtn')) {
-    el('favStarBtn').style.display = locked ? 'flex' : 'none';
+    el('favStarBtn').style.display = locked ? '' : 'none';
     const fav = isCurrentFav();
-    el('favStarBtn').textContent = fav ? '★' : '☆';
-    el('favStarBtn').style.color = fav ? 'var(--acid)' : 'var(--dust)';
+    el('favStarBtn').textContent = fav ? '★ Saved' : '☆ Save';
+    el('favStarBtn').classList.toggle('on', fav);
   }
-  if (el('shareBtn')) el('shareBtn').style.display = locked ? 'flex' : 'none';
+  if (el('shareBtn')) el('shareBtn').style.display = locked ? '' : 'none';
   if (el('saveBigBtn')) el('saveBigBtn').style.display = locked ? 'none' : '';
   if (el('startBtn')) el('startBtn').style.display = locked ? '' : 'none';
 }
@@ -2339,11 +2369,19 @@ function toggleFavorite() {
 function encodeSession() {
   const s = getSession(activeSessionId);
   // d (additief): duur per blok, zodat stepper-waardes meereizen; oude
-  // clients negeren het veld, oude links zonder d vallen terug op basisduren
-  return encodePayload(s ? s.name : 'Session', currentBlocks.map(b=>b._key), getTFinite(), s ? s.color : 'lime', currentBlocks.map(b=>b.t));
+  // clients negeren het veld, oude links zonder d vallen terug op basisduren.
+  // f (afzender) en m (maker) reizen ook additief mee: de naam staat al
+  // lokaal, dus geen backend nodig
+  let sender = '';
+  try { sender = localStorage.getItem('crimpify_name') || ''; } catch {}
+  const maker = (activeSessionId === 'custom' && customSession && customSession.basedOn) ? customSession.basedOn.coach
+    : (activeSessionId === 'custom' && customSession && customSession.madeBy) || undefined;
+  return encodePayload(s ? s.name : 'Session', currentBlocks.map(b=>b._key), getTFinite(), s ? s.color : 'lime', currentBlocks.map(b=>b.t), { f: sender || undefined, m: maker });
 }
-function encodePayload(name, keys, time, color, durations) {
+function encodePayload(name, keys, time, color, durations, meta) {
   const payload = { n: name || 'Session', k: keys, t: time, c: color || 'lime' };
+  if (meta && meta.f) payload.f = meta.f;
+  if (meta && meta.m) payload.m = meta.m;
   if (Array.isArray(durations) && durations.length === keys.length) payload.d = durations;
   // eigen oefeningen reizen mee in de link
   const own = keys.filter(k=>k.startsWith('ux_') && BLOCKLIB[k]);
@@ -2371,14 +2409,41 @@ function shareText(sessName, time) {
   return label + ' \u00B7 ' + (time || getTFinite()) + ' min boulder session \u2192 tap the link to train it';
 }
 function doShare() {
-  const url = location.origin + location.pathname + '#s=' + encodeSession();
-  const s = getSession(activeSessionId);
-  const name = s ? s.name : 'Session';
-  if (navigator.share) {
-    navigator.share({ title: 'Crimpify: ' + name, text: shareText(name), url }).catch(()=>{ openShareDialog(url); });
-  } else {
-    openShareDialog(url);
+  // naam heeft waarde op het deelmoment: vraag hem hier (overslaan mag)
+  askNameThen(() => {
+    const url = location.origin + location.pathname + '#s=' + encodeSession();
+    const s = getSession(activeSessionId);
+    const name = s ? s.name : 'Session';
+    trackEvent('share_created');
+    if (navigator.share) {
+      navigator.share({ title: 'Crimpify: ' + name, text: shareText(name), url }).catch(()=>{ openShareDialog(url); });
+    } else {
+      openShareDialog(url);
+    }
+  });
+}
+// ── NAAM OP HET DEELMOMENT: nooit bij binnenkomst, nooit blokkerend ──
+let _nameThenCb = null;
+function askNameThen(cb) {
+  let name = '';
+  try { name = localStorage.getItem('crimpify_name') || ''; } catch {}
+  if (name) { cb(); return; }
+  _nameThenCb = cb;
+  const inp = document.getElementById('nameSheetInput');
+  if (!inp) { cb(); return; }
+  inp.value = '';
+  document.getElementById('nameSheet').style.display = 'flex';
+  inp.focus();
+}
+function closeNameSheet() { _nameThenCb = null; document.getElementById('nameSheet').style.display = 'none'; }
+function nameSheetGo(withName) {
+  if (withName) {
+    const v = (document.getElementById('nameSheetInput').value || '').trim();
+    if (v) { try { localStorage.setItem('crimpify_name', v.slice(0, 24)); } catch {} renderGreeting(); }
   }
+  document.getElementById('nameSheet').style.display = 'none';
+  const cb = _nameThenCb; _nameThenCb = null;
+  if (cb) cb();
 }
 // toast: één element, korte bevestiging, verdwijnt vanzelf
 let _toastTimer = null;
@@ -2431,7 +2496,13 @@ function importFromHash() {
     validDur.push(Array.isArray(p.d) && typeof p.d[i] === 'number' ? p.d[i] : null);
   });
   if (!validKeys.length) return false;
-  customSession = { id:'custom', cat:'shared', name: (p.n||'Shared session'), desc:'', color: p.c||'lime', rpe:'–', intent:'Shared session · locked by its maker. Want something different? Make your own copy (⧉).' };
+  trackEvent('share_opened-' + slugName(p.n));
+  // afzender reist mee in de link (veld f): persoonlijke ontvangst zonder
+  // backend; geen naam = de bestaande neutrale banner. Maker (m) idem.
+  const sender = (typeof p.f === 'string' && p.f.trim()) ? p.f.trim().slice(0, 24) : '';
+  const banner = sender ? `${sender} sent you "${p.n || 'a session'}".` : 'Shared session, locked by its maker.';
+  customSession = { id:'custom', cat:'shared', name: (p.n||'Shared session'), desc:'', color: p.c||'lime', rpe:'–', intent: banner };
+  if (typeof p.m === 'string' && p.m.trim()) customSession.madeBy = p.m.trim().slice(0, 24);
   customKeys = validKeys;
   durationOverride['custom'] = {};
   validDur.forEach((mv, i) => { if (mv != null) durationOverride['custom'][i] = mv; });
@@ -2575,11 +2646,19 @@ function buildSlab() {
 
   document.getElementById('slabTitle').textContent = s.name;
   document.getElementById('slabTitle').style.color = col.text;
-  document.getElementById('slabMeta').textContent = `do · rpe ${s.rpe} · ${total} min`;
+  // share-landing: ontvanger ziet duur, materiaal en (als bekend) de maker
+  const isShared = s.cat === 'shared';
+  document.getElementById('slabMeta').textContent = isShared
+    ? `${total} min · ${deriveGear(currentBlocks).toLowerCase()}${s.madeBy ? ' · by ' + s.madeBy : ''}`
+    : `do · rpe ${s.rpe} · ${total} min`;
   document.getElementById('slabMeta').style.color = col.color;
   document.getElementById('slabMeta').style.opacity = '.5';
   document.getElementById('slabFooterMeta').innerHTML = `${(s.cat||'own').toLowerCase()}<br><b>${total} min</b>`;
-  document.getElementById('slabIntent').textContent = s.intent || '';
+  if (isShared) {
+    document.getElementById('slabIntent').innerHTML = `${s.intent || ''}<br><span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--disabled);">works without an account · your progress stays on this device</span>`;
+  } else {
+    document.getElementById('slabIntent').textContent = s.intent || '';
+  }
 
   // attributie op kopieën uit de catalogus; originelen en eigen sessies tonen niets
   const bo = document.getElementById('slabBasedOn');
@@ -2629,9 +2708,11 @@ function buildSlab() {
     <div class="slab-block" style="background:none;min-height:44px;justify-content:center;" onclick="toggleSlabEdit()">
       <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:${slabEditMode?'var(--acid)':'var(--disabled)'};">${slabEditMode?'✓ done editing':'✎ edit'}</div>
     </div>`;
-  const lockedRow = sessionLocked ? `
+  // gedeelde sessies: geen regel onder de blokken meer, de REMIX-knop in de
+  // actieladder is de ene affordance (dedupe, juli 2026)
+  const lockedRow = (sessionLocked && sessionOwned) ? `
     <div class="slab-block" style="background:none;min-height:40px;justify-content:center;pointer-events:none;">
-      <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--disabled);">${sessionOwned ? 'locked · ✎ to edit' : 'shared session · ⧉ for your own copy'}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--disabled);">locked · ✎ to edit</div>
     </div>` : '';
   // eerlijk conflict (alleen generate-pad): nooit stil knijpen
   const fit = _fitInfo[activeSessionId];
@@ -3189,8 +3270,13 @@ function renderGreeting() {
   timeBtn.innerHTML = `<span id="timeSummary" style="color:var(--acid);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.06em;">${timeLabel()}</span><span id="timeChev" style="font-size:11px;opacity:.5;color:var(--dust);">▾</span>`;
   line.appendChild(h); line.appendChild(timeBtn);
   el.appendChild(line);
+  // naamvraag pas als er iets te personaliseren valt: na de eerste
+  // afgeronde sessie. Wie via een link binnenkomt ziet eerst gewoon de app.
+  const hasHistory = loadHistory().length > 0;
   if (name) {
     h.textContent = 'Welcome back, ' + name;
+  } else if (!hasHistory) {
+    h.textContent = 'Welcome to Crimpify';
   } else {
     h.textContent = 'Welcome to Crimpify';
     const row = document.createElement('div');
@@ -3266,6 +3352,88 @@ document.addEventListener('visibilitychange', () => {
   if (_swReloadPending) swReloadWhenSafe();
 });
 window.addEventListener('pagehide', flushState);
+
+// ── GROEIVLIEGWIEL: aggregaat-events + installatie-uitnodiging ──
+// GoatCounter-events: cookieloos en geaggregeerd, nooit individuen
+// (productprincipe 1). We meten welke sessies reizen en waar de trechter
+// lekt: shared-open-<sessie>, session-start, session-done-<sig>,
+// install-prompt-shown, install-accepted.
+function trackEvent(name) {
+  try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: name, event: true }); } catch {}
+}
+function slugName(n) { return (n || 'session').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+
+// installatie: Android/Chrome via beforeinstallprompt, iOS via instructies.
+// Actieve uitnodiging precies een keer, na de eerste gelogde sessie; de
+// passieve regel op de landing blijft altijd beschikbaar. Nooit zeuren.
+let _bipEvent = null;
+let _installOfferPending = false;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); _bipEvent = e; });
+window.addEventListener('appinstalled', () => {
+  try { localStorage.setItem('crimpify_install_prompt', 'accepted'); } catch {}
+  trackEvent('install_accepted');
+});
+const IS_IOS_DEVICE = /iP(hone|ad|od)/.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function isStandalone() {
+  try { return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; } catch { return false; }
+}
+function installOfferAvailable() {
+  if (isStandalone()) return false;
+  try { if (localStorage.getItem('crimpify_install_prompt')) return false; } catch {}
+  return !!_bipEvent || IS_IOS_DEVICE;   // geen mechanisme = niet tonen, niet markeren
+}
+// subtiele regel onderaan de samenvatting, na resultaat en delen/bewaren;
+// onderbreekt het deelmoment nooit
+function revealSummaryInstall() {
+  if (!installOfferAvailable()) return;
+  try { localStorage.setItem('crimpify_install_prompt', 'shown'); } catch {}
+  trackEvent('install_prompt_shown');
+  const el = document.getElementById('summaryInstall');
+  if (el) el.style.display = '';
+}
+function summaryInstallTap() {
+  if (_bipEvent) { installViaPrompt(); return; }
+  showInstallSheet('offer');   // iOS: korte deelknop-instructies
+}
+function showInstallSheet(source) {
+  const body = document.getElementById('installSheetBody');
+  if (!body) return;
+  const title = source === 'offer' ? 'Keep Crimpify' : 'This is the app';
+  const intro = source === 'offer'
+    ? 'Nice first session. Put Crimpify on your home screen so you never lose it: it works offline and needs no account.'
+    : 'Crimpify is a full app. Put it on your home screen: it works offline and needs no account.';
+  let action;
+  if (_bipEvent) {
+    action = `<button class="be-done" style="width:100%;" onclick="installViaPrompt()">Add to home screen</button>
+      <button class="be-secondary" style="width:100%;margin-top:8px;" onclick="closeInstallSheet()">Not now</button>`;
+  } else if (IS_IOS_DEVICE) {
+    action = `<div class="be-why" style="margin-top:2px;">1. Tap the share button in your browser.<br>2. Choose "Add to Home Screen".</div>
+      <button class="be-done" style="width:100%;margin-top:14px;" onclick="closeInstallSheet()">Got it</button>`;
+  } else {
+    action = `<div class="be-why" style="margin-top:2px;">Use your browser menu: "Install app" or "Add to home screen".</div>
+      <button class="be-done" style="width:100%;margin-top:14px;" onclick="closeInstallSheet()">Got it</button>`;
+  }
+  body.innerHTML = `
+    <div class="be-name" style="margin-bottom:6px;">${title}</div>
+    <div class="be-why" style="margin-top:0;">${intro}</div>
+    <div style="margin-top:14px;">${action}</div>`;
+  document.getElementById('installSheet').style.display = 'flex';
+}
+function closeInstallSheet() { document.getElementById('installSheet').style.display = 'none'; }
+function installViaPrompt() {
+  const e = _bipEvent;
+  closeInstallSheet();
+  if (!e) return;
+  e.prompt();
+  e.userChoice.then(r => {
+    if (r && r.outcome === 'accepted') {
+      try { localStorage.setItem('crimpify_install_prompt', 'accepted'); } catch {}
+      trackEvent('install_accepted');
+    }
+  }).catch(() => {});
+  _bipEvent = null;
+}
 
 // ── INIT ──
 ['maxHangs','nohangs','fourByFour','hehe','campus','lockoffs'].forEach(k=>{ if (BLOCKLIB[k]) BLOCKLIB[k].bm = true; });
@@ -3721,6 +3889,7 @@ function openChoosePreview(i) {
   // navigatie: een openstaand blok-detail (appears-in-route) sluit hier,
   // anders blijft dat overlay als wees boven de sessie hangen
   closeBlockDetail();
+  trackEvent('session_previewed');
   _previewIdx = i;
   const col = C[s.color] || C.lime;
   // interactiemodel: preview-rijen zijn tikbaar → alleen-lezen blok-info
@@ -3777,14 +3946,19 @@ function chooseCopyTitle(base) {
 // SHARE op de preview: deelt de gecureerde sessie via het bestaande linkmechanisme
 function sharePreviewSession() {
   if (_previewIdx == null) return;
-  const s = MOCK_CHOOSE[_previewIdx];
-  const keys = s.keys.filter(k => BLOCKLIB[k]);
-  const url = location.origin + location.pathname + '#s=' + encodePayload(s.name, keys, sessionMins(s), s.color, keys.map(k => BLOCKLIB[k].t));
-  if (navigator.share) {
-    navigator.share({ title: 'Crimpify: ' + s.name, text: shareText(s.name, sessionMins(s)), url }).catch(() => openShareDialog(url));
-  } else {
-    openShareDialog(url);
-  }
+  askNameThen(() => {
+    const s = MOCK_CHOOSE[_previewIdx];
+    const keys = s.keys.filter(k => BLOCKLIB[k]);
+    let sender = '';
+    try { sender = localStorage.getItem('crimpify_name') || ''; } catch {}
+    const url = location.origin + location.pathname + '#s=' + encodePayload(s.name, keys, sessionMins(s), s.color, keys.map(k => BLOCKLIB[k].t), { f: sender || undefined, m: s.coach });
+    trackEvent('share_created');
+    if (navigator.share) {
+      navigator.share({ title: 'Crimpify: ' + s.name, text: shareText(s.name, sessionMins(s)), url }).catch(() => openShareDialog(url));
+    } else {
+      openShareDialog(url);
+    }
+  });
 }
 function customizeFromChoose() {
   if (_previewIdx == null) return;
